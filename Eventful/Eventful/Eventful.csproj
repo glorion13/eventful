@@ -65,6 +65,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WPFFolderBrowser">
+      <HintPath>..\..\..\Invadopodia\Invadopodia\Invadopodia\Third-party\WPFFolderBrowser.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

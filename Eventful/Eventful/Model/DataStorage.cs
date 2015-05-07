@@ -10,18 +10,18 @@ namespace Eventful.Model
 {
     public static class DataStorage
     {
-        public static string StorageDirectory = String.Concat(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"\Eventful\");
-        public static void SaveEventToXml(Event ev, Deck deck)
+        public static string DefaultStorageDirectory = String.Concat(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"\Eventful\");
+        public static void SaveEventToXml(Event ev, Deck deck, string StorageDirectory)
         {
             try
             {
-                SaveEventToXmlUnsafe(ev, deck);
+                SaveEventToXmlUnsafe(ev, deck, StorageDirectory);
             }
             catch (DirectoryNotFoundException)
             {
                 CreateStorageDirectory(StorageDirectory);
                 CreateStorageDirectory(String.Concat(StorageDirectory, PrepareFilename(deck.Title)));
-                SaveEventToXml(ev, deck);
+                SaveEventToXml(ev, deck, StorageDirectory);
             }
             catch
             {
@@ -29,7 +29,7 @@ namespace Eventful.Model
             }
         }
 
-        private static void SaveEventToXmlUnsafe(Event ev, Deck deck)
+        private static void SaveEventToXmlUnsafe(Event ev, Deck deck, string StorageDirectory)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(Event));
             TextWriter textWriter = new StreamWriter(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", PrepareFilename(ev.Title), ".xml"));
@@ -65,7 +65,42 @@ namespace Eventful.Model
             Event ev;
             ev = (Event)deserializer.Deserialize(textReader);
             textReader.Close();
+            ev.IsChanged = false;
             return ev;
+        }
+
+
+        public static void DeleteEvent(Event ev, Deck deck, string StorageDirectory)
+        {
+            BackupEvent(ev, deck, StorageDirectory);
+        }
+        public static void DeleteDeck(Deck deck, string StorageDirectory)
+        {
+            BackupDeck(deck, StorageDirectory);
+        }
+
+        private static void BackupEvent(Event ev, Deck deck, string StorageDirectory)
+        {
+            try
+            {
+                CreateStorageDirectory(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", ".Backups"));
+                Directory.Move(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", PrepareFilename(ev.Title), ".xml"), String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", @".Backups\", PrepareFilename(DateTime.Now.ToString()), ".xml"));
+            }
+            catch
+            {
+            }
+        }
+
+        private static void BackupDeck(Deck deck, string StorageDirectory)
+        {
+            try
+            {
+                CreateStorageDirectory(String.Concat(StorageDirectory, ".Backups"));
+                Directory.Move(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\"), String.Concat(StorageDirectory, @".Backups\", PrepareFilename(DateTime.Now.ToString())));
+            }
+            catch
+            {
+            }
         }
 
     }

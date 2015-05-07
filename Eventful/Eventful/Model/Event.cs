@@ -29,6 +29,7 @@ namespace Eventful.Model
             set
             {
                 Set(() => Title, ref title, value);
+                IsChanged = true;
             }
         }
 
@@ -42,6 +43,7 @@ namespace Eventful.Model
             set
             {
                 Set(() => Text, ref text, value);
+                IsChanged = true;
             }
         }
 
@@ -55,6 +57,46 @@ namespace Eventful.Model
             set
             {
                 Set(() => Notes, ref notes, value);
+                IsChanged = true;
+            }
+        }
+
+        private string author = "anonymous";
+        public string Author
+        {
+            get
+            {
+                return author;
+            }
+            set
+            {
+                Set(() => Author, ref author, value);
+            }
+        }
+
+        private DateTime date = DateTime.Now;
+        public DateTime Date
+        {
+            get
+            {
+                return date;
+            }
+            set
+            {
+                Set(() => Date, ref date, value);
+            }
+        }
+
+        private bool isChanged = false;
+        public bool IsChanged
+        {
+            get
+            {
+                return isChanged;
+            }
+            set
+            {
+                Set(() => IsChanged, ref isChanged, value);
             }
         }
 

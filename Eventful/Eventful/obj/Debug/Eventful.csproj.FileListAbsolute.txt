@@ -30,8 +30,6 @@ C:\Users\alexandros_gouvatsos\Documents\GitHub\Eventful\Eventful\Eventful\obj\De
 C:\Users\alexandros_gouvatsos\Documents\GitHub\Eventful\Eventful\Eventful\obj\Debug\View\MainWindow.g.cs
 C:\Users\alexandros_gouvatsos\Documents\GitHub\Eventful\Eventful\Eventful\obj\Debug\View\MainWindow.baml
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\Eventful.exe.config
-G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.exe
-G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.pdb
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\Eventful.exe
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\Eventful.pdb
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\GalaSoft.MvvmLight.dll
@@ -40,6 +38,7 @@ G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\GalaSoft.MvvmLight.Plat
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\MahApps.Metro.dll
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\Microsoft.Practices.ServiceLocation.dll
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\System.Windows.Interactivity.dll
+G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\WPFFolderBrowser.dll
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\GalaSoft.MvvmLight.pdb
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\GalaSoft.MvvmLight.xml
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\GalaSoft.MvvmLight.Extras.pdb
@@ -49,7 +48,6 @@ G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\GalaSoft.MvvmLight.Plat
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\MahApps.Metro.xml
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
 G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\Microsoft.Practices.ServiceLocation.xml
-G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.csprojResolveAssemblyReference.cache
 G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\View\MainWindow.g.cs
 G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\App.g.cs
 G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\GeneratedInternalTypeHelper.g.cs
@@ -60,3 +58,5 @@ G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\View\MainWindow.baml
 G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.g.resources
 G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.Properties.Resources.resources
 G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.csproj.GenerateResource.Cache
+G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.exe
+G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.pdb
