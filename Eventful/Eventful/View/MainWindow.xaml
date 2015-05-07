@@ -5,7 +5,7 @@
         xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:MvvmControls="http://www.galasoft.ch/mvvmlight"
         xmlns:Converters="clr-namespace:Eventful.Converters"
-        Title="Eventful" Height="500" Width="800"
+        Title="Eventful" Height="768" Width="1024"
         ShowTitleBar="True"  
         SaveWindowPosition="True"
         ResizeMode="CanResizeWithGrip"
@@ -51,9 +51,19 @@
 
     <MetroControls:MetroWindow.RightWindowCommands>
         <MetroControls:WindowCommands>
-            <Button Content="settings" />
+            <Button Content="SETTINGS" Command="{Binding ShowSettingsCommand}" />
         </MetroControls:WindowCommands>
     </MetroControls:MetroWindow.RightWindowCommands>
+
+    <MetroControls:MetroWindow.Flyouts>
+        <MetroControls:FlyoutsControl>
+            <MetroControls:Flyout Header="Settings" Position="Right" Width="350" Visibility="{Binding IsSettingsFlyoutVisible, Converter={StaticResource BoolToVisibility}}" CloseCommand="{Binding ShowSettingsCommand}">
+                <Grid Margin="10,10">
+                    <TextBlock Text="test" />
+                </Grid>
+            </MetroControls:Flyout>
+        </MetroControls:FlyoutsControl>
+    </MetroControls:MetroWindow.Flyouts>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -61,8 +71,8 @@
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="125" />
-            <ColumnDefinition Width="125" />
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
@@ -70,12 +80,14 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
             </Grid.RowDefinitions>
-            <DataGrid ItemsSource="{Binding DecksViewSource.View}" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" ItemTemplate="{StaticResource DeckListItemTemplate}" AutoGenerateColumns="False" Grid.Row="0">
+            <DataGrid CanUserDeleteRows="False" CanUserAddRows="False" HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding DecksViewSource.View}" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" ItemTemplate="{StaticResource DeckListItemTemplate}" AutoGenerateColumns="False" Grid.Row="0">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Decks" SortDirection="Ascending" Width="*" Binding="{Binding Title}" />
+                    <DataGridTextColumn Header="Decks" Width="*" Binding="{Binding Title}" />
                 </DataGrid.Columns>
             </DataGrid>
+            <Button Content="Add deck" Command="{Binding AddDeckCommand}" Grid.Row="2" />
             <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" MetroControls:TextBoxHelper.ClearTextButton="True" Height="25" Grid.Row="1" />
         </Grid>
         <GridSplitter Grid.Row="0" Grid.Column="0" Style="{StaticResource GridSplitterStyle}" />
@@ -84,21 +96,39 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
             </Grid.RowDefinitions>
-            <DataGrid ItemsSource="{Binding EventsViewSource.View}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" ItemTemplate="{StaticResource EventListItemTemplate}" AutoGenerateColumns="False" Grid.Row="0">
+            <DataGrid CanUserAddRows="False" ItemsSource="{Binding EventsViewSource.View}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" ItemTemplate="{StaticResource EventListItemTemplate}" AutoGenerateColumns="False" Grid.Row="0">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Events" SortDirection="Ascending" Width="*" Binding="{Binding Title}" />
+                    <DataGridTextColumn Header="Events" Width="*" Binding="{Binding Title}" />
                 </DataGrid.Columns>
             </DataGrid>
+            <Button Content="Add event" Command="{Binding AddEventCommand}" Grid.Row="2" />
             <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" MetroControls:TextBoxHelper.ClearTextButton="True" Height="25" Grid.Row="1" />
         </Grid>
         <GridSplitter Grid.Row="0" Grid.Column="1" Style="{StaticResource GridSplitterStyle}" />
 
-        <Grid Grid.Row="0" Grid.Column="2" Margin="5">
+        <TextBlock Text="No events selected to edit." Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <Grid Grid.Row="0" Grid.Column="2" Margin="5" Visibility="{Binding IsEditEventVisible, Converter={StaticResource BoolToVisibility}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="100" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <TextBox Text="{Binding SelectedEvent.Title, UpdateSourceTrigger=PropertyChanged}" FontSize="28" Grid.Row="0" BorderThickness="0" />
+
+            <!--<TextBlock Text="Text" Grid.Row="1" />-->
+            <TextBox Text="{Binding SelectedEvent.Text}" MetroControls:TextBoxHelper.Watermark="Body" Grid.Row="1" Margin="0,5" />
+
+            <!--<TextBlock Text="Notes" Grid.Row="3" />-->
+            <TextBox Text="{Binding SelectedEvent.Notes}" MetroControls:TextBoxHelper.Watermark="Notes" Grid.Row="2" Margin="0,5" />
+            
+            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />
         </Grid>
 
-        <Border Visibility="{Binding StatusbarVisibility, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-        <Grid Visibility="{Binding StatusbarVisibility, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
+        <Border Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+        <Grid Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="80" />
                 <ColumnDefinition Width="30" />

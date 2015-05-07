@@ -1,0 +1,120 @@
+nigga I don't know
+[05/05/2015 23:07:07] Alexandros Gouvatsos: ok
+[05/05/2015 23:07:13] Phoenix: unless I use it in anger
+[05/05/2015 23:07:20] Phoenix: can't really think of needs off the top of my head
+[05/05/2015 23:07:23] Phoenix: Tass if u make a pun
+[05/05/2015 23:07:25] Phoenix: I swear to god
+[05/05/2015 23:07:31] Phoenix: I will put an entire dictionary in youra ss
+[05/05/2015 23:07:46] Anastasios Chrysikos: some kind of link that ties the events taking into consideration difficulty level?
+[05/05/2015 23:08:05] Phoenix: they would call you Tassyrus Larousse Britannica
+[05/05/2015 23:08:15] Anastasios Chrysikos: brektannica
+[05/05/2015 23:08:22] Anastasios Chrysikos: :P
+[05/05/2015 23:08:40] Phoenix: difficulty level is very relative
+[05/05/2015 23:08:49] Phoenix: in the current stage of dev we don't have levels of diff
+[05/05/2015 23:08:54] Phoenix: should have it, down the line
+[05/05/2015 23:09:56] Alexandros Gouvatsos: hahahah I liked brektannica
+[05/05/2015 23:10:12] Phoenix: (me too)
+[05/05/2015 23:10:17] Phoenix: (he will never know)
+[05/05/2015 23:11:09] Phoenix: Ah
+[05/05/2015 23:11:09] Phoenix: Alex
+[05/05/2015 23:11:16] Phoenix: it should have "trigger" directions
+[05/05/2015 23:11:17] Anastasios Chrysikos: CANT READ INSIDE PARENTHESES
+[05/05/2015 23:11:39] Phoenix: basic functionality for if conditions
+[05/05/2015 23:12:11] Phoenix: which means in the grand vision of the Plex (that's what the tool is called) we can see which events are linked to which, but some may have uni- or bi-directional relations
+[05/05/2015 23:12:27] Alexandros Gouvatsos: plex already exists unfortunately :(
+[05/05/2015 23:12:30] Phoenix: so that Event B can only happen if Event A has happened, but Event C can happen either way
+[05/05/2015 23:12:34] Phoenix: ITS CALLED PLEX U FAGGOT
+[05/05/2015 23:12:40] Anastasios Chrysikos: hahahaahahahahaa
+[05/05/2015 23:12:41] Phoenix: actually call it Faggot (internal dev name)
+[05/05/2015 23:12:48] Alexandros Gouvatsos: done.
+[05/05/2015 23:12:57] Phoenix: hey did you write those new events? Yeah uploaded them to faggot
+[05/05/2015 23:12:59] Phoenix: it works
+[05/05/2015 23:13:03] Phoenix: rolls off the tongue
+[05/05/2015 23:13:07] Phoenix: like your mum's vagina, Tass
+[05/05/2015 23:13:11] Phoenix: boom, burns left right and center
+[05/05/2015 23:13:12] Anastasios Chrysikos: OHHHHHHHHHHHHHHHHHHHHHHHH
+[05/05/2015 23:13:16] Phoenix: like anal sex with your dad, Alex
+[05/05/2015 23:13:17] Anastasios Chrysikos: wait shit
+[05/05/2015 23:13:19] Phoenix: NOBODY WILL BE SPARED
+[05/05/2015 23:13:24] Anastasios Chrysikos: SHOTS FIRED
+[05/05/2015 23:13:30] Alexandros Gouvatsos: hahahahahha
+[05/05/2015 23:13:40] Anastasios Chrysikos: HES A LOOSE CANNON
+[05/05/2015 23:13:45] Phoenix: LIKE MY DICK
+[05/05/2015 23:13:50] Anastasios Chrysikos: damn it phoenix were doing this by the book
+[05/05/2015 23:13:51] Phoenix: THATSWASSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+[05/05/2015 23:13:54] Anastasios Chrysikos: gouvo's a good cop
+[05/05/2015 23:14:03] Anastasios Chrysikos: the captain's gonna be up my ass with this
+[05/05/2015 23:14:08] Anastasios Chrysikos: turn in your badge and your gun
+[05/05/2015 23:14:16] Anastasios Chrysikos: you cant do this alone
+[05/05/2015 23:14:18] Anastasios Chrysikos: my partner died
+[05/05/2015 23:14:19] Alexandros Gouvatsos: what movie were you watchin tass? :P
+[05/05/2015 23:14:22] Alexandros Gouvatsos: hahahhahahahaha
+[05/05/2015 23:14:22] Anastasios Chrysikos: im two days away from retirement
+[05/05/2015 23:14:28] Phoenix: hahahah
+[05/05/2015 23:14:38] Anastasios Chrysikos: :P
+[05/05/2015 23:14:43] Anastasios Chrysikos: got a little carried away there
+[05/05/2015 23:14:54] Phoenix: anyway back on track
+[05/05/2015 23:15:01] Phoenix: alex u think we could have some sort of dependencies?
+[05/05/2015 23:15:10] Phoenix: trigger/"ifs"
+[05/05/2015 23:15:17] Phoenix: sequential and conditional
+[05/05/2015 23:15:25] Anastasios Chrysikos: I like this
+[05/05/2015 23:15:28] Phoenix: 1) Events that happen if and only if but right after
+[05/05/2015 23:15:37] Phoenix: 2) Event that CAN happen if and only if condition X is met
+[05/05/2015 23:18:13] Anastasios Chrysikos: 3) Event that CANNOT happen if condition X is met
+[05/05/2015 23:18:35] Anastasios Chrysikos: increases replayability and immersion, more focus on making choices
+[05/05/2015 23:19:03] Alexandros Gouvatsos: we can
+[05/05/2015 23:19:19] Alexandros Gouvatsos: but we have to keep it manageable for the writers as well
+[05/05/2015 23:19:35] Phoenix: we'll hire a team of professionals
+[05/05/2015 23:19:45] Alexandros Gouvatsos: the way I imagined it is like that
+[05/05/2015 23:19:49] Alexandros Gouvatsos: an event
+[05/05/2015 23:19:56] Alexandros Gouvatsos: can either be triggered immediately
+[05/05/2015 23:20:14] Alexandros Gouvatsos: (opens up in the player's face)
+[05/05/2015 23:20:47] Alexandros Gouvatsos: or it can be added at the top of the "event deck" (which means it will be added on the map)
+[05/05/2015 23:20:58] Alexandros Gouvatsos: or it can be randomly inserted into the event deck
+[05/05/2015 23:21:20] Anastasios Chrysikos: oh that last part's really cool!
+[05/05/2015 23:21:27] Alexandros Gouvatsos: "bags" of events
+[05/05/2015 23:21:31] Alexandros Gouvatsos: would work in the same way
+[05/05/2015 23:21:42] Alexandros Gouvatsos: and are also treated as "event decks" themselves
+[05/05/2015 23:22:11] Alexandros Gouvatsos: in other words, the "event deck" is the main "bag" of events
+[05/05/2015 23:22:19] Alexandros Gouvatsos: that's how I imagined it
+[05/05/2015 23:23:48] Phoenix: so to speak plainly, the bag of events is the sequential events pooled together
+[05/05/2015 23:23:58] Phoenix: the event deck is the sum of bag-of-events
+[05/05/2015 23:24:03] Anastasios Chrysikos: bag of bags
+[05/05/2015 23:24:08] Phoenix: and events/bags can be randomly inserted
+[05/05/2015 23:24:15] Phoenix: or sequentially stacked
+[05/05/2015 23:24:25] Phoenix: the bag will be called Loot Vuitton
+[05/05/2015 23:24:26] Anastasios Chrysikos: master baggins
+[05/05/2015 23:24:31] Anastasios Chrysikos: hahahaha
+[05/05/2015 23:25:40] Alexandros Gouvatsos: hahhahahahahahah
+[05/05/2015 23:25:43] Alexandros Gouvatsos: HAHAHHA
+[05/05/2015 23:26:25] Alexandros Gouvatsos: if statements will exist
+[05/05/2015 23:26:32] Alexandros Gouvatsos: but will only check if a TAG exists
+[05/05/2015 23:26:53] Alexandros Gouvatsos: how about that?
+[05/05/2015 23:27:28] Anastasios Chrysikos: well, that sounds like it would work for various side quests and world building
+[05/05/2015 23:27:28] Phoenix: Alex to be helpful, I think you should do iteration 1
+[05/05/2015 23:27:31] Phoenix: we use it in anger
+[05/05/2015 23:27:35] Phoenix: and see what we need to change on that
+[05/05/2015 23:27:57] Anastasios Chrysikos: although there should be a main, overarching line of events
+[05/05/2015 23:28:01] Anastasios Chrysikos: that play out regardless
+[05/05/2015 23:28:14] Alexandros Gouvatsos: for sure
+[05/05/2015 23:28:22] Alexandros Gouvatsos: the bag of events called "faggotry"
+[05/05/2015 23:28:36] Alexandros Gouvatsos: to keep things consistent with our phobias
+[05/05/2015 23:28:44] Phoenix: hahahahaahhaahhahaahahhahaahahahaha
+[05/05/2015 23:29:00] Alexandros Gouvatsos: run Faggot
+[05/05/2015 23:29:05] Alexandros Gouvatsos: open up event Faggotry
+[05/05/2015 23:29:14] Phoenix: HAAHAHAHHAHAHAHA
+[05/05/2015 23:29:19] Anastasios Chrysikos: hey guys I found the main bag for faggotry
+[05/05/2015 23:29:20] Anastasios Chrysikos: http://i.imgur.com/TOtCN.jpg
+[05/05/2015 23:29:24] Alexandros Gouvatsos: if tag(FAGGOT): faggot faggot faggot faggot faggot
+[05/05/2015 23:29:43] Alexandros Gouvatsos: HAHAHAHAHHAHAHAHAH
+[05/05/2015 23:29:47] Phoenix: LOOOOOL
+[05/05/2015 23:29:58] Alexandros Gouvatsos: delicious wieners
+[05/05/2015 23:30:14] Phoenix: that bag of dicks
+[05/05/2015 23:30:18] Phoenix: I actually lmaoed
+[05/05/2015 23:31:40] Anastasios Chrysikos: :P
+[05/05/2015 23:32:25] Anastasios Chrysikos: well look considering a main quest and various branches
+[05/05/2015 23:32:36] Anastasios Chrysikos: sort of a tree structure
+[05/05/2015 23:33:02] Anastasios Chrysikos: we could definitely work with faggotree
+[05/05/2015 23:34:53] Alexandros Gouvatsos: hahahahaha
+[05/05/2015 23:45:23] Phoenix: hahahahaah
+[05/05/2015 23:45:25] Phoenix: faggotree
