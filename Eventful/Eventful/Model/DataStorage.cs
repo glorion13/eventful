@@ -11,30 +11,52 @@ namespace Eventful.Model
     public static class DataStorage
     {
         public static string DefaultStorageDirectory = String.Concat(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"\Eventful\");
-        public static void SaveEventToXml(Event ev, Deck deck, string StorageDirectory)
+
+        public static bool SaveEventToXml(Event ev, Deck deck, string StorageDirectory)
         {
             try
             {
                 SaveEventToXmlUnsafe(ev, deck, StorageDirectory);
+                return true;
             }
             catch (DirectoryNotFoundException)
             {
-                CreateStorageDirectory(StorageDirectory);
-                CreateStorageDirectory(String.Concat(StorageDirectory, PrepareFilename(deck.Title)));
-                SaveEventToXml(ev, deck, StorageDirectory);
+                try
+                {
+                    CreateStorageDirectory(StorageDirectory);
+                    CreateStorageDirectory(String.Concat(StorageDirectory, PrepareFilename(deck.Title)));
+                    SaveEventToXmlUnsafe(ev, deck, StorageDirectory);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             }
             catch
             {
-
+                return false;
             }
         }
-
         private static void SaveEventToXmlUnsafe(Event ev, Deck deck, string StorageDirectory)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(Event));
             TextWriter textWriter = new StreamWriter(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", PrepareFilename(ev.Title), ".xml"));
             serializer.Serialize(textWriter, ev);
             textWriter.Close();
+        }
+
+        public static bool SaveDeck(Deck deck, string StorageDirectory)
+        {
+            try
+            {
+                CreateStorageDirectory(String.Concat(StorageDirectory, PrepareFilename(deck.Title)));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static string PrepareFilename(string text)
@@ -48,27 +70,26 @@ namespace Eventful.Model
 
         private static void CreateStorageDirectory(string directory)
         {
-            try
-            {
-                Directory.CreateDirectory(directory);
-            }
-            catch
-            {
-
-            }
+            Directory.CreateDirectory(directory);
         }
 
         public static Event LoadEventFromXml(string filename)
         {
-            XmlSerializer deserializer = new XmlSerializer(typeof(Event));
-            TextReader textReader = new StreamReader(filename);
-            Event ev;
-            ev = (Event)deserializer.Deserialize(textReader);
-            textReader.Close();
-            ev.IsChanged = false;
-            return ev;
+            try
+            {
+                XmlSerializer deserializer = new XmlSerializer(typeof(Event));
+                TextReader textReader = new StreamReader(filename);
+                Event ev;
+                ev = (Event)deserializer.Deserialize(textReader);
+                textReader.Close();
+                ev.IsChanged = false;
+                return ev;
+            }
+            catch
+            {
+                return null;
+            }
         }
-
 
         public static void DeleteEvent(Event ev, Deck deck, string StorageDirectory)
         {
@@ -90,7 +111,6 @@ namespace Eventful.Model
             {
             }
         }
-
         private static void BackupDeck(Deck deck, string StorageDirectory)
         {
             try

@@ -11,6 +11,7 @@ using MahApps.Metro.Controls.Dialogs;
 using System.Threading.Tasks;
 using System.Linq;
 using WPFFolderBrowser;
+using System.Windows.Controls;
 
 namespace Eventful.ViewModel
 {
@@ -58,28 +59,6 @@ namespace Eventful.ViewModel
         private void InitialiseInRealMode()
         {
             LoadDecksFromDisk();
-        }
-
-        private void LoadDecksFromDisk()
-        {
-            Decks.Clear();
-            if (Directory.Exists(StorageDirectory))
-            {
-                foreach (string directory in Directory.EnumerateDirectories(StorageDirectory))
-                {
-                    string subDirectory = directory.Replace(StorageDirectory, "");
-                    if (subDirectory[0] != '.')
-                    {
-                        Deck tempDeck = new Deck(subDirectory);
-                        foreach (string file in Directory.EnumerateFiles(directory))
-                        {
-                            Event tempEvent = DataStorage.LoadEventFromXml(file);
-                            tempDeck.Events.Add(tempEvent);
-                        }
-                        Decks.Add(tempDeck);
-                    }
-                }
-            }
         }
 
         private void InitialiseAuthor()
@@ -375,6 +354,41 @@ namespace Eventful.ViewModel
             }
         }
 
+        private RelayCommand changeDeckNameCommand;
+        public RelayCommand ChangeDeckNameCommand
+        {
+            get
+            {
+                return changeDeckNameCommand ?? (changeDeckNameCommand = new RelayCommand(ExecuteChangeDeckNameCommand));
+            }
+        }
+        private void ExecuteChangeDeckNameCommand()
+        {
+            ChangeDeckName("What is the new title of the deck?");
+        }
+        private async void ChangeDeckName(string text)
+        {
+            if (SelectedDeck != null)
+            {
+                string dialogResult = await ShowOkCancelInput("Change Deck Name", text);
+                if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
+                {
+                    ChangeDeckName(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
+                }
+                else if (dialogResult == null)
+                {
+                }
+                else if (dialogResult == "")
+                {
+                    ChangeDeckName("A deck title cannot be empty.");
+                }
+                else
+                {
+                    SelectedDeck.Title = dialogResult;
+                }
+            }
+        }
+
         private RelayCommand addEventCommand;
         public RelayCommand AddEventCommand
         {
@@ -406,11 +420,15 @@ namespace Eventful.ViewModel
                 else
                 {
                     Event tempEvent = new Event(dialogResult);
-                    SelectedDeck.Events.Add(tempEvent);
+                    AddEventToDeck(tempEvent, SelectedDeck);
                     SelectedEvent = tempEvent;
-                    SaveSelectedEvent();
                 }
             }
+        }
+        private void AddEventToDeck(Event ev, Deck deck)
+        {
+            deck.Events.Add(ev);
+            SaveEvent(ev, deck);
         }
 
         private RelayCommand addDeckCommand;
@@ -444,8 +462,16 @@ namespace Eventful.ViewModel
                 else
                 {
                     Deck tempDeck = new Deck(dialogResult);
-                    Decks.Add(tempDeck);
-                    SelectedDeck = tempDeck;
+                    bool success = DataStorage.SaveDeck(tempDeck, StorageDirectory);
+                    if (success)
+                    {
+                        Decks.Add(tempDeck);
+                        SelectedDeck = tempDeck;
+                    }
+                    else
+                    {
+                        await ShowOkMessage("Couldn't Save Deck", "The deck was not saved successfully. Try again later and ensure the save folder is accessible.");
+                    }
                 }
             }
         }
@@ -462,16 +488,16 @@ namespace Eventful.ViewModel
         {
             bool dialogResult = await ShowOkCancelMessage("Confirm Event Deletion", String.Concat("Do you want to delete the event \"", SelectedEvent.Title, "\"?"));
             if (dialogResult)
-                RemoveEvent();
+                RemoveEventFromDeck(SelectedEvent, SelectedDeck);
         }
-        private void RemoveEvent()
+        private void RemoveEventFromDeck(Event ev, Deck deck)
         {
-            if (SelectedEvent != null && SelectedDeck != null)
+            if (ev != null && deck != null)
             {
                 try
                 {
-                    DataStorage.DeleteEvent(SelectedEvent, SelectedDeck, StorageDirectory);
-                    SelectedDeck.Events.Remove(SelectedEvent);
+                    DataStorage.DeleteEvent(ev, deck, StorageDirectory);
+                    deck.Events.Remove(ev);
                 }
                 catch
                 {
@@ -492,16 +518,16 @@ namespace Eventful.ViewModel
         {
             bool dialogResult = await ShowOkCancelMessage("Confirm Deck Deletion", String.Concat("Do you want to delete the deck \"", SelectedDeck.Title, "\"?"));
             if (dialogResult)
-                RemoveDeck();
+                RemoveDeck(SelectedDeck);
         }
-        private void RemoveDeck()
+        private void RemoveDeck(Deck deck)
         {
-            if (SelectedDeck != null)
+            if (deck != null)
             {
                 try
                 {
-                    DataStorage.DeleteDeck(SelectedDeck, StorageDirectory);
-                    Decks.Remove(SelectedDeck);
+                    DataStorage.DeleteDeck(deck, StorageDirectory);
+                    Decks.Remove(deck);
                 }
                 catch
                 {
@@ -519,16 +545,19 @@ namespace Eventful.ViewModel
         }
         private void ExecuteSaveEventCommand()
         {
-            SaveSelectedEvent();
+            SaveEvent(SelectedEvent, SelectedDeck);
         }
-        private void SaveSelectedEvent()
+        private async void SaveEvent(Event ev, Deck deck)
         {
-            if (SelectedEvent != null)
+            if (ev != null)
             {
-                SelectedEvent.Author = Author;
-                SelectedEvent.Date = DateTime.Now;
-                DataStorage.SaveEventToXml(SelectedEvent, SelectedDeck, StorageDirectory);
-                SelectedEvent.IsChanged = false;
+                ev.Author = Author;
+                ev.Date = DateTime.Now;
+                bool success = DataStorage.SaveEventToXml(ev, deck, StorageDirectory);
+                if (success)
+                    ev.IsChanged = false;
+                else
+                    await ShowOkMessage("Couldn't Save Event", "The event was not saved successfully. Try again later and ensure the save folder is accessible.");
             }
         }
 
@@ -581,6 +610,97 @@ namespace Eventful.ViewModel
             }
         }
 
+        private RelayCommand syncDataCommand;
+        public RelayCommand SyncDataCommand
+        {
+            get
+            {
+                return syncDataCommand ?? (syncDataCommand = new RelayCommand(ExecuteSyncDataCommand));
+            }
+        }
+        private async void ExecuteSyncDataCommand()
+        {
+            if (SelectedEvent != null)
+            {
+                if (SelectedEvent.IsChanged)
+                {
+                    bool dialogResult = await ShowOkCancelMessage("Sync Data", "You haven't saved your changes yet. If you sync they will be lost. Are you sure you want to sync?");
+                    if (dialogResult)
+                    {
+                        string deckTitle = SelectedDeck.Title;
+                        string eventTitle = SelectedEvent.Title;
+                        LoadDecksFromDisk();
+                        SelectedDeck = Decks.FirstOrDefault(d => d.Title == deckTitle);
+                        SelectedEvent = (SelectedDeck == null) ? null : SelectedDeck.Events.FirstOrDefault(e => e.Title == eventTitle);
+                    }
+                }
+            }
+            else
+            {
+                LoadDecksFromDisk();
+            }
+        }
+
+        private RelayCommand<SelectionChangedEventArgs> moveEventToDeckCommand;
+        public RelayCommand<SelectionChangedEventArgs> MoveEventToDeckCommand
+        {
+            get
+            {
+                return moveEventToDeckCommand ?? (moveEventToDeckCommand = new RelayCommand<SelectionChangedEventArgs>(ExecuteMoveEventToDeckCommand));
+            }
+        }
+        private async void ExecuteMoveEventToDeckCommand(SelectionChangedEventArgs args)
+        {
+            Deck newDeck = args.AddedItems[0] as Deck;
+            Event currentEvent = SelectedEvent;
+            if (SelectedEvent != null && SelectedDeck != null && newDeck != null)
+            {
+                if (newDeck != SelectedDeck)
+                {
+                    if (newDeck.Events.Any(e => String.Equals(e.Title, SelectedEvent.Title, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        SelectedDeck = newDeck;
+                        SelectedEvent = newDeck.Events.FirstOrDefault(e => String.Equals(e.Title, currentEvent.Title, StringComparison.OrdinalIgnoreCase));
+                        await ShowOkMessage("Move Event", String.Concat("An event named \"", SelectedEvent.Title, "\" already exists in the \"", newDeck.Title, "\" deck. Rename it and then try again."));
+                    }
+                    else
+                        MoveEventToDeck(SelectedEvent, SelectedDeck, newDeck);
+                }
+            }
+        }
+        private void MoveEventToDeck(Event ev, Deck oldDeck, Deck newDeck)
+        {
+            AddEventToDeck(ev, newDeck);
+            RemoveEventFromDeck(ev, oldDeck);
+        }
+
+        private void LoadDecksFromDisk()
+        {
+            Decks.Clear();
+            if (Directory.Exists(StorageDirectory))
+            {
+                foreach (string directory in Directory.EnumerateDirectories(StorageDirectory))
+                {
+                    string subDirectory = directory.Replace(StorageDirectory, "");
+                    if (subDirectory[0] != '.')
+                    {
+                        Deck tempDeck = new Deck(subDirectory);
+                        foreach (string file in Directory.EnumerateFiles(directory))
+                        {
+                            Event tempEvent = DataStorage.LoadEventFromXml(file);
+                            tempDeck.Events.Add(tempEvent);
+                        }
+                        Decks.Add(tempDeck);
+                    }
+                }
+            }
+        }
+
+        private async Task ShowOkMessage(string title, string body)
+        {
+            MetroWindow metroWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
+            await metroWindow.ShowMessageAsync(title, body, MessageDialogStyle.Affirmative);
+        }
         private async Task<bool> ShowOkCancelMessage(string title, string body)
         {
             MetroWindow metroWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
@@ -592,11 +712,6 @@ namespace Eventful.ViewModel
             MetroWindow metroWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
             string dialogResult = await metroWindow.ShowInputAsync(title, body);
             return dialogResult;
-        }
-        private async void ShowOkMessage(string Title, string body)
-        {
-            MetroWindow metroWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
-            MessageDialogResult dialogResult = await metroWindow.ShowMessageAsync(Title, body, MessageDialogStyle.Affirmative);
         }
 
     }

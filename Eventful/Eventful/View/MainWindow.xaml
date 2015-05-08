@@ -25,10 +25,14 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate x:Key="DeckListItemTemplate">
-                <TextBlock Text="{Binding Title}" />
+                <Grid>
+                    <TextBlock Text="{Binding Title}" />
+                </Grid>
             </DataTemplate>
             <DataTemplate x:Key="EventListItemTemplate">
-                <TextBlock Text="{Binding Title}" />
+                <Grid>
+                    <TextBlock Text="{Binding Title}" />
+                </Grid>
             </DataTemplate>
             <Style x:Key="GridSplitterStyle" TargetType="GridSplitter">
                 <Setter Property="Width">
@@ -49,6 +53,7 @@
 
     <MetroControls:MetroWindow.RightWindowCommands>
         <MetroControls:WindowCommands>
+            <Button Content="sync" Command="{Binding SyncDataCommand}" />
             <Button Content="settings" Command="{Binding ShowSettingsCommand}" />
         </MetroControls:WindowCommands>
     </MetroControls:MetroWindow.RightWindowCommands>
@@ -118,7 +123,17 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveDeckButtonEnabled}" Command="{Binding RemoveDeckCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="1" />
-            <ListView ItemsSource="{Binding DecksViewSource.View}" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" ItemTemplate="{StaticResource DeckListItemTemplate}" Grid.Row="2" />
+            <!--<ListView ItemsSource="{Binding DecksViewSource.View}" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" ItemTemplate="{StaticResource DeckListItemTemplate}" Grid.Row="2" />-->
+            <DataGrid CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" ItemTemplate="{StaticResource DeckListItemTemplate}" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="2">
+                <Interactivity:Interaction.Triggers>
+                    <Interactivity:EventTrigger EventName="BeginningEdit">
+                        <MvvmControls:EventToCommand Command="{Binding ChangeDeckNameCommand}" />
+                    </Interactivity:EventTrigger>
+                </Interactivity:Interaction.Triggers>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Title}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
         <GridSplitter Grid.Row="0" Grid.Column="0" Style="{StaticResource GridSplitterStyle}" />
 
@@ -139,7 +154,17 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveEventButtonEnabled}" Command="{Binding RemoveEventCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="1" />
-            <ListView ItemsSource="{Binding EventsViewSource.View}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" ItemTemplate="{StaticResource EventListItemTemplate}" Grid.Row="2" />
+            <!--<ListView ItemsSource="{Binding EventsViewSource.View}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" ItemTemplate="{StaticResource EventListItemTemplate}" Grid.Row="2" />-->
+            <DataGrid CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" ItemTemplate="{StaticResource EventListItemTemplate}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="2">
+                <Interactivity:Interaction.Triggers>
+                    <Interactivity:EventTrigger EventName="BeginningEdit">
+                        <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
+                    </Interactivity:EventTrigger>
+                </Interactivity:Interaction.Triggers>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Title}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
         <GridSplitter Grid.Row="0" Grid.Column="1" Style="{StaticResource GridSplitterStyle}" />
 
@@ -156,13 +181,23 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="20" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28" Grid.Row="0">
-                    <Interactivity:Interaction.Triggers>
-                        <Interactivity:EventTrigger EventName="MouseDown">
-                            <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
-                        </Interactivity:EventTrigger>
-                    </Interactivity:Interaction.Triggers>
-                </TextBlock>
+                <StackPanel Orientation="Horizontal" Grid.Row="0">
+                    <MetroControls:SplitButton VerticalAlignment="Center" FontSize="22" MaxWidth="150" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedDeck, Mode=OneWay}" ItemsSource="{Binding Decks}" DisplayMemberPath="Title">
+                        <Interactivity:Interaction.Triggers>
+                            <Interactivity:EventTrigger EventName="SelectionChanged">
+                                <MvvmControls:EventToCommand Command="{Binding MoveEventToDeckCommand}" PassEventArgsToCommand="True" />
+                            </Interactivity:EventTrigger>
+                        </Interactivity:Interaction.Triggers>
+                    </MetroControls:SplitButton>
+                    <TextBlock Text=" > " FontSize="28" />
+                    <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28">
+                        <Interactivity:Interaction.Triggers>
+                            <Interactivity:EventTrigger EventName="MouseDown">
+                                <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
+                            </Interactivity:EventTrigger>
+                        </Interactivity:Interaction.Triggers>
+                    </TextBlock>
+                </StackPanel>
                 <StackPanel Orientation="Horizontal" Grid.Row="1">
                     <TextBlock Text="Last saved by " FontWeight="Light" FontSize="12" />
                     <TextBlock Text="{Binding SelectedEvent.Author}" FontWeight="Bold" FontSize="12" />
