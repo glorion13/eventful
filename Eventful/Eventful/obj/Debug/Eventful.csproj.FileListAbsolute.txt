@@ -60,3 +60,8 @@ G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.Properties.Res
 G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.csproj.GenerateResource.Cache
 G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.exe
 G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.pdb
+G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\Eventful.exe.manifest
+G:\Documents\GitHub\eventful\Eventful\Eventful\bin\Debug\Eventful.application
+G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.exe.manifest
+G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.application
+G:\Documents\GitHub\eventful\Eventful\Eventful\obj\Debug\Eventful.csprojResolveAssemblyReference.cache

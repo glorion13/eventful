@@ -340,6 +340,41 @@ namespace Eventful.ViewModel
             IsSettingsFlyoutVisible = !IsSettingsFlyoutVisible;
         }
 
+        private RelayCommand changeEventNameCommand;
+        public RelayCommand ChangeEventNameCommand
+        {
+            get
+            {
+                return changeEventNameCommand ?? (changeEventNameCommand = new RelayCommand(ExecuteChangeEventNameCommand));
+            }
+        }
+        private void ExecuteChangeEventNameCommand()
+        {
+            ChangeEventName("What is the new title of the event?");
+        }
+        private async void ChangeEventName(string text)
+        {
+            if (SelectedEvent != null && SelectedDeck != null)
+            {
+                string dialogResult = await ShowOkCancelInput("Change Event Name", text);
+                if (SelectedDeck.Events.Any(e => String.Equals(e.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
+                {
+                    ChangeEventName(String.Concat("An event with the title \"", dialogResult, "\" already exists in this deck. Please enter a different title."));
+                }
+                else if (dialogResult == null)
+                {
+                }
+                else if (dialogResult == "")
+                {
+                    ChangeEventName("An event title cannot be empty.");
+                }
+                else
+                {
+                    SelectedEvent.Title = dialogResult;
+                }
+            }
+        }
+
         private RelayCommand addEventCommand;
         public RelayCommand AddEventCommand
         {

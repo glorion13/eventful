@@ -4,9 +4,11 @@
         DataContext="{Binding Source={StaticResource Locator}, Path=MainViewModel}"
         xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:MvvmControls="http://www.galasoft.ch/mvvmlight"
+        xmlns:Interactivity="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:Converters="clr-namespace:Eventful.Converters"
         xmlns:Properties="clr-namespace:Eventful.Properties"
-        Title="Faggot" Height="768" Width="1024"
+        Title="Eventful" Height="768" Width="1024"
+        Icon="../Images/Pencil.ico"
         ShowTitleBar="True"  
         SaveWindowPosition="True"
         ResizeMode="CanResizeWithGrip"
@@ -15,7 +17,6 @@
 
     <MetroControls:MetroWindow.Resources>
         <ResourceDictionary>
-            
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
@@ -23,15 +24,12 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
             <DataTemplate x:Key="DeckListItemTemplate">
                 <TextBlock Text="{Binding Title}" />
             </DataTemplate>
-
             <DataTemplate x:Key="EventListItemTemplate">
                 <TextBlock Text="{Binding Title}" />
             </DataTemplate>
-
             <Style x:Key="GridSplitterStyle" TargetType="GridSplitter">
                 <Setter Property="Width">
                     <Setter.Value>2</Setter.Value>
@@ -43,16 +41,15 @@
                     <Setter.Value>Stretch</Setter.Value>
                 </Setter>
             </Style>
-
             <Converters:BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+            <Converters:DateTimeToStringConverter x:Key="DateToString" />
             <Properties:Settings x:Key="Settings" />
         </ResourceDictionary>
-
     </MetroControls:MetroWindow.Resources>
 
     <MetroControls:MetroWindow.RightWindowCommands>
         <MetroControls:WindowCommands>
-            <Button Content="SETTINGS" Command="{Binding ShowSettingsCommand}" />
+            <Button Content="settings" Command="{Binding ShowSettingsCommand}" />
         </MetroControls:WindowCommands>
     </MetroControls:MetroWindow.RightWindowCommands>
 
@@ -154,7 +151,25 @@
                 <RowDefinition Height="100" />
                 <RowDefinition Height="30" />
             </Grid.RowDefinitions>
-            <TextBox Text="{Binding SelectedEvent.Title, UpdateSourceTrigger=PropertyChanged}" FontSize="28" Grid.Row="0" BorderThickness="0" />
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="20" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28" Grid.Row="0">
+                    <Interactivity:Interaction.Triggers>
+                        <Interactivity:EventTrigger EventName="MouseDown">
+                            <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
+                        </Interactivity:EventTrigger>
+                    </Interactivity:Interaction.Triggers>
+                </TextBlock>
+                <StackPanel Orientation="Horizontal" Grid.Row="1">
+                    <TextBlock Text="Last saved by " FontWeight="Light" FontSize="12" />
+                    <TextBlock Text="{Binding SelectedEvent.Author}" FontWeight="Bold" FontSize="12" />
+                    <TextBlock Text=" on " FontWeight="Light" FontSize="12" />
+                    <TextBlock Text="{Binding SelectedEvent.Date, Converter={StaticResource DateToString}}" FontWeight="Normal"  FontSize="12" />
+                </StackPanel>
+            </Grid>
 
             <!--<TextBlock Text="Text" Grid.Row="1" />-->
             <TextBox Text="{Binding SelectedEvent.Text, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True" TextWrapping="Wrap" MetroControls:TextBoxHelper.Watermark="Body" Grid.Row="1" Margin="0,5" />
