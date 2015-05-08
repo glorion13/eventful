@@ -68,7 +68,7 @@ namespace Eventful.Model
             return text;
         }
 
-        private static void CreateStorageDirectory(string directory)
+        public static void CreateStorageDirectory(string directory)
         {
             Directory.CreateDirectory(directory);
         }

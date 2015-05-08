@@ -109,8 +109,8 @@
         <Grid Grid.Row="0" Grid.Column="0" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="30" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
@@ -122,9 +122,9 @@
                 <Button Content="+" IsEnabled="{Binding IsAddDeckButtonEnabled}" Command="{Binding AddDeckCommand}" Grid.Column="1" />
                 <Button Content="-" IsEnabled="{Binding IsRemoveDeckButtonEnabled}" Command="{Binding RemoveDeckCommand}" Grid.Column="2" />
             </Grid>
-            <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="1" />
+            <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
             <!--<ListView ItemsSource="{Binding DecksViewSource.View}" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" ItemTemplate="{StaticResource DeckListItemTemplate}" Grid.Row="2" />-->
-            <DataGrid CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" ItemTemplate="{StaticResource DeckListItemTemplate}" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="2">
+            <DataGrid Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" ItemTemplate="{StaticResource DeckListItemTemplate}" VerticalScrollBarVisibility="Hidden" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
                 <Interactivity:Interaction.Triggers>
                     <Interactivity:EventTrigger EventName="BeginningEdit">
                         <MvvmControls:EventToCommand Command="{Binding ChangeDeckNameCommand}" />
@@ -140,8 +140,8 @@
         <Grid Grid.Row="0" Grid.Column="1" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="30" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
@@ -153,9 +153,9 @@
                 <Button Content="+" IsEnabled="{Binding IsAddEventButtonEnabled}" Command="{Binding AddEventCommand}" Grid.Column="1" />
                 <Button Content="-" IsEnabled="{Binding IsRemoveEventButtonEnabled}" Command="{Binding RemoveEventCommand}" Grid.Column="2" />
             </Grid>
-            <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="1" />
+            <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
             <!--<ListView ItemsSource="{Binding EventsViewSource.View}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" ItemTemplate="{StaticResource EventListItemTemplate}" Grid.Row="2" />-->
-            <DataGrid CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" ItemTemplate="{StaticResource EventListItemTemplate}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="2">
+            <DataGrid Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Hidden" ItemTemplate="{StaticResource EventListItemTemplate}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="1">
                 <Interactivity:Interaction.Triggers>
                     <Interactivity:EventTrigger EventName="BeginningEdit">
                         <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />

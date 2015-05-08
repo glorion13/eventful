@@ -150,6 +150,7 @@ namespace Eventful.ViewModel
                 Set(() => StorageDirectory, ref storageDirectory, value);
                 Properties.Settings.Default["StorageDirectory"] = StorageDirectory;
                 Properties.Settings.Default.Save();
+                //DataStorage.CreateStorageDirectory(StorageDirectory);
             }
         }
 
@@ -634,6 +635,14 @@ namespace Eventful.ViewModel
                         SelectedEvent = (SelectedDeck == null) ? null : SelectedDeck.Events.FirstOrDefault(e => e.Title == eventTitle);
                     }
                 }
+                else
+                {
+                    string deckTitle = SelectedDeck.Title;
+                    string eventTitle = SelectedEvent.Title;
+                    LoadDecksFromDisk();
+                    SelectedDeck = Decks.FirstOrDefault(d => d.Title == deckTitle);
+                    SelectedEvent = (SelectedDeck == null) ? null : SelectedDeck.Events.FirstOrDefault(e => e.Title == eventTitle);
+                }
             }
             else
             {
@@ -651,20 +660,27 @@ namespace Eventful.ViewModel
         }
         private async void ExecuteMoveEventToDeckCommand(SelectionChangedEventArgs args)
         {
-            Deck newDeck = args.AddedItems[0] as Deck;
-            Event currentEvent = SelectedEvent;
-            if (SelectedEvent != null && SelectedDeck != null && newDeck != null)
+            if (args.AddedItems.Count > 0)
             {
-                if (newDeck != SelectedDeck)
+                Deck newDeck = args.AddedItems[0] as Deck;
+                Event currentEvent = SelectedEvent;
+                if (SelectedEvent != null && SelectedDeck != null && newDeck != null)
                 {
-                    if (newDeck.Events.Any(e => String.Equals(e.Title, SelectedEvent.Title, StringComparison.OrdinalIgnoreCase)))
+                    if (newDeck != SelectedDeck)
                     {
-                        SelectedDeck = newDeck;
-                        SelectedEvent = newDeck.Events.FirstOrDefault(e => String.Equals(e.Title, currentEvent.Title, StringComparison.OrdinalIgnoreCase));
-                        await ShowOkMessage("Move Event", String.Concat("An event named \"", SelectedEvent.Title, "\" already exists in the \"", newDeck.Title, "\" deck. Rename it and then try again."));
+                        if (newDeck.Events.Any(e => String.Equals(e.Title, SelectedEvent.Title, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            SelectedDeck = newDeck;
+                            SelectedEvent = newDeck.Events.FirstOrDefault(e => String.Equals(e.Title, currentEvent.Title, StringComparison.OrdinalIgnoreCase));
+                            await ShowOkMessage("Move Event", String.Concat("An event named \"", SelectedEvent.Title, "\" already exists in the \"", newDeck.Title, "\" deck. Rename it and then try again."));
+                        }
+                        else
+                        {
+                            MoveEventToDeck(SelectedEvent, SelectedDeck, newDeck);
+                            SelectedDeck = newDeck;
+                            SelectedEvent = newDeck.Events.FirstOrDefault(e => String.Equals(e.Title, currentEvent.Title, StringComparison.OrdinalIgnoreCase));
+                        }
                     }
-                    else
-                        MoveEventToDeck(SelectedEvent, SelectedDeck, newDeck);
                 }
             }
         }
@@ -685,7 +701,7 @@ namespace Eventful.ViewModel
                     if (subDirectory[0] != '.')
                     {
                         Deck tempDeck = new Deck(subDirectory);
-                        foreach (string file in Directory.EnumerateFiles(directory))
+                        foreach (string file in Directory.EnumerateFiles(directory, "*.xml"))
                         {
                             Event tempEvent = DataStorage.LoadEventFromXml(file);
                             tempDeck.Events.Add(tempEvent);
