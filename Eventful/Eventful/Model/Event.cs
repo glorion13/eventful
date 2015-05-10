@@ -33,6 +33,20 @@ namespace Eventful.Model
             }
         }
 
+        private Guid id = Guid.NewGuid();
+        public Guid Id
+        {
+            get
+            {
+                return id;
+            }
+            set
+            {
+                Set(() => Id, ref id, value);
+                IsChanged = true;
+            }
+        }
+
         private string text = "";
         public string Text
         {

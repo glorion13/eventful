@@ -41,7 +41,7 @@ namespace Eventful.Model
         private static void SaveEventToXmlUnsafe(Event ev, Deck deck, string StorageDirectory)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(Event));
-            TextWriter textWriter = new StreamWriter(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", PrepareFilename(ev.Title), ".xml"));
+            TextWriter textWriter = new StreamWriter(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", PrepareFilename(ev.Title), " #", ev.Id, ".event"));
             serializer.Serialize(textWriter, ev);
             textWriter.Close();
         }
@@ -105,7 +105,7 @@ namespace Eventful.Model
             try
             {
                 CreateStorageDirectory(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", ".Backups"));
-                Directory.Move(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", PrepareFilename(ev.Title), ".xml"), String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", @".Backups\", PrepareFilename(DateTime.Now.ToString()), ".xml"));
+                Directory.Move(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", PrepareFilename(ev.Title), " #", ev.Id, ".event"), String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", @".Backups\", String.Concat(PrepareFilename(ev.Title), " #", ev.Id, " "), PrepareFilename(DateTime.Now.ToString()), ".event"));
             }
             catch
             {

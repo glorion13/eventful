@@ -407,11 +407,11 @@ namespace Eventful.ViewModel
             if (SelectedDeck != null)
             {
                 string dialogResult = await ShowOkCancelInput("Create New Event", text);
-                if (SelectedDeck.Events.Any(e => String.Equals(e.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
+                /*if (SelectedDeck.Events.Any(e => String.Equals(e.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
                 {
                     AddNewEvent(String.Concat("An event with the title \"", dialogResult, "\" already exists in this deck. Please enter a different title."));
-                }
-                else if (dialogResult == null)
+                }*/
+                if (dialogResult == null)
                 {
                 }
                 else if (dialogResult == "")
@@ -449,11 +449,11 @@ namespace Eventful.ViewModel
             if (Decks != null)
             {
                 string dialogResult = await ShowOkCancelInput("Create New Deck", text);
-                if (Decks.Any(e => String.Equals(e.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
+                /*if (Decks.Any(e => String.Equals(e.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
                 {
                     AddNewDeck(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
-                }
-                else if (dialogResult == null)
+                }*/
+                if (dialogResult == null)
                 {
                 }
                 else if (dialogResult == "")
@@ -658,7 +658,7 @@ namespace Eventful.ViewModel
                 return moveEventToDeckCommand ?? (moveEventToDeckCommand = new RelayCommand<SelectionChangedEventArgs>(ExecuteMoveEventToDeckCommand));
             }
         }
-        private async void ExecuteMoveEventToDeckCommand(SelectionChangedEventArgs args)
+        private  void ExecuteMoveEventToDeckCommand(SelectionChangedEventArgs args)
         {
             if (args.AddedItems.Count > 0)
             {
@@ -668,18 +668,18 @@ namespace Eventful.ViewModel
                 {
                     if (newDeck != SelectedDeck)
                     {
-                        if (newDeck.Events.Any(e => String.Equals(e.Title, SelectedEvent.Title, StringComparison.OrdinalIgnoreCase)))
+                        /*if (newDeck.Events.Any(e => String.Equals(e.Title, SelectedEvent.Title, StringComparison.OrdinalIgnoreCase)))
                         {
                             SelectedDeck = newDeck;
                             SelectedEvent = newDeck.Events.FirstOrDefault(e => String.Equals(e.Title, currentEvent.Title, StringComparison.OrdinalIgnoreCase));
                             await ShowOkMessage("Move Event", String.Concat("An event named \"", SelectedEvent.Title, "\" already exists in the \"", newDeck.Title, "\" deck. Rename it and then try again."));
                         }
                         else
-                        {
-                            MoveEventToDeck(SelectedEvent, SelectedDeck, newDeck);
-                            SelectedDeck = newDeck;
-                            SelectedEvent = newDeck.Events.FirstOrDefault(e => String.Equals(e.Title, currentEvent.Title, StringComparison.OrdinalIgnoreCase));
-                        }
+                        {*/
+                        MoveEventToDeck(SelectedEvent, SelectedDeck, newDeck);
+                        SelectedDeck = newDeck;
+                        SelectedEvent = newDeck.Events.FirstOrDefault(e => String.Equals(e.Title, currentEvent.Title, StringComparison.OrdinalIgnoreCase));
+                        //}
                     }
                 }
             }
@@ -701,10 +701,11 @@ namespace Eventful.ViewModel
                     if (subDirectory[0] != '.')
                     {
                         Deck tempDeck = new Deck(subDirectory);
-                        foreach (string file in Directory.EnumerateFiles(directory, "*.xml"))
+                        foreach (string file in Directory.EnumerateFiles(directory, "*.event"))
                         {
                             Event tempEvent = DataStorage.LoadEventFromXml(file);
-                            tempDeck.Events.Add(tempEvent);
+                            if (tempEvent != null)
+                                tempDeck.Events.Add(tempEvent);
                         }
                         Decks.Add(tempDeck);
                     }
