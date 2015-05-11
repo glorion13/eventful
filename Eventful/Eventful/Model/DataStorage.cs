@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,20 +13,23 @@ namespace Eventful.Model
     {
         public static string DefaultStorageDirectory = String.Concat(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"\Eventful\");
 
-        public static bool SaveEventToXml(Event ev, Deck deck, string StorageDirectory)
+        public static bool SaveEventToDisk(Event ev, Deck deck, string storageDirectory)
         {
+            if (deck == null || ev == null || storageDirectory == null) return false;
             try
             {
-                SaveEventToXmlUnsafe(ev, deck, StorageDirectory);
+                XmlSerializer serializer = new XmlSerializer(typeof(Event));
+                TextWriter textWriter = new StreamWriter(String.Concat(storageDirectory, RemoveIllegalCharactersFromFilename(deck.Title), @"\", RemoveIllegalCharactersFromFilename(ev.Title), " #", ev.Id, ".event"));
+                serializer.Serialize(textWriter, ev);
+                textWriter.Close();
                 return true;
             }
             catch (DirectoryNotFoundException)
             {
                 try
                 {
-                    CreateStorageDirectory(StorageDirectory);
-                    CreateStorageDirectory(String.Concat(StorageDirectory, PrepareFilename(deck.Title)));
-                    SaveEventToXmlUnsafe(ev, deck, StorageDirectory);
+                    SaveDeckToDisk(deck, storageDirectory);
+                    SaveEventToDisk(ev, deck, storageDirectory);
                     return true;
                 }
                 catch
@@ -38,20 +42,25 @@ namespace Eventful.Model
                 return false;
             }
         }
-        private static void SaveEventToXmlUnsafe(Event ev, Deck deck, string StorageDirectory)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(Event));
-            TextWriter textWriter = new StreamWriter(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", PrepareFilename(ev.Title), " #", ev.Id, ".event"));
-            serializer.Serialize(textWriter, ev);
-            textWriter.Close();
-        }
-
-        public static bool SaveDeck(Deck deck, string StorageDirectory)
+        public static bool SaveDeckToDisk(Deck deck, string storageDirectory)
         {
             try
             {
-                CreateStorageDirectory(String.Concat(StorageDirectory, PrepareFilename(deck.Title)));
+                Directory.CreateDirectory(String.Concat(storageDirectory, RemoveIllegalCharactersFromFilename(deck.Title)));
                 return true;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                try
+                {
+                    Directory.CreateDirectory(storageDirectory);
+                    SaveDeckToDisk(deck, storageDirectory);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             }
             catch
             {
@@ -59,21 +68,7 @@ namespace Eventful.Model
             }
         }
 
-        private static string PrepareFilename(string text)
-        {
-            string[] restrictedStrings  = new string[] { "\\", "/", ":", "*", "?", "\"", "<", ">", "|" };
-            string replacementString = "";
-            foreach (string restrictedString in restrictedStrings)
-                text = text.Replace(restrictedString, replacementString);
-            return text;
-        }
-
-        public static void CreateStorageDirectory(string directory)
-        {
-            Directory.CreateDirectory(directory);
-        }
-
-        public static Event LoadEventFromXml(string filename)
+        public static Event LoadEventFromDisk(string filename)
         {
             try
             {
@@ -90,39 +85,93 @@ namespace Eventful.Model
                 return null;
             }
         }
-
-        public static void DeleteEvent(Event ev, Deck deck, string StorageDirectory)
+        public static Deck LoadDeckFromDisk(string deckTitle, string storageDirectory)
         {
-            BackupEvent(ev, deck, StorageDirectory);
+            string fullpath = String.Concat(storageDirectory, deckTitle);
+            if (!Directory.Exists(fullpath)) return null;
+            if (deckTitle.Length <= 0) return null;
+            if (deckTitle[0] == '.') return null;
+            Deck newDeck = new Deck(deckTitle);
+            foreach (string file in Directory.EnumerateFiles(fullpath, "*.event"))
+            {
+                Event newEvent = LoadEventFromDisk(file);
+                if (newEvent != null)
+                    newDeck.Events.Add(newEvent);
+            }
+            return newDeck;
+        }
+        public static List<Deck> LoadAllDecksFromDisk(string storageDirectory)
+        {
+            List<Deck> decks = new List<Deck>();
+            try
+            {
+                foreach (string directory in Directory.EnumerateDirectories(storageDirectory))
+                {
+                    string subDirectory = directory.Replace(storageDirectory, "");
+                    Deck deck = LoadDeckFromDisk(subDirectory, storageDirectory);
+                    if (deck != null)
+                        decks.Add(deck);
+                }
+                return decks;
+            }
+            catch
+            {
+                return new List<Deck>();
+            }
+        }
+
+        public static void DeleteEvent(Event ev, Deck deck, string storageDirectory)
+        {
+            BackupEvent(ev, deck, storageDirectory);
         }
         public static void DeleteDeck(Deck deck, string StorageDirectory)
         {
             BackupDeck(deck, StorageDirectory);
         }
 
-        private static void BackupEvent(Event ev, Deck deck, string StorageDirectory)
+        private static void BackupEvent(Event ev, Deck deck, string storageDirectory)
         {
             try
             {
-                CreateStorageDirectory(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", ".Backups"));
-                Directory.Move(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", PrepareFilename(ev.Title), " #", ev.Id, ".event"), String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\", @".Backups\", String.Concat(PrepareFilename(ev.Title), " #", ev.Id, " "), PrepareFilename(DateTime.Now.ToString()), ".event"));
+                Directory.CreateDirectory(String.Concat(storageDirectory, RemoveIllegalCharactersFromFilename(deck.Title), @"\", ".Backups"));
+                Directory.Move(String.Concat(storageDirectory, RemoveIllegalCharactersFromFilename(deck.Title), @"\", RemoveIllegalCharactersFromFilename(ev.Title), " #", ev.Id, ".event"), String.Concat(storageDirectory, RemoveIllegalCharactersFromFilename(deck.Title), @"\", @".Backups\", String.Concat(RemoveIllegalCharactersFromFilename(ev.Title), " #", ev.Id, " "), RemoveIllegalCharactersFromFilename(DateTime.Now.ToString()), ".event"));
+            }
+            catch
+            {
+            }
+        }
+        private static void BackupDeck(Deck deck, string storageDirectory)
+        {
+            try
+            {
+                Directory.CreateDirectory(String.Concat(storageDirectory, ".Backups"));
+                Directory.Move(String.Concat(storageDirectory, RemoveIllegalCharactersFromFilename(deck.Title), @"\"), String.Concat(storageDirectory, @".Backups\", RemoveIllegalCharactersFromFilename(deck.Title), " ", RemoveIllegalCharactersFromFilename(DateTime.Now.ToString())));
             }
             catch
             {
             }
         }
 
-        private static void BackupDeck(Deck deck, string StorageDirectory)
+        public static void RenameDeck(Deck deck, string newDeckTitle, string storageDirectory)
         {
             try
             {
-                CreateStorageDirectory(String.Concat(StorageDirectory, ".Backups"));
-                Directory.Move(String.Concat(StorageDirectory, PrepareFilename(deck.Title), @"\"), String.Concat(StorageDirectory, @".Backups\", PrepareFilename(DateTime.Now.ToString())));
+                Directory.Move(
+                    String.Concat(storageDirectory, RemoveIllegalCharactersFromFilename(deck.Title), @"\"),
+                    String.Concat(storageDirectory, newDeckTitle, @"\")
+                );
             }
             catch
             {
             }
         }
 
+        private static string RemoveIllegalCharactersFromFilename(string filename)
+        {
+            string[] restrictedStrings = new string[] { "\\", "/", ":", "*", "?", "\"", "<", ">", "|" };
+            foreach (string restrictedString in restrictedStrings)
+                filename = filename.Replace(restrictedString, "");
+            return filename;
+        }
     }
 }
