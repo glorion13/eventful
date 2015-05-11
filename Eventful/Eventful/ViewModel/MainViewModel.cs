@@ -350,7 +350,9 @@ namespace Eventful.ViewModel
                 }
                 else
                 {
+                    DataStorage.DeleteEvent(SelectedEvent, SelectedDeck, StorageDirectory);
                     SelectedEvent.Title = dialogResult;
+                    SaveEvent(SelectedEvent, SelectedDeck);
                 }
             }
         }
@@ -385,7 +387,9 @@ namespace Eventful.ViewModel
                 }
                 else
                 {
+                    DataStorage.DeleteDeck(SelectedDeck, StorageDirectory);
                     SelectedDeck.Title = dialogResult;
+                    DataStorage.SaveDeck(SelectedDeck, StorageDirectory);
                 }
             }
         }

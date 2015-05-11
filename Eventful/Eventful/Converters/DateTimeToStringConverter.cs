@@ -11,7 +11,7 @@ namespace Eventful.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             DateTime date = (DateTime)value;
-            return date.ToString("d MMM yyyy, hh:mm:ss");
+            return date.ToString("d MMM yyyy, HH:mm:ss");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

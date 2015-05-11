@@ -111,6 +111,7 @@ namespace Eventful.Model
             {
             }
         }
+
         private static void BackupDeck(Deck deck, string StorageDirectory)
         {
             try
