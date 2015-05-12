@@ -100,7 +100,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WPFFolderBrowser">
-      <HintPath>..\..\..\invadopodia\Invadopodia\Third-party\WPFFolderBrowser.dll</HintPath>
+      <HintPath>..\packages\WPFFolderBrowser.1.0.2\lib\WPFFolderBrowser.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
