@@ -63,6 +63,7 @@ namespace Eventful.ViewModel
 
         private void LoadDecksFromDisk()
         {
+            Decks.Clear();
             foreach (Deck deck in DataStorage.LoadAllDecksFromDisk(StorageDirectory))
                 Decks.Add(deck);
         }
