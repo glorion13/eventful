@@ -9,6 +9,7 @@ namespace Eventful.Model
 {
     public class EventScreen : ViewModelBase
     {
+
         private string text = "";
         public string Text
         {
@@ -23,5 +24,6 @@ namespace Eventful.Model
         }
 
 
+        
     }
 }

@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using WPFFolderBrowser;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Collections.Generic;
 
 namespace Eventful.ViewModel
 {
@@ -27,7 +29,38 @@ namespace Eventful.ViewModel
             else
             {
                 InitialiseInRealMode();
+                string[] specialWords = { "string", "char", "null" };
+                tags = new List<string>(specialWords);
+                char[] chrs = {
+                                '.',
+                                ')',
+                                '(',
+                                '[',
+                                ']',
+                                '>',
+                                '<',
+                                ':',
+                                ';',
+                                '\n',
+                                '\t',
+                                '\r'
+                              };
+                specials = new List<char>(chrs);
             }
+        }
+
+        static List<string> tags = new List<string>();
+        static List<char> specials = new List<char>();
+        new struct Tag
+        {
+            public TextPointer StartPosition;
+            public TextPointer EndPosition;
+            public string Word;
+        } 
+
+        public Func<string, bool> HighlightPatterns
+        {
+            get { return x => x.Contains("HIT"); }
         }
 
         private void InitialiseInAllModes()
@@ -389,6 +422,19 @@ namespace Eventful.ViewModel
             }
         }
 
+        private RelayCommand eventTextChangedCommand;
+        public RelayCommand EventTextChangedCommand
+        {
+            get
+            {
+                return eventTextChangedCommand ?? (eventTextChangedCommand = new RelayCommand(ExecuteTextChangedCommand));
+            }
+        }
+        private void ExecuteTextChangedCommand()
+        {
+            
+        }
+
         private RelayCommand addEventCommand;
         public RelayCommand AddEventCommand
         {
@@ -454,17 +500,21 @@ namespace Eventful.ViewModel
                 else
                 {
                     Deck tempDeck = new Deck(dialogResult);
-                    bool success = DataStorage.SaveDeckToDisk(tempDeck, StorageDirectory);
-                    if (success)
-                    {
-                        Decks.Add(tempDeck);
-                        SelectedDeck = tempDeck;
-                    }
-                    else
-                    {
-                        await ShowOkMessage("Couldn't Save Deck", "The deck was not saved successfully. Try again later and ensure the save folder is accessible.");
-                    }
+                    CreateDeck(tempDeck);
                 }
+            }
+        }
+        private async void CreateDeck(Deck deck)
+        {
+            bool success = DataStorage.SaveDeckToDisk(deck, StorageDirectory);
+            if (success)
+            {
+                Decks.Add(deck);
+                SelectedDeck = deck;
+            }
+            else
+            {
+                await ShowOkMessage("Couldn't Save Deck", "The deck was not saved successfully. Try again later and ensure the save folder is accessible.");
             }
         }
 
@@ -637,8 +687,27 @@ namespace Eventful.ViewModel
         private void ExecuteDuplicateEventCommand()
         {
             Event duplicateEvent = new Event(SelectedEvent);
-            duplicateEvent.Title = SelectedEvent.Title + " Copy";
+            duplicateEvent.Title += " Copy";
+            while (SelectedDeck.Events.Any(e => e.Title == duplicateEvent.Title))
+                duplicateEvent.Title += " Copy";
             AddEventToDeck(duplicateEvent, SelectedDeck);
+        }
+
+        private RelayCommand duplicateDeckCommand;
+        public RelayCommand DuplicateDeckCommand
+        {
+            get
+            {
+                return duplicateDeckCommand ?? (duplicateDeckCommand = new RelayCommand(ExecuteDuplicateDeckCommand));
+            }
+        }
+        private void ExecuteDuplicateDeckCommand()
+        {
+            Deck duplicateDeck = new Deck(SelectedDeck);
+            duplicateDeck.Title += " Copy";
+            while (Decks.Any(d => d.Title == duplicateDeck.Title))
+                duplicateDeck.Title += " Copy";
+            CreateDeck(duplicateDeck);
         }
 
         private RelayCommand<SelectionChangedEventArgs> moveEventToDeckCommand;

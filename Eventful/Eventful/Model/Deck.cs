@@ -19,6 +19,11 @@ namespace Eventful.Model
             Events = new ObservableCollection<Event>();
             Title = title;
         }
+        public Deck(Deck deck)
+        {
+            Events = new ObservableCollection<Event>(deck.Events);
+            Title = deck.Title;
+        }
 
         private string title;
         public string Title
