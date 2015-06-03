@@ -626,6 +626,21 @@ namespace Eventful.ViewModel
             SelectedEvent = (SelectedDeck == null) ? null : SelectedDeck.Events.FirstOrDefault(e => e.Title == eventTitle);
         }
 
+        private RelayCommand duplicateEventCommand;
+        public RelayCommand DuplicateEventCommand
+        {
+            get
+            {
+                return duplicateEventCommand ?? (duplicateEventCommand = new RelayCommand(ExecuteDuplicateEventCommand));
+            }
+        }
+        private void ExecuteDuplicateEventCommand()
+        {
+            Event duplicateEvent = new Event(SelectedEvent);
+            duplicateEvent.Title = SelectedEvent.Title + " Copy";
+            AddEventToDeck(duplicateEvent, SelectedDeck);
+        }
+
         private RelayCommand<SelectionChangedEventArgs> moveEventToDeckCommand;
         public RelayCommand<SelectionChangedEventArgs> MoveEventToDeckCommand
         {

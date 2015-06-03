@@ -18,6 +18,12 @@ namespace Eventful.Model
         {
             Title = title;
         }
+        public Event(Event ev)
+        {
+            Title = ev.Title;
+            Text = ev.Text;
+            Author = ev.Author;
+        }
 
         private string title;
         public string Title
@@ -57,20 +63,6 @@ namespace Eventful.Model
             set
             {
                 Set(() => Text, ref text, value);
-                IsChanged = true;
-            }
-        }
-
-        private string notes = "";
-        public string Notes
-        {
-            get
-            {
-                return notes;
-            }
-            set
-            {
-                Set(() => Notes, ref notes, value);
                 IsChanged = true;
             }
         }

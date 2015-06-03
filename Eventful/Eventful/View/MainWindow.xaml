@@ -51,6 +51,12 @@
         </ResourceDictionary>
     </MetroControls:MetroWindow.Resources>
 
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding Path=SaveEventCommand}" 
+                Key="S" 
+                Modifiers="Control"/>
+    </Window.InputBindings>
+
     <MetroControls:MetroWindow.RightWindowCommands>
         <MetroControls:WindowCommands>
             <Button Content="sync" Command="{Binding SyncDataCommand}" />
@@ -125,6 +131,10 @@
             <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
             <!--<ListView ItemsSource="{Binding DecksViewSource.View}" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" ItemTemplate="{StaticResource DeckListItemTemplate}" Grid.Row="2" />-->
             <DataGrid Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" ItemTemplate="{StaticResource DeckListItemTemplate}" VerticalScrollBarVisibility="Hidden" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
+                <DataGrid.InputBindings>
+                    <KeyBinding Command="{Binding Path=RemoveDeckCommand}" 
+                                Key="Delete"/>
+                </DataGrid.InputBindings>
                 <Interactivity:Interaction.Triggers>
                     <Interactivity:EventTrigger EventName="BeginningEdit">
                         <MvvmControls:EventToCommand Command="{Binding ChangeDeckNameCommand}" />
@@ -156,6 +166,13 @@
             <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
             <!--<ListView ItemsSource="{Binding EventsViewSource.View}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" ItemTemplate="{StaticResource EventListItemTemplate}" Grid.Row="2" />-->
             <DataGrid Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Hidden" ItemTemplate="{StaticResource EventListItemTemplate}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="1">
+                <DataGrid.InputBindings>
+                    <KeyBinding Command="{Binding Path=DuplicateEventCommand}" 
+                                Key="D" 
+                                Modifiers="Control"/>
+                    <KeyBinding Command="{Binding Path=RemoveEventCommand}" 
+                                Key="Delete"/>
+                </DataGrid.InputBindings>
                 <Interactivity:Interaction.Triggers>
                     <Interactivity:EventTrigger EventName="BeginningEdit">
                         <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
@@ -207,10 +224,16 @@
             </Grid>
 
             <!--<TextBlock Text="Text" Grid.Row="1" />-->
-            <TextBox Text="{Binding SelectedEvent.Text, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True" TextWrapping="Wrap" MetroControls:TextBoxHelper.Watermark="Body" Grid.Row="1" Margin="0,5" />
+            <RichTextBox ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True" MetroControls:TextBoxHelper.Watermark="Body" Grid.Row="1" Margin="0,5">
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="{Binding SelectedEvent.Text, UpdateSourceTrigger=PropertyChanged}" />
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
 
             <!--<TextBlock Text="Notes" Grid.Row="3" />-->
-            <TextBox Text="{Binding SelectedEvent.Notes, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True" TextWrapping="Wrap" MetroControls:TextBoxHelper.Watermark="Notes" Grid.Row="2" Margin="0,0,0,5" />
+            <!--<TextBox Text="{Binding SelectedEvent.Notes, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True" TextWrapping="Wrap" MetroControls:TextBoxHelper.Watermark="Notes" Grid.Row="2" Margin="0,0,0,5" />-->
 
             <Button Content="Save" IsEnabled="{Binding SelectedEvent.IsChanged}" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />
         </Grid>
