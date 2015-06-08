@@ -28,39 +28,21 @@ namespace Eventful.ViewModel
             }
             else
             {
-                InitialiseInRealMode();
-                string[] specialWords = { "string", "char", "null" };
-                tags = new List<string>(specialWords);
-                char[] chrs = {
-                                '.',
-                                ')',
-                                '(',
-                                '[',
-                                ']',
-                                '>',
-                                '<',
-                                ':',
-                                ';',
-                                '\n',
-                                '\t',
-                                '\r'
-                              };
-                specials = new List<char>(chrs);
+                InitialiseInRealMode();              
             }
         }
 
-        static List<string> tags = new List<string>();
-        static List<char> specials = new List<char>();
-        new struct Tag
+        private List<String> testItems;
+        public List<String> TestItems
         {
-            public TextPointer StartPosition;
-            public TextPointer EndPosition;
-            public string Word;
-        } 
-
-        public Func<string, bool> HighlightPatterns
-        {
-            get { return x => x.Contains("HIT"); }
+            get
+            {
+                return testItems;
+            }
+            set
+            {
+                Set(() => TestItems, ref testItems, value);
+            }
         }
 
         private void InitialiseInAllModes()
@@ -69,7 +51,7 @@ namespace Eventful.ViewModel
             DeckFilter = "";
             DecksViewSource = new CollectionViewSource();
             DecksViewSource.Source = Decks;
-            EventsViewSource = new CollectionViewSource();
+            EventsViewSource = new CollectionViewSource();    
             DecksViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
             InitialiseAuthor();
             InitialiseStorageDirectory();
@@ -145,6 +127,36 @@ namespace Eventful.ViewModel
             Event ev = obj as Event;
             if (ev == null) return false;
             return (CultureInfo.CurrentCulture.CompareInfo.IndexOf(ev.Title, EventFilter, CompareOptions.IgnoreCase) >= 0);
+        }
+
+        private string deckFilter;
+        public string DeckFilter
+        {
+            get
+            {
+                return deckFilter;
+            }
+            set
+            {
+                Set(() => DeckFilter, ref deckFilter, value);
+                if (DecksViewSource != null)
+                    DecksViewSource.View.Filter = new Predicate<object>(DeckTitleContains);
+            }
+        }
+
+        private string eventFilter;
+        public string EventFilter
+        {
+            get
+            {
+                return eventFilter;
+            }
+            set
+            {
+                Set(() => EventFilter, ref eventFilter, value);
+                if (EventsViewSource != null)
+                    EventsViewSource.View.Filter = new Predicate<object>(EventTitleContains);
+            }
         }
 
         private ObservableCollection<Deck> decks;
@@ -313,36 +325,6 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => IsRemoveEventButtonEnabled, ref isRemoveEventButtonEnabled, value);
-            }
-        }
-
-        private string deckFilter;
-        public string DeckFilter
-        {
-            get
-            {
-                return deckFilter;
-            }
-            set
-            {
-                Set(() => DeckFilter, ref deckFilter, value);
-                if (DecksViewSource != null)
-                    DecksViewSource.View.Filter = new Predicate<object>(DeckTitleContains);
-            }
-        }
-
-        private string eventFilter;
-        public string EventFilter
-        {
-            get
-            {
-                return eventFilter;
-            }
-            set
-            {
-                Set(() => EventFilter, ref eventFilter, value);
-                if (EventsViewSource != null)
-                    EventsViewSource.View.Filter = new Predicate<object>(EventTitleContains);
             }
         }
 
@@ -551,6 +533,7 @@ namespace Eventful.ViewModel
         }
         private async void ExecuteRemoveDeckCommand()
         {
+            if (SelectedDeck == null) return;
             bool dialogResult = await ShowOkCancelMessage("Confirm Deck Deletion", String.Concat("Do you want to delete the deck \"", SelectedDeck.Title, "\"?"));
             if (dialogResult)
                 RemoveDeck(SelectedDeck);
@@ -686,6 +669,7 @@ namespace Eventful.ViewModel
         }
         private void ExecuteDuplicateEventCommand()
         {
+            if (SelectedEvent == null) return;
             Event duplicateEvent = new Event(SelectedEvent);
             duplicateEvent.Title += " Copy";
             while (SelectedDeck.Events.Any(e => e.Title == duplicateEvent.Title))
@@ -703,6 +687,7 @@ namespace Eventful.ViewModel
         }
         private void ExecuteDuplicateDeckCommand()
         {
+            if (SelectedDeck == null) return;
             Deck duplicateDeck = new Deck(SelectedDeck);
             duplicateDeck.Title += " Copy";
             while (Decks.Any(d => d.Title == duplicateDeck.Title))

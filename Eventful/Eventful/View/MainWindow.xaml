@@ -8,6 +8,9 @@
     xmlns:Interactivity="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:Converters="clr-namespace:Eventful.Converters"
     xmlns:Properties="clr-namespace:Eventful.Properties"
+    xmlns:ExtendedToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+    xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
     Title="Eventful" Height="768" Width="1024"
     Icon="../Images/Pencil.ico"
     ShowTitleBar="True"  
@@ -129,7 +132,6 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveDeckButtonEnabled}" Command="{Binding RemoveDeckCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-            <!--<ListView ItemsSource="{Binding DecksViewSource.View}" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" ItemTemplate="{StaticResource DeckListItemTemplate}" Grid.Row="2" />-->
             <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" ItemTemplate="{StaticResource DeckListItemTemplate}" VerticalScrollBarVisibility="Hidden" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=RemoveDeckCommand}" 
@@ -138,6 +140,12 @@
                                 Key="D"
                                 Modifiers="Control" />
                 </DataGrid.InputBindings>
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Duplicate deck" Command="{Binding DuplicateDeckCommand}" />
+                        <MenuItem Header="Delete deck" Command="{Binding RemoveDeckCommand}" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
                 <Interactivity:Interaction.Triggers>
                     <Interactivity:EventTrigger EventName="BeginningEdit">
                         <MvvmControls:EventToCommand Command="{Binding ChangeDeckNameCommand}" />
@@ -167,7 +175,6 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveEventButtonEnabled}" Command="{Binding RemoveEventCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-            <!--<ListView ItemsSource="{Binding EventsViewSource.View}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" ItemTemplate="{StaticResource EventListItemTemplate}" Grid.Row="2" />-->
             <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Hidden" ItemTemplate="{StaticResource EventListItemTemplate}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=DuplicateEventCommand}" 
@@ -176,6 +183,12 @@
                     <KeyBinding Command="{Binding Path=RemoveEventCommand}" 
                                 Key="Delete"/>
                 </DataGrid.InputBindings>
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Duplicate event" Command="{Binding DuplicateEventCommand}" />
+                        <MenuItem Header="Delete event" Command="{Binding RemoveEventCommand}" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
                 <Interactivity:Interaction.Triggers>
                     <Interactivity:EventTrigger EventName="BeginningEdit">
                         <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
@@ -226,13 +239,16 @@
                 </StackPanel>
             </Grid>
 
-            <!--<TextBlock Text="Text" Grid.Row="1" />-->
-            <RichTextBox SpellCheck.IsEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True" MetroControls:TextBoxHelper.Watermark="Body" Grid.Row="1" Margin="0,5">
-                <!--<FlowDocument>
+            <controls:AutoCompleteBox IsTextCompletionEnabled="True" ItemsSource="{Binding Decks}" Grid.Row="1" FilterMode="Contains" Text="{Binding SelectedEvent.Text}" />
+
+            <!--<TextBox AcceptsReturn="True" Text="{Binding SelectedEvent.Text, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Auto" MetroControls:TextBoxHelper.Watermark="Body" Grid.Row="1" Margin="0,5" />
+            -->
+            <!--<RichTextBox SpellCheck.IsEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True" MetroControls:TextBoxHelper.Watermark="Body" Grid.Row="1" Margin="0,5">
+                <FlowDocument>
                     <Paragraph>
                         <Run Text="{Binding SelectedEvent.Text, UpdateSourceTrigger=PropertyChanged}" />
                     </Paragraph>
-                </FlowDocument>-->
+                </FlowDocument>
                 <Interactivity:Interaction.Triggers>
                     <Interactivity:EventTrigger EventName="TextChanged">
                         <MvvmControls:EventToCommand Command="{Binding EventTextChangedCommand}" PassEventArgsToCommand="True" />
@@ -243,7 +259,7 @@
                         <Setter Property="Margin" Value="0" />
                     </Style>
                 </RichTextBox.Resources>
-            </RichTextBox>
+            </RichTextBox>-->
 
             <!--<TextBlock Text="Notes" Grid.Row="3" />-->
             <!--<TextBox Text="{Binding SelectedEvent.Notes, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True" TextWrapping="Wrap" MetroControls:TextBoxHelper.Watermark="Notes" Grid.Row="2" Margin="0,0,0,5" />-->
