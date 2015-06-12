@@ -12,7 +12,6 @@ namespace Eventful.Model
     {
         public Event()
         {
-
         }
         public Event(string title)
         {
@@ -106,5 +105,17 @@ namespace Eventful.Model
             }
         }
 
+        private ObservableCollection<Option> options;
+        public ObservableCollection<Option> Options
+        {
+            get
+            {
+                return options;
+            }
+            set
+            {
+                Set(() => Options, ref options, value);
+            }
+        }
     }
 }

@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using GalaSoft.MvvmLight.Messaging;
+using Eventful.ViewModel;
 
 namespace Eventful.View
 {
@@ -25,7 +27,22 @@ namespace Eventful.View
         public MainWindow()
         {
             InitializeComponent();
+            Messenger.Default.Register<EditEventViewModel>(this, vm => OpenNewEventWindow(vm));
+            Messenger.Default.Register<TagLibraryViewModel>(this, vm => OpenTagLibraryWindow(vm));
         }
 
+        private void OpenNewEventWindow(EditEventViewModel vm)
+        {
+            MetroWindow newWindow = new EditEventWindow();
+            newWindow.DataContext = vm;
+            newWindow.Show();
+        }
+
+        private void OpenTagLibraryWindow(TagLibraryViewModel vm)
+        {
+            MetroWindow newWindow = new TagLibraryWindow();
+            newWindow.DataContext = vm;
+            newWindow.Show();
+        }
     }
 }

@@ -2,7 +2,7 @@
     x:Class="Eventful.View.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    DataContext="{Binding Source={StaticResource Locator}, Path=MainViewModel}"
+    DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:MvvmControls="http://www.galasoft.ch/mvvmlight"
     xmlns:Interactivity="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
@@ -63,6 +63,7 @@
     <MetroControls:MetroWindow.RightWindowCommands>
         <MetroControls:WindowCommands>
             <Button Content="sync" Command="{Binding SyncDataCommand}" />
+            <Button Content="tags" Command="{Binding OpenTagLibraryCommand}" />
             <Button Content="settings" Command="{Binding ShowSettingsCommand}" />
         </MetroControls:WindowCommands>
     </MetroControls:MetroWindow.RightWindowCommands>
@@ -185,6 +186,7 @@
                 </DataGrid.InputBindings>
                 <DataGrid.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="Open event in new window" Command="{Binding OpenNewEventWindowCommand}" />
                         <MenuItem Header="Duplicate event" Command="{Binding DuplicateEventCommand}" />
                         <MenuItem Header="Delete event" Command="{Binding RemoveEventCommand}" />
                     </ContextMenu>
@@ -240,30 +242,8 @@
             </Grid>
 
             <controls:AutoCompleteBox IsTextCompletionEnabled="True" ItemsSource="{Binding Decks}" Grid.Row="1" FilterMode="Contains" Text="{Binding SelectedEvent.Text}" />
-
-            <!--<TextBox AcceptsReturn="True" Text="{Binding SelectedEvent.Text, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Auto" MetroControls:TextBoxHelper.Watermark="Body" Grid.Row="1" Margin="0,5" />
-            -->
-            <!--<RichTextBox SpellCheck.IsEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True" MetroControls:TextBoxHelper.Watermark="Body" Grid.Row="1" Margin="0,5">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="{Binding SelectedEvent.Text, UpdateSourceTrigger=PropertyChanged}" />
-                    </Paragraph>
-                </FlowDocument>
-                <Interactivity:Interaction.Triggers>
-                    <Interactivity:EventTrigger EventName="TextChanged">
-                        <MvvmControls:EventToCommand Command="{Binding EventTextChangedCommand}" PassEventArgsToCommand="True" />
-                    </Interactivity:EventTrigger>
-                </Interactivity:Interaction.Triggers>
-                <RichTextBox.Resources>
-                    <Style TargetType="{x:Type Paragraph}">
-                        <Setter Property="Margin" Value="0" />
-                    </Style>
-                </RichTextBox.Resources>
-            </RichTextBox>-->
-
-            <!--<TextBlock Text="Notes" Grid.Row="3" />-->
-            <!--<TextBox Text="{Binding SelectedEvent.Notes, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True" TextWrapping="Wrap" MetroControls:TextBoxHelper.Watermark="Notes" Grid.Row="2" Margin="0,0,0,5" />-->
-
+            <ListBox ItemsSource="{Binding SelectedEvent.Options}" Grid.Row="2" />
+            
             <Button Content="Save" IsEnabled="{Binding SelectedEvent.IsChanged}" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />
         </Grid>
 

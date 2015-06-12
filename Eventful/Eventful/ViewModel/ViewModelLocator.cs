@@ -43,13 +43,29 @@ namespace Eventful.ViewModel
             ////}
 
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<EditEventViewModel>();
+            SimpleIoc.Default.Register<TagLibraryViewModel>();
         }
 
-        public MainViewModel MainViewModel
+        public MainViewModel Main
         {
             get
             {
                 return ServiceLocator.Current.GetInstance<MainViewModel>();
+            }
+        }
+        public EditEventViewModel EditEvent
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<EditEventViewModel>();
+            }
+        }
+        public TagLibraryViewModel TagLibrary
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<TagLibraryViewModel>();
             }
         }
         

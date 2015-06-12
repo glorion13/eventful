@@ -32,19 +32,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        private List<String> testItems;
-        public List<String> TestItems
-        {
-            get
-            {
-                return testItems;
-            }
-            set
-            {
-                Set(() => TestItems, ref testItems, value);
-            }
-        }
-
         private void InitialiseInAllModes()
         {
             Decks = new ObservableCollection<Deck>();
@@ -63,6 +50,7 @@ namespace Eventful.ViewModel
             mainDeck.Events.Add(new Event("Finding Timmy: A Bewildering Adventure"));
             Event ev = new Event("Cinding Timmy");
             ev.Text = "Hello world.";
+            ev.Options.Add(new Option());
             mainDeck.Events.Add(ev);
             mainDeck.Events.Add(new Event("Ainding Timmy"));
             mainDeck.Events.Add(new Event("Binding Timmy"));
@@ -112,7 +100,7 @@ namespace Eventful.ViewModel
             }
             catch
             {
-                StorageDirectory = DataStorage.DefaultStorageDirectory;
+                StorageDirectory = DataStorage.DefaultStorageDirectory;               
             }
         }
 
@@ -742,6 +730,37 @@ namespace Eventful.ViewModel
             MetroWindow metroWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
             string dialogResult = await metroWindow.ShowInputAsync(title, body);
             return dialogResult;
+        }
+
+        private RelayCommand openNewEventWindowCommand;
+        public RelayCommand OpenNewEventWindowCommand
+        {
+            get
+            {
+                return openNewEventWindowCommand ?? (openNewEventWindowCommand = new RelayCommand(ExecuteOpenNewEventWindowCommand));
+            }
+        }
+        private void ExecuteOpenNewEventWindowCommand()
+        {
+            if (SelectedEvent == null) return;
+            EditEventViewModel vm = new EditEventViewModel();
+            vm.SelectedEvent = SelectedEvent;
+            vm.SelectedDeck = SelectedDeck;
+            MessengerInstance.Send(vm);
+        }
+
+        private RelayCommand openTagLibraryCommand;
+        public RelayCommand OpenTagLibraryCommand
+        {
+            get
+            {
+                return openTagLibraryCommand ?? (openTagLibraryCommand = new RelayCommand(ExecuteOpenTagLibraryCommand));
+            }
+        }
+        private void ExecuteOpenTagLibraryCommand()
+        {
+            TagLibraryViewModel vm = new TagLibraryViewModel();
+            MessengerInstance.Send(vm);
         }
 
     }
