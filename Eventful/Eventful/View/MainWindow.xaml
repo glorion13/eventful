@@ -11,6 +11,7 @@
     xmlns:ExtendedToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
     xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
     Title="Eventful" Height="768" Width="1024"
     Icon="../Images/Pencil.ico"
     ShowTitleBar="True"  
@@ -241,7 +242,7 @@
                 </StackPanel>
             </Grid>
 
-            <controls:AutoCompleteBox IsTextCompletionEnabled="True" ItemsSource="{Binding Decks}" Grid.Row="1" FilterMode="Contains" Text="{Binding SelectedEvent.Text}" />
+            <avalonEdit:TextEditor Name="textEditor" Grid.Row="1" SyntaxHighlighting="ESL" Text="{Binding SelectedEvent.Text}" />
             <ListBox ItemsSource="{Binding SelectedEvent.Options}" Grid.Row="2" />
             
             <Button Content="Save" IsEnabled="{Binding SelectedEvent.IsChanged}" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />

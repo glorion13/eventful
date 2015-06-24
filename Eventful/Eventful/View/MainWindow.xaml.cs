@@ -16,6 +16,10 @@ using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using GalaSoft.MvvmLight.Messaging;
 using Eventful.ViewModel;
+using System.Xml;
+using System.IO;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace Eventful.View
 {
@@ -29,6 +33,13 @@ namespace Eventful.View
             InitializeComponent();
             Messenger.Default.Register<EditEventViewModel>(this, vm => OpenNewEventWindow(vm));
             Messenger.Default.Register<TagLibraryViewModel>(this, vm => OpenTagLibraryWindow(vm));
+
+            byte[] syntax = Eventful.Properties.Resources.ESL;
+            Stream stream = new MemoryStream(syntax);
+            using (XmlTextReader reader = new XmlTextReader(stream))
+            {
+                textEditor.SyntaxHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
+            }
         }
 
         private void OpenNewEventWindow(EditEventViewModel vm)

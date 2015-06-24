@@ -1,0 +1,25 @@
+﻿<?xml version="1.0"?>
+<SyntaxDefinition name="ESL"
+        xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  
+  <Color name="Comment" foreground="Green" />
+  <Color name="Tag" foreground="Blue" />
+
+  <!-- This is the main ruleset. -->
+  <RuleSet>
+    <Span color="Comment" begin="//" />
+    <Span color="Comment" multiline="true"
+       begin="/\*" end="\*/" />
+
+    <Span color="Tag">
+      <Begin>&lt;</Begin>
+      <End>&gt;</End>
+    </Span>
+
+    <Keywords fontWeight="bold" foreground="Blue">
+      <Word>tag</Word>
+      <Word>player</Word>
+    </Keywords>
+
+  </RuleSet>
+</SyntaxDefinition>
