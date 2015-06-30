@@ -1,0 +1,14 @@
+<tag:KingSlayer>
+Hello there. I am <info:PlayerBackground> too!
+</tag:KingSlayer>
+
+
+Syntax Highlight
+Auto complete
+
+
+Tag library
+Action navigation
+Actions
+Background information variables
+Player

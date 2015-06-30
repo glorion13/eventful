@@ -27,6 +27,18 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
+            <Style x:Key="GridSplitterStyle" TargetType="GridSplitter">
+                <Setter Property="Width">
+                    <Setter.Value>2</Setter.Value>
+                </Setter>
+                <Setter Property="HorizontalAlignment">
+                    <Setter.Value>Right</Setter.Value>
+                </Setter>
+                <Setter Property="VerticalAlignment">
+                    <Setter.Value>Stretch</Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </MetroControls:MetroWindow.Resources>
 
@@ -52,29 +64,35 @@
                     <ColumnDefinition Width="30" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Tags" Grid.Column="0" FontSize="20" />
-                <Button Content="+" IsEnabled="{Binding IsAddDeckButtonEnabled}" Command="{Binding AddDeckCommand}" Grid.Column="1" />
-                <Button Content="-" IsEnabled="{Binding IsRemoveDeckButtonEnabled}" Command="{Binding RemoveDeckCommand}" Grid.Column="2" />
+                <Button Content="+" IsEnabled="{Binding IsAddTagButtonEnabled}" Command="{Binding AddTagCommand}" Grid.Column="1" />
+                <Button Content="-" IsEnabled="{Binding IsRemoveTagButtonEnabled}" Command="{Binding RemoveTagCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-            <DataGrid SelectionMode="Extended"  Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" ItemTemplate="{StaticResource DeckListItemTemplate}" VerticalScrollBarVisibility="Hidden" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
+            <DataGrid SelectionMode="Extended"  Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding TagsViewSource.View}" VerticalScrollBarVisibility="Hidden" SelectedItem="{Binding SelectedTag, Mode=TwoWay}" Grid.Row="1">
                 <DataGrid.InputBindings>
-                    <KeyBinding Command="{Binding Path=RemoveDeckCommand}" 
+                    <KeyBinding Command="{Binding Path=RemoveTagCommand}" 
                                 Key="Delete"/>
                 </DataGrid.InputBindings>
                 <DataGrid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Delete tag" Command="{Binding RemoveDeckCommand}" />
+                        <MenuItem Header="Delete tag" Command="{Binding RemoveTagCommand}" />
                     </ContextMenu>
                 </DataGrid.ContextMenu>
                 <Interactivity:Interaction.Triggers>
                     <Interactivity:EventTrigger EventName="BeginningEdit">
-                        <MvvmControls:EventToCommand Command="{Binding ChangeDeckNameCommand}" />
+                        <MvvmControls:EventToCommand Command="{Binding ChangeTagNameCommand}" />
                     </Interactivity:EventTrigger>
                 </Interactivity:Interaction.Triggers>
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Title}" Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
+        </Grid>
+        <GridSplitter Grid.Row="0" Grid.Column="0" Style="{StaticResource GridSplitterStyle}" />
+
+        <Grid Grid.Row="0" Grid.Column="1">
+        <ListBox  ItemsSource="{Binding SelectedTag.Events}">
+        </ListBox>
         </Grid>
 
     </Grid>

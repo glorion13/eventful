@@ -10,6 +10,7 @@
     xmlns:Properties="clr-namespace:Eventful.Properties"
     xmlns:ExtendedToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+    xmlns:LocalControls="clr-namespace:Eventful.Controls"
     xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
     Title="Eventful" Height="768" Width="1024"
@@ -242,7 +243,11 @@
                 </StackPanel>
             </Grid>
 
-            <avalonEdit:TextEditor Name="textEditor" Grid.Row="1" SyntaxHighlighting="ESL" Text="{Binding SelectedEvent.Text}" />
+            <avalonEdit:TextEditor Name="mvvmTextEditor" Grid.Row="1" SyntaxHighlighting="ESL">
+                <Interactivity:Interaction.Behaviors>
+                    <LocalControls:AvalonEditBehavior TextBindBehavior="{Binding SelectedEvent.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </Interactivity:Interaction.Behaviors>
+            </avalonEdit:TextEditor>
             <ListBox ItemsSource="{Binding SelectedEvent.Options}" Grid.Row="2" />
             
             <Button Content="Save" IsEnabled="{Binding SelectedEvent.IsChanged}" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />

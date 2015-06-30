@@ -139,6 +139,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\AvalonTextBehavior.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="EventEditor.xaml.cs">
@@ -155,9 +156,6 @@
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\TagLibraryViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="View\EventEditor.xaml.cs">
-      <DependentUpon>EventEditor.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\TagLibraryWindow.xaml.cs">
       <DependentUpon>TagLibraryWindow.xaml</DependentUpon>
     </Compile>
@@ -166,10 +164,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\EditEventWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\EventEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -217,7 +211,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <EmbeddedResource Include="Resources\ESL.xshd" />
+    <EmbeddedResource Include="Resources\ESL.xshd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

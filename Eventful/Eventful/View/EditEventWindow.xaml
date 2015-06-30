@@ -11,6 +11,8 @@
     xmlns:ExtendedToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
     xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+    xmlns:LocalControls="clr-namespace:Eventful.Controls"
     Title="{Binding SelectedEvent.Title}" Height="768" Width="1024"
     Icon="../Images/Pencil.ico"
     ShowTitleBar="True"  
@@ -37,7 +39,6 @@
             <RowDefinition Height="60" />
             <RowDefinition Height="*" />
             <RowDefinition Height="100" />
-            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Grid>
             <Grid.RowDefinitions>
@@ -45,21 +46,9 @@
                 <RowDefinition Height="20" />
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
-                <MetroControls:SplitButton VerticalAlignment="Center" FontSize="22" MaxWidth="150" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedDeck, Mode=OneWay}" ItemsSource="{Binding Decks}" DisplayMemberPath="Title">
-                    <Interactivity:Interaction.Triggers>
-                        <Interactivity:EventTrigger EventName="SelectionChanged">
-                            <MvvmControls:EventToCommand Command="{Binding MoveEventToDeckCommand}" PassEventArgsToCommand="True" />
-                        </Interactivity:EventTrigger>
-                    </Interactivity:Interaction.Triggers>
-                </MetroControls:SplitButton>
+                <TextBlock Text="{Binding SelectedDeck.Title}" FontSize="28" />
                 <TextBlock Text=" > " FontSize="28" />
-                <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28">
-                        <Interactivity:Interaction.Triggers>
-                            <Interactivity:EventTrigger EventName="MouseDown">
-                                <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
-                            </Interactivity:EventTrigger>
-                        </Interactivity:Interaction.Triggers>
-                </TextBlock>
+                <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="1">
                 <TextBlock Text="Last saved by " FontWeight="Light" FontSize="12" />
@@ -69,7 +58,10 @@
             </StackPanel>
         </Grid>
 
-        <controls:AutoCompleteBox IsTextCompletionEnabled="True" ItemsSource="{Binding Decks}" Grid.Row="1" FilterMode="Contains" Text="{Binding SelectedEvent.Text}" />
-        <Button Content="Save" IsEnabled="{Binding SelectedEvent.IsChanged}" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />
+        <avalonEdit:TextEditor IsReadOnly="True"  Name="mvvmTextEditor" Grid.Row="1" SyntaxHighlighting="ESL">
+            <Interactivity:Interaction.Behaviors>
+                <LocalControls:AvalonEditBehavior TextBindBehavior="{Binding SelectedEvent.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </Interactivity:Interaction.Behaviors>
+        </avalonEdit:TextEditor>
     </Grid>
 </MetroControls:MetroWindow>

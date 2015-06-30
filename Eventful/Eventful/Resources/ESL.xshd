@@ -4,6 +4,7 @@
   
   <Color name="Comment" foreground="Green" />
   <Color name="Tag" foreground="Blue" />
+  <Color name="TagContent" foreground="Green" />
 
   <!-- This is the main ruleset. -->
   <RuleSet>
@@ -12,14 +13,22 @@
        begin="/\*" end="\*/" />
 
     <Span color="Tag">
-      <Begin>&lt;</Begin>
-      <End>&gt;</End>
+      <Begin>:</Begin>
+      <End>&lt;/</End>
+    </Span>
+    
+    <Span color="TagContent" multiline="true">
+      <Begin>{</Begin>
+      <End>}</End>
     </Span>
 
     <Keywords fontWeight="bold" foreground="Blue">
-      <Word>tag</Word>
-      <Word>player</Word>
+      <Word>test</Word>
     </Keywords>
+    
+    <Rule foreground="DarkBlue" fontWeight="bold">
+      tag{1,}
+    </Rule>
 
   </RuleSet>
 </SyntaxDefinition>

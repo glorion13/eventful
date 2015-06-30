@@ -64,46 +64,6 @@ namespace Eventful.ViewModel
             LoadDecksFromDisk();
         }
 
-        private void LoadDecksFromDisk()
-        {
-            Decks.Clear();
-            foreach (Deck deck in DataStorage.LoadAllDecksFromDisk(StorageDirectory))
-                Decks.Add(deck);
-        }
-
-        private void InitialiseAuthor()
-        {
-            try
-            {
-                string authorFromSettings = Properties.Settings.Default["Author"] as string;
-                if (authorFromSettings != "")
-                    Author = authorFromSettings;
-                else
-                {
-                    Author = System.Environment.UserName;
-                }
-            }
-            catch
-            {
-                Author = System.Environment.UserName;
-            }
-        }
-        private void InitialiseStorageDirectory()
-        {
-            try
-            {
-                string storageDirectoryFromSettings = Properties.Settings.Default["StorageDirectory"] as string;
-                if (storageDirectoryFromSettings != "")
-                    StorageDirectory = storageDirectoryFromSettings;
-                else
-                    StorageDirectory = DataStorage.DefaultStorageDirectory;
-            }
-            catch
-            {
-                StorageDirectory = DataStorage.DefaultStorageDirectory;               
-            }
-        }
-
         private bool DeckTitleContains(object obj)
         {
             Deck deck = obj as Deck;
@@ -163,6 +123,23 @@ namespace Eventful.ViewModel
         public CollectionViewSource DecksViewSource { get; set; }
         public CollectionViewSource EventsViewSource { get; set; }
 
+        private void InitialiseAuthor()
+        {
+            try
+            {
+                string authorFromSettings = Properties.Settings.Default["Author"] as string;
+                if (authorFromSettings != "")
+                    Author = authorFromSettings;
+                else
+                {
+                    Author = System.Environment.UserName;
+                }
+            }
+            catch
+            {
+                Author = System.Environment.UserName;
+            }
+        }
         private string author = System.Environment.UserName;
         public string Author
         {
@@ -177,7 +154,49 @@ namespace Eventful.ViewModel
                 Properties.Settings.Default.Save();
             }
         }
+        private RelayCommand changeAuthorCommand;
+        public RelayCommand ChangeAuthorCommand
+        {
+            get
+            {
+                return changeAuthorCommand ?? (changeAuthorCommand = new RelayCommand(ExecuteChangeAuthorCommand));
+            }
+        }
+        private void ExecuteChangeAuthorCommand()
+        {
+            ChangeAuthor("What is your name?");
+        }
+        private async void ChangeAuthor(string text)
+        {
+            string dialogResult = await ShowOkCancelInput("Change Author Name", text);
+            if (dialogResult == null)
+            {
+            }
+            else if (dialogResult == "")
+            {
+                ChangeAuthor("Your name cannot be empty.");
+            }
+            else
+            {
+                Author = dialogResult;
+            }
+        }
 
+        private void InitialiseStorageDirectory()
+        {
+            try
+            {
+                string storageDirectoryFromSettings = Properties.Settings.Default["StorageDirectory"] as string;
+                if (storageDirectoryFromSettings != "")
+                    StorageDirectory = storageDirectoryFromSettings;
+                else
+                    StorageDirectory = DataStorage.DefaultStorageDirectory;
+            }
+            catch
+            {
+                StorageDirectory = DataStorage.DefaultStorageDirectory;
+            }
+        }
         private string storageDirectory = DataStorage.DefaultStorageDirectory;
         public string StorageDirectory
         {
@@ -191,6 +210,32 @@ namespace Eventful.ViewModel
                 Properties.Settings.Default["StorageDirectory"] = StorageDirectory;
                 Properties.Settings.Default.Save();
             }
+        }
+        private RelayCommand browseStorageDirectoryCommand;
+        public RelayCommand BrowseStorageDirectoryCommand
+        {
+            get
+            {
+                return browseStorageDirectoryCommand ?? (browseStorageDirectoryCommand = new RelayCommand(ExecuteBrowseStorageDirectoryCommand));
+            }
+        }
+        private void ExecuteBrowseStorageDirectoryCommand()
+        {
+            WPFFolderBrowserDialog dialog = new WPFFolderBrowserDialog();
+            dialog.Title = "Please select a folder";
+            bool? result = dialog.ShowDialog();
+            if (result == true)
+            {
+                string[] pathTokens = dialog.FileName.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+                StorageDirectory = (pathTokens[pathTokens.Length - 1] == "Eventful") ? String.Concat(dialog.FileName, @"\") : String.Concat(dialog.FileName, @"\Eventful\");
+                LoadDecksFromDisk();
+            }
+        }
+        private void LoadDecksFromDisk()
+        {
+            Decks.Clear();
+            foreach (Deck deck in DataStorage.LoadAllDecksFromDisk(StorageDirectory))
+                Decks.Add(deck);
         }
 
         private Deck selectedDeck;
@@ -276,173 +321,6 @@ namespace Eventful.ViewModel
                 Set(() => IsAddDeckButtonEnabled, ref isAddDeckButtonEnabled, value);
             }
         }
-
-        private bool isAddEventButtonEnabled = false;
-        public bool IsAddEventButtonEnabled
-        {
-            get
-            {
-                return isAddEventButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsAddEventButtonEnabled, ref isAddEventButtonEnabled, value);
-            }
-        }
-
-        private bool isRemoveDeckButtonEnabled = false;
-        public bool IsRemoveDeckButtonEnabled
-        {
-            get
-            {
-                return isRemoveDeckButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsRemoveDeckButtonEnabled, ref isRemoveDeckButtonEnabled, value);
-            }
-        }
-
-        private bool isRemoveEventButtonEnabled = false;
-        public bool IsRemoveEventButtonEnabled
-        {
-            get
-            {
-                return isRemoveEventButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsRemoveEventButtonEnabled, ref isRemoveEventButtonEnabled, value);
-            }
-        }
-
-        private RelayCommand showSettingsCommand;
-        public RelayCommand ShowSettingsCommand
-        {
-            get
-            {
-                return showSettingsCommand ?? (showSettingsCommand = new RelayCommand(ExecuteShowSettingsCommand));
-            }
-        }
-        private void ExecuteShowSettingsCommand()
-        {
-            IsSettingsFlyoutVisible = !IsSettingsFlyoutVisible;
-        }
-
-        private RelayCommand changeEventNameCommand;
-        public RelayCommand ChangeEventNameCommand
-        {
-            get
-            {
-                return changeEventNameCommand ?? (changeEventNameCommand = new RelayCommand(ExecuteChangeEventNameCommand));
-            }
-        }
-        private void ExecuteChangeEventNameCommand()
-        {
-            ChangeEventName("What is the new title of the event?");
-        }
-        private async void ChangeEventName(string text)
-        {
-            if (SelectedEvent != null && SelectedDeck != null)
-            {
-                string dialogResult = await ShowOkCancelInput("Change Event Name", text);
-                if (dialogResult == null)
-                {
-                }
-                else if (dialogResult == "")
-                    ChangeEventName("An event title cannot be empty.");
-                else
-                {
-                    DataStorage.DeleteEvent(SelectedEvent, SelectedDeck, StorageDirectory);
-                    SelectedEvent.Title = dialogResult;
-                    SaveEvent(SelectedEvent, SelectedDeck);
-                }
-            }
-        }
-
-        private RelayCommand changeDeckNameCommand;
-        public RelayCommand ChangeDeckNameCommand
-        {
-            get
-            {
-                return changeDeckNameCommand ?? (changeDeckNameCommand = new RelayCommand(ExecuteChangeDeckNameCommand));
-            }
-        }
-        private void ExecuteChangeDeckNameCommand()
-        {
-            ChangeDeckName("What is the new title of the deck?");
-        }
-        private async void ChangeDeckName(string text)
-        {
-            if (SelectedDeck != null)
-            {
-                string dialogResult = await ShowOkCancelInput("Change Deck Name", text);
-                if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
-                    ChangeDeckName(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
-                else if (dialogResult == null)
-                {
-                }
-                else if (dialogResult == "")
-                    ChangeDeckName("A deck title cannot be empty.");
-                else
-                {
-                    DataStorage.RenameDeck(SelectedDeck, dialogResult, StorageDirectory);
-                    SelectedDeck.Title = dialogResult;
-                }
-            }
-        }
-
-        private RelayCommand eventTextChangedCommand;
-        public RelayCommand EventTextChangedCommand
-        {
-            get
-            {
-                return eventTextChangedCommand ?? (eventTextChangedCommand = new RelayCommand(ExecuteTextChangedCommand));
-            }
-        }
-        private void ExecuteTextChangedCommand()
-        {
-            
-        }
-
-        private RelayCommand addEventCommand;
-        public RelayCommand AddEventCommand
-        {
-            get
-            {
-                return addEventCommand ?? (addEventCommand = new RelayCommand(ExecuteAddEventCommand));
-            }
-        }
-        private void ExecuteAddEventCommand()
-        {
-            AddNewEvent("What is the title of the new event? You can always change it later.");
-        }
-        private async void AddNewEvent(string text)
-        {
-            if (SelectedDeck != null)
-            {
-                string dialogResult = await ShowOkCancelInput("Create New Event", text);
-                if (dialogResult == null)
-                {
-                }
-                else if (dialogResult == "")
-                {
-                    AddNewEvent("An event title cannot be empty.");
-                }
-                else
-                {
-                    Event tempEvent = new Event(dialogResult);
-                    AddEventToDeck(tempEvent, SelectedDeck);
-                    SelectedEvent = tempEvent;
-                }
-            }
-        }
-        private void AddEventToDeck(Event ev, Deck deck)
-        {
-            deck.Events.Add(ev);
-            SaveEvent(ev, deck);
-        }
-
         private RelayCommand addDeckCommand;
         public RelayCommand AddDeckCommand
         {
@@ -488,6 +366,104 @@ namespace Eventful.ViewModel
             }
         }
 
+        private bool isAddEventButtonEnabled = false;
+        public bool IsAddEventButtonEnabled
+        {
+            get
+            {
+                return isAddEventButtonEnabled;
+            }
+            set
+            {
+                Set(() => IsAddEventButtonEnabled, ref isAddEventButtonEnabled, value);
+            }
+        }
+        private RelayCommand addEventCommand;
+        public RelayCommand AddEventCommand
+        {
+            get
+            {
+                return addEventCommand ?? (addEventCommand = new RelayCommand(ExecuteAddEventCommand));
+            }
+        }
+        private void ExecuteAddEventCommand()
+        {
+            AddNewEvent("What is the title of the new event? You can always change it later.");
+        }
+        private async void AddNewEvent(string text)
+        {
+            if (SelectedDeck != null)
+            {
+                string dialogResult = await ShowOkCancelInput("Create New Event", text);
+                if (dialogResult == null)
+                {
+                }
+                else if (dialogResult == "")
+                {
+                    AddNewEvent("An event title cannot be empty.");
+                }
+                else
+                {
+                    Event tempEvent = new Event(dialogResult);
+                    AddEventToDeck(tempEvent, SelectedDeck);
+                    SelectedEvent = tempEvent;
+                }
+            }
+        }
+        private void AddEventToDeck(Event ev, Deck deck)
+        {
+            deck.Events.Add(ev);
+            SaveEvent(ev, deck);
+        }
+
+        private bool isRemoveDeckButtonEnabled = false;
+        public bool IsRemoveDeckButtonEnabled
+        {
+            get
+            {
+                return isRemoveDeckButtonEnabled;
+            }
+            set
+            {
+                Set(() => IsRemoveDeckButtonEnabled, ref isRemoveDeckButtonEnabled, value);
+            }
+        }
+        private RelayCommand removeDeckCommand;
+        public RelayCommand RemoveDeckCommand
+        {
+            get
+            {
+                return removeDeckCommand ?? (removeDeckCommand = new RelayCommand(ExecuteRemoveDeckCommand));
+            }
+        }
+        private async void ExecuteRemoveDeckCommand()
+        {
+            if (SelectedDeck == null) return;
+            bool dialogResult = await ShowOkCancelMessage("Confirm Deck Deletion", String.Concat("Do you want to delete the deck \"", SelectedDeck.Title, "\"?"));
+            if (dialogResult)
+                RemoveDeck(SelectedDeck);
+        }
+        private void RemoveDeck(Deck deck)
+        {
+            if (deck != null)
+            {
+                DataStorage.DeleteDeck(deck, StorageDirectory);
+                Decks.Remove(deck);
+            }
+        }
+
+        private bool isRemoveEventButtonEnabled = false;
+        public bool IsRemoveEventButtonEnabled
+        {
+            get
+            {
+                return isRemoveEventButtonEnabled;
+            }
+            set
+            {
+                Set(() => IsRemoveEventButtonEnabled, ref isRemoveEventButtonEnabled, value);
+            }
+        }
         private RelayCommand removeEventCommand;
         public RelayCommand RemoveEventCommand
         {
@@ -511,28 +487,93 @@ namespace Eventful.ViewModel
             }
         }
 
-        private RelayCommand removeDeckCommand;
-        public RelayCommand RemoveDeckCommand
+        private RelayCommand showSettingsCommand;
+        public RelayCommand ShowSettingsCommand
         {
             get
             {
-                return removeDeckCommand ?? (removeDeckCommand = new RelayCommand(ExecuteRemoveDeckCommand));
+                return showSettingsCommand ?? (showSettingsCommand = new RelayCommand(ExecuteShowSettingsCommand));
             }
         }
-        private async void ExecuteRemoveDeckCommand()
+        private void ExecuteShowSettingsCommand()
         {
-            if (SelectedDeck == null) return;
-            bool dialogResult = await ShowOkCancelMessage("Confirm Deck Deletion", String.Concat("Do you want to delete the deck \"", SelectedDeck.Title, "\"?"));
-            if (dialogResult)
-                RemoveDeck(SelectedDeck);
+            IsSettingsFlyoutVisible = !IsSettingsFlyoutVisible;
         }
-        private void RemoveDeck(Deck deck)
+
+        private RelayCommand changeDeckNameCommand;
+        public RelayCommand ChangeDeckNameCommand
         {
-            if (deck != null)
+            get
             {
-                DataStorage.DeleteDeck(deck, StorageDirectory);
-                Decks.Remove(deck);
+                return changeDeckNameCommand ?? (changeDeckNameCommand = new RelayCommand(ExecuteChangeDeckNameCommand));
             }
+        }
+        private void ExecuteChangeDeckNameCommand()
+        {
+            ChangeDeckName("What is the new title of the deck?");
+        }
+        private async void ChangeDeckName(string text)
+        {
+            if (SelectedDeck != null)
+            {
+                string dialogResult = await ShowOkCancelInput("Change Deck Name", text);
+                if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
+                    ChangeDeckName(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
+                else if (dialogResult == null)
+                {
+                }
+                else if (dialogResult == "")
+                    ChangeDeckName("A deck title cannot be empty.");
+                else
+                {
+                    DataStorage.RenameDeck(SelectedDeck, dialogResult, StorageDirectory);
+                    SelectedDeck.Title = dialogResult;
+                }
+            }
+        }
+
+        private RelayCommand changeEventNameCommand;
+        public RelayCommand ChangeEventNameCommand
+        {
+            get
+            {
+                return changeEventNameCommand ?? (changeEventNameCommand = new RelayCommand(ExecuteChangeEventNameCommand));
+            }
+        }
+        private void ExecuteChangeEventNameCommand()
+        {
+            ChangeEventName("What is the new title of the event?");
+        }
+        private async void ChangeEventName(string text)
+        {
+            if (SelectedEvent != null && SelectedDeck != null)
+            {
+                string dialogResult = await ShowOkCancelInput("Change Event Name", text);
+                if (dialogResult == null)
+                {
+                }
+                else if (dialogResult == "")
+                    ChangeEventName("An event title cannot be empty.");
+                else
+                {
+                    DataStorage.DeleteEvent(SelectedEvent, SelectedDeck, StorageDirectory);
+                    SelectedEvent.Title = dialogResult;
+                    SaveEvent(SelectedEvent, SelectedDeck);
+                }
+            }
+        }
+
+        private RelayCommand eventTextChangedCommand;
+        public RelayCommand EventTextChangedCommand
+        {
+            get
+            {
+                return eventTextChangedCommand ?? (eventTextChangedCommand = new RelayCommand(ExecuteTextChangedCommand));
+            }
+        }
+        private void ExecuteTextChangedCommand()
+        {
+            
         }
 
         private RelayCommand saveEventCommand;
@@ -558,55 +599,6 @@ namespace Eventful.ViewModel
                     ev.IsChanged = false;
                 else
                     await ShowOkMessage("Couldn't Save Event", "The event was not saved successfully. Try again later and ensure the save folder is accessible.");
-            }
-        }
-
-        private RelayCommand changeAuthorCommand;
-        public RelayCommand ChangeAuthorCommand
-        {
-            get
-            {
-                return changeAuthorCommand ?? (changeAuthorCommand = new RelayCommand(ExecuteChangeAuthorCommand));
-            }
-        }
-        private void ExecuteChangeAuthorCommand()
-        {
-            ChangeAuthor("What is your name?");
-        }
-        private async void ChangeAuthor(string text)
-        {
-            string dialogResult = await ShowOkCancelInput("Change Author Name", text);
-            if (dialogResult == null)
-            {
-            }
-            else if (dialogResult == "")
-            {
-                ChangeAuthor("Your name cannot be empty.");
-            }
-            else
-            {
-                Author = dialogResult;
-            }
-        }
-
-        private RelayCommand browseStorageDirectoryCommand;
-        public RelayCommand BrowseStorageDirectoryCommand
-        {
-            get
-            {
-                return browseStorageDirectoryCommand ?? (browseStorageDirectoryCommand = new RelayCommand(ExecuteBrowseStorageDirectoryCommand));
-            }
-        }
-        private void ExecuteBrowseStorageDirectoryCommand()
-        {
-            WPFFolderBrowserDialog dialog = new WPFFolderBrowserDialog();
-            dialog.Title = "Please select a folder";
-            bool? result = dialog.ShowDialog();
-            if (result == true)
-            {
-                string[] pathTokens = dialog.FileName.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-                StorageDirectory = (pathTokens[pathTokens.Length - 1] == "Eventful") ? String.Concat(dialog.FileName, @"\") : String.Concat(dialog.FileName, @"\Eventful\");
-                LoadDecksFromDisk();
             }
         }
 

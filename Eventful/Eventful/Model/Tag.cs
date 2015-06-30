@@ -9,6 +9,11 @@ namespace Eventful.Model
 {
     public class Tag : ViewModelBase
     {
+        public Tag(string title)
+        {
+            Title = title;
+        }
+
         private HashSet<Event> events;
         public HashSet<Event> Events
         {
@@ -19,6 +24,19 @@ namespace Eventful.Model
             set
             {
                 Set(() => Events, ref events, value);
+            }
+        }
+
+        private string title;
+        public string Title
+        {
+            get
+            {
+                return title;
+            }
+            set
+            {
+                Set(() => Title, ref title, value);
             }
         }
 
