@@ -1,7 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,16 +12,16 @@ namespace Eventful.Model
         {
         }
 
-        private ObservableCollection<Event> events;
-        public ObservableCollection<Event> Events
+        private Event resultingEvent;
+        public Event ResultingEvent
         {
             get
             {
-                return events;
+                return resultingEvent;
             }
             set
             {
-                Set(() => Events, ref events, value);
+                Set(() => ResultingEvent, ref resultingEvent, value);
             }
         }
 
