@@ -64,8 +64,8 @@
                     <ColumnDefinition Width="30" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Tags" Grid.Column="0" FontSize="20" />
-                <Button Content="+" IsEnabled="{Binding IsAddTagButtonEnabled}" Command="{Binding AddTagCommand}" Grid.Column="1" />
-                <Button Content="-" IsEnabled="{Binding IsRemoveTagButtonEnabled}" Command="{Binding RemoveTagCommand}" Grid.Column="2" />
+                <!--<Button Content="+" IsEnabled="{Binding IsAddTagButtonEnabled}" Command="{Binding AddTagCommand}" Grid.Column="1" />-->
+                <!--<Button Content="-" IsEnabled="{Binding IsRemoveTagButtonEnabled}" Command="{Binding RemoveTagCommand}" Grid.Column="2" />-->
             </Grid>
             <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
             <DataGrid SelectionMode="Extended"  Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding TagsViewSource.View}" VerticalScrollBarVisibility="Hidden" SelectedItem="{Binding SelectedTag, Mode=TwoWay}" Grid.Row="1">

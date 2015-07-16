@@ -62,6 +62,17 @@ namespace Eventful.ViewModel
         private void InitialiseInRealMode()
         {
             LoadDecksFromDisk();
+            BuildTagsList();
+        }
+
+        private void BuildTagsList()
+        {
+            foreach (Deck deck in Decks)
+                foreach (Event ev in deck.Events)
+                    foreach (Option option in ev.Options)
+                        foreach (Result result in option.Results)
+                            if (result.Resolve() is Tag)
+                                MessengerInstance.Send<Tag>(new Tag("lol"));
         }
 
         private bool DeckTitleContains(object obj)

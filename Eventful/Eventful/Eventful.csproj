@@ -149,6 +149,7 @@
     <Compile Include="Model\DataStorage.cs" />
     <Compile Include="Model\Deck.cs" />
     <Compile Include="Model\Event.cs" />
+    <Compile Include="Model\Result.cs" />
     <Compile Include="Model\Tag.cs" />
     <Compile Include="UnitTests\DataStorageTests.cs" />
     <Compile Include="ViewModel\EditEventViewModel.cs" />
