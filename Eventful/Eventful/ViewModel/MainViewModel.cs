@@ -71,7 +71,7 @@ namespace Eventful.ViewModel
                 foreach (Event ev in deck.Events)
                     foreach (Option option in ev.Options)
                         foreach (Result result in option.Results)
-                            if (result.Resolve() is Tag)
+                            if (result.Parameter is Tag)
                                 MessengerInstance.Send<Tag>(new Tag("lol"));
         }
 

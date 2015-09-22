@@ -13,7 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
 using GalaSoft.MvvmLight.Messaging;
 using Eventful.ViewModel;
 using System.Xml;
@@ -23,6 +22,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Folding;
 
 namespace Eventful.View
 {
@@ -37,13 +37,27 @@ namespace Eventful.View
             Messenger.Default.Register<EditEventViewModel>(this, vm => OpenNewEventWindow(vm));
             Messenger.Default.Register<TagLibraryViewModel>(this, vm => OpenTagLibraryWindow(vm));
 
-            SetupTextEditorSyntaxHighlight();
+            //SetupTextEditorSyntaxHighlight();
+            SetupTextEditorForFolding();
             SetupTextEditorAutocomplete();
+        }
+
+        FoldingManager textEditorFoldingManager;
+        XmlFoldingStrategy textEditorFoldingStrategy;
+        private void SetupTextEditorForFolding()
+        {
+            textEditorFoldingManager = FoldingManager.Install(mvvmTextEditor.TextArea);
+            textEditorFoldingStrategy = new XmlFoldingStrategy();
+        }
+
+        private void UpdateTextEditorFoldings()
+        {
+            textEditorFoldingStrategy.UpdateFoldings(textEditorFoldingManager, mvvmTextEditor.Document);
         }
 
         private void SetupTextEditorSyntaxHighlight()
         {
-            byte[] syntax = Eventful.Properties.Resources.ESL;
+            byte[] syntax = Eventful.Properties.Resources.EML;
             Stream stream = new MemoryStream(syntax);
             using (XmlTextReader reader = new XmlTextReader(stream))
             {
@@ -62,18 +76,37 @@ namespace Eventful.View
         {
             if (e.Text == ":")
             {
-                // Open code completion after the user has pressed dot:
-                completionWindow = new CompletionWindow(mvvmTextEditor.TextArea);
-                IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                data.Add(new MyCompletionData("Item1"));
-                data.Add(new MyCompletionData("Item2"));
-                data.Add(new MyCompletionData("Item3"));
-                completionWindow.Show();
-                completionWindow.Closed += delegate
+                var kek = TextUtilities.GetNextCaretPosition(mvvmTextEditor.Document, mvvmTextEditor.CaretOffset, LogicalDirection.Backward, CaretPositioningMode.WordStart);
+                var lol = mvvmTextEditor.Document.GetText(kek, kek + mvvmTextEditor.CaretOffset);
+                if (lol == "tag:")
                 {
-                    completionWindow = null;
-                };
+                    // Open code completion after the user has pressed dot:
+                    completionWindow = new CompletionWindow(mvvmTextEditor.TextArea);
+                    IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+                    data.Add(new MyCompletionData("Kingslayer"));
+                    data.Add(new MyCompletionData("Nautical-looking"));                   
+                    completionWindow.Show();
+                    completionWindow.Closed += delegate
+                    {
+                        completionWindow = null;
+                    };
+                }
+                else
+                {
+                    // Open code completion after the user has pressed dot:
+                    completionWindow = new CompletionWindow(mvvmTextEditor.TextArea);
+                    IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+                    data.Add(new MyCompletionData("Item1"));
+                    data.Add(new MyCompletionData("Item2"));
+                    data.Add(new MyCompletionData("Item3"));
+                    completionWindow.Show();
+                    completionWindow.Closed += delegate
+                    {
+                        completionWindow = null;
+                    };
+                }
             }
+            UpdateTextEditorFoldings();
         }
 
         private void mvvmTextEditorTextAreaTextEntering(object sender, TextCompositionEventArgs e)
@@ -87,6 +120,7 @@ namespace Eventful.View
                     completionWindow.CompletionList.RequestInsertion(e);
                 }
             }
+            UpdateTextEditorFoldings();
         }
 
         private void OpenNewEventWindow(EditEventViewModel vm)
