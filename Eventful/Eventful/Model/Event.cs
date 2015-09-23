@@ -52,7 +52,7 @@ namespace Eventful.Model
             }
         }
 
-        private string text = "";
+        private string text = "<EventBody>\n\n</EventBody>";
         public string Text
         {
             get

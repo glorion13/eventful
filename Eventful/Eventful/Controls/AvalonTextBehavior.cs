@@ -48,7 +48,9 @@ namespace Eventful.Controls
             }
         }
 
-        private static void PropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        private static void PropertyChangedCallback(
+                DependencyObject dependencyObject,
+                DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
             var behavior = dependencyObject as AvalonEditBehavior;
             if (behavior.AssociatedObject != null)
@@ -56,9 +58,12 @@ namespace Eventful.Controls
                 var editor = behavior.AssociatedObject as TextEditor;
                 if (editor.Document != null)
                 {
+                    var caretOffset = editor.CaretOffset;
                     editor.Document.Text = dependencyPropertyChangedEventArgs.NewValue == null ? "" : dependencyPropertyChangedEventArgs.NewValue.ToString();
+                    editor.CaretOffset = caretOffset;
                 }
             }
         }
+
     }
 }

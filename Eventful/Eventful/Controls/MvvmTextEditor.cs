@@ -1,64 +1,176 @@
 ﻿using ICSharpCode.AvalonEdit;
-using System;
+using ICSharpCode.AvalonEdit.Folding;
+using System.Windows.Input;
+using System.IO;
+using System.Xml;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Document;
+using System;
 using System.Windows;
+using System.ComponentModel;
 
 namespace Eventful.Controls
 {
-    public class MvvmTextEditor : TextEditor, INotifyPropertyChanged
+    public class MvvmTextEditor : TextEditor
     {
-        public static DependencyProperty CaretOffsetProperty =
-            DependencyProperty.Register("CaretOffset", typeof(int), typeof(MvvmTextEditor),
-            // binding changed callback: set value of underlying property
-            new PropertyMetadata((obj, args) =>
-            {
-                MvvmTextEditor target = (MvvmTextEditor)obj;
-                target.CaretOffset = (int)args.NewValue;
-            })
-        );
+        FoldingManager textEditorFoldingManager;
+        XmlFoldingStrategy textEditorFoldingStrategy;
+        CompletionWindow completionWindow;
 
-        public static DependencyProperty TextProperty =
-            DependencyProperty.Register("Text", typeof(string), typeof(MvvmTextEditor),
-            // binding changed callback: set value of underlying property
-            new PropertyMetadata((obj, args) =>
-            {
-                MvvmTextEditor target = (MvvmTextEditor) obj;
-                target.Document.Text = (string) args.NewValue;
-            })
-        );
-
-        public new int CaretOffset
+        public MvvmTextEditor()
         {
-            get { return base.CaretOffset; }
-            set { base.CaretOffset = value; }
+            SetupTextEditorForFolding();
+            SetupTextEditorAutocomplete();
+            //SetupTextEditorSyntaxHighlight();
         }
 
-        public new string Text
+        private void SetupTextEditorForFolding()
         {
-            get { return base.Document.Text; }
-            set { base.Document.Text = value; }
+            textEditorFoldingManager = FoldingManager.Install(base.TextArea);
+            textEditorFoldingStrategy = new XmlFoldingStrategy();
+        }
+        private void SetupTextEditorSyntaxHighlight()
+        {
+            byte[] syntax = Eventful.Properties.Resources.ESL;
+            Stream stream = new MemoryStream(syntax);
+            using (XmlTextReader reader = new XmlTextReader(stream))
+            {
+                base.SyntaxHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
+            }
+        }
+        private void SetupTextEditorAutocomplete()
+        {
+            base.TextArea.TextEntering += mvvmTextEditorTextAreaTextEntering;
+            base.TextArea.TextEntered += mvvmTextEditorTextAreaTextEntered;
+        }
+        public void UpdateTextEditorFoldings()
+        {
+            textEditorFoldingStrategy.UpdateFoldings(textEditorFoldingManager, base.Document);
         }
 
-        public int Length { get { return base.Document.Text.Length; } }
+        private void mvvmTextEditorTextAreaTextEntered(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text == "<")
+            {
+                completionWindow = new CompletionWindow(base.TextArea);
+                IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+                data.Add(new MyCompletionData("var:"));
+                data.Add(new MyCompletionData("tag:"));
+                completionWindow.Show();
+                completionWindow.Closed += delegate
+                {
+                    completionWindow = null;
+                };
+            }
+            if (e.Text == ":")
+            {
+                if (base.Document.TextLength >= 4)
+                {
+                    string threeCharacterOffset = base.Document.GetText(base.CaretOffset - 4, 3);
+                    if (threeCharacterOffset == "tag")
+                    {
+                        completionWindow = new CompletionWindow(base.TextArea);
+                        IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+                        data.Add(new MyCompletionData("Kingslayer"));
+                        data.Add(new MyCompletionData("Nautical-looking"));
+                        completionWindow.Show();
+                        completionWindow.Closed += delegate
+                        {
+                            completionWindow = null;
+                        };
+                    }
+                    else if (threeCharacterOffset == "var")
+                    {
+                        completionWindow = new CompletionWindow(base.TextArea);
+                        IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+                        data.Add(new MyCompletionData("player_name"));
+                        data.Add(new MyCompletionData("player_background"));
+                        completionWindow.Show();
+                        completionWindow.Closed += delegate
+                        {
+                            completionWindow = null;
+                        };
+                    }
+                }
+            }
+            UpdateTextEditorFoldings();
+        }
+
+        private void mvvmTextEditorTextAreaTextEntering(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text.Length > 0 && completionWindow != null)
+            {
+                if (!char.IsLetterOrDigit(e.Text[0]))
+                {
+                    // Whenever a non-letter is typed while the completion window is open,
+                    // insert the currently selected element.
+                    completionWindow.CompletionList.RequestInsertion(e);
+                }
+            }
+        }
+
+        public static readonly DependencyProperty DocumentTextProperty = DependencyProperty.Register(
+            "DocumentText", typeof(string), typeof(MvvmTextEditor), new PropertyMetadata("", OnDocumentTextChanged));
+
+        private static void OnDocumentTextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (MvvmTextEditor)sender;
+            if (string.Compare(control.DocumentText, e.NewValue.ToString()) != 0)
+            {
+                //avoid undo stack overflow
+                control.DocumentText = e.NewValue.ToString();
+            }
+        }
+
+        public string DocumentText
+        {
+            get { return Text; }
+            set { Text = value; }
+        }
 
         protected override void OnTextChanged(EventArgs e)
         {
-            RaisePropertyChanged("Length");
-            RaisePropertyChanged("Text");
-            RaisePropertyChanged("CaretOffset");
+            SetCurrentValue(DocumentTextProperty, Text);
             base.OnTextChanged(e);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void RaisePropertyChanged(string property)
+        /// Implements AvalonEdit ICompletionData interface to provide the entries in the
+        /// completion drop down.
+        public class MyCompletionData : ICompletionData
         {
-            if (PropertyChanged != null)
+            public MyCompletionData(string text)
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
+                this.Text = text;
+            }
+
+            public System.Windows.Media.ImageSource Image
+            {
+                get { return null; }
+            }
+
+            public double Priority { get { return 0; } }
+
+            public string Text { get; private set; }
+
+            // Use this property if you want to show a fancy UIElement in the list.
+            public object Content
+            {
+                get { return this.Text; }
+            }
+
+            public object Description
+            {
+                get { return "Description for " + this.Text; }
+            }
+
+            public void Complete(TextArea textArea, ISegment completionSegment,
+                EventArgs insertionRequestEventArgs)
+            {
+                textArea.Document.Replace(completionSegment, this.Text);
             }
         }
     }

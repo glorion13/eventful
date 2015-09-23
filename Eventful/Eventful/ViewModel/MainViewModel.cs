@@ -14,6 +14,8 @@ using WPFFolderBrowser;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Collections.Generic;
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace Eventful.ViewModel
 {
@@ -62,10 +64,11 @@ namespace Eventful.ViewModel
         }
         private void InitialiseInRealMode()
         {
-            LoadDecksFromDisk();
+            Task.Factory.StartNew(() => LoadDecksFromDisk(TestDecks));
             BuildTagsList();
 
             MessengerInstance.Register<ObservableCollection<string>>(this, vars => Variables = new ObservableCollection<string>(vars));
+            Variables.Add("player_name");
         }
 
         private void BuildTagsList()
@@ -243,12 +246,15 @@ namespace Eventful.ViewModel
             {
                 string[] pathTokens = dialog.FileName.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
                 StorageDirectory = (pathTokens[pathTokens.Length - 1] == "Eventful") ? String.Concat(dialog.FileName, @"\") : String.Concat(dialog.FileName, @"\Eventful\");
-                LoadDecksFromDisk();
+                LoadDecksFromDisk(TestDecks);
             }
         }
-        private void LoadDecksFromDisk()
+
+        List<Deck> TestDecks;
+        private async void LoadDecksFromDisk(List<Deck> decks)
         {
-            Decks.Clear();
+            decks = new List<Deck>();
+            //decks.Clear();
             foreach (Deck deck in DataStorage.LoadAllDecksFromDisk())
                 Decks.Add(deck);
         }
@@ -321,6 +327,18 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => IsSettingsFlyoutVisible, ref isSettingsFlyoutVisible, value);
+            }
+        }
+        private bool isVariablesFlyoutVisible = false;
+        public bool IsVariablesFlyoutVisible
+        {
+            get
+            {
+                return isSettingsFlyoutVisible;
+            }
+            set
+            {
+                Set(() => IsVariablesFlyoutVisible, ref isVariablesFlyoutVisible, value);
             }
         }
 
@@ -642,14 +660,14 @@ namespace Eventful.ViewModel
             }
             else
             {
-                LoadDecksFromDisk();
+                LoadDecksFromDisk(TestDecks);
             }
         }
         private void SyncAndKeepFocusOnSelectedEvent()
         {
             string deckTitle = SelectedDeck.Title;
             string eventTitle = SelectedEvent.Title;
-            LoadDecksFromDisk();
+            LoadDecksFromDisk(TestDecks);
             SelectedDeck = Decks.FirstOrDefault(d => d.Title == deckTitle);
             SelectedEvent = (SelectedDeck == null) ? null : SelectedDeck.Events.FirstOrDefault(e => e.Title == eventTitle);
         }
@@ -762,11 +780,7 @@ namespace Eventful.ViewModel
         }
         private void ExecuteOpenVariableLibraryCommand()
         {
-            VariableLibraryViewModel vm = new VariableLibraryViewModel();
-            Variables = new ObservableCollection<string>();
-            Variables.Add("fasoli");
-            MessengerInstance.Send(Variables);
-            MessengerInstance.Send(vm);
+            IsVariablesFlyoutVisible = true;
         }
 
         private ObservableCollection<string> variables;

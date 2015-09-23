@@ -159,39 +159,10 @@ namespace Eventful.ViewModel
         {
             AddNewVariable("What is the name of the new variable? You can always change it later.");
         }
-        private async void AddNewVariable(string text)
+        private void AddNewVariable(string text)
         {
-            /*if (Decks != null)
-            {
-                string dialogResult = await ShowOkCancelInput("Create New Deck", text);
-                if (dialogResult == null)
-                {
-                }
-                else if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
-                    AddNewVariable(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
-                else if (dialogResult == "")
-                    AddNewVariable("A deck title cannot be empty.");
-                else
-                {
-                    Deck tempDeck = new Deck(dialogResult);
-                    CreateDeck(tempDeck);
-                }
-            }*/
+
         }
-        /*private async void CreateDeck(Deck deck)
-        {
-            bool success = DataStorage.SaveDeckToDisk(deck, StorageDirectory);
-            if (success)
-            {
-                Decks.Add(deck);
-                SelectedDeck = deck;
-            }
-            else
-            {
-                await ShowOkMessage("Couldn't Save Deck", "The deck was not saved successfully. Try again later and ensure the save folder is accessible.");
-            }
-            }
-            */
 
     }
 
