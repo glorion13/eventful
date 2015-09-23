@@ -1,0 +1,75 @@
+﻿<MetroControls:MetroWindow
+    x:Class="Eventful.View.VariableLibraryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Eventful.View"
+        mc:Ignorable="d"
+        DataContext="{Binding Source={StaticResource Locator}, Path=VariablesLibrary}"
+        xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:MvvmControls="http://www.galasoft.ch/mvvmlight"
+        xmlns:Interactivity="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:Converters="clr-namespace:Eventful.Converters"
+        xmlns:Properties="clr-namespace:Eventful.Properties"
+        xmlns:ExtendedToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+        xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+        Title="Variable Library" Height="300" Width="300"
+        Icon="../Images/Pencil.ico"
+        ShowTitleBar="True"  
+        SaveWindowPosition="True"
+        ResizeMode="CanResizeWithGrip"
+        EnableDWMDropShadow="True">
+
+    <MetroControls:MetroWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </MetroControls:MetroWindow.Resources>
+
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="30" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Variables" Grid.Column="0" FontSize="20" />
+            <Button Content="+" IsEnabled="{Binding IsAddVariableButtonEnabled}" Command="{Binding AddVariableCommand}" Grid.Column="1" />
+            <Button Content="-" IsEnabled="{Binding IsRemoveVariableButtonEnabled}" Command="{Binding RemoveVariableCommand}" Grid.Column="2" />
+        </Grid>
+        <TextBox Text="{Binding VariableFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
+        <DataGrid SelectionMode="Extended" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding VariableViewSource.View}" VerticalScrollBarVisibility="Hidden" SelectedItem="{Binding SelectedVariable, Mode=TwoWay}" Grid.Row="1">
+            <DataGrid.InputBindings>
+                <KeyBinding Command="{Binding Path=RemoveVariableCommand}" 
+                                Key="Delete"/>
+            </DataGrid.InputBindings>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Delete variable" Command="{Binding RemoveVariableCommand}" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <Interactivity:Interaction.Triggers>
+                <Interactivity:EventTrigger EventName="BeginningEdit">
+                    <MvvmControls:EventToCommand Command="{Binding ChangeVariableNameCommand}" />
+                </Interactivity:EventTrigger>
+            </Interactivity:Interaction.Triggers>
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+
+</MetroControls:MetroWindow>

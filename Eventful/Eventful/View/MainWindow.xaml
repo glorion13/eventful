@@ -66,6 +66,7 @@
         <MetroControls:WindowCommands>
             <Button Content="sync" Command="{Binding SyncDataCommand}" />
             <Button Content="tags" Command="{Binding OpenTagLibraryCommand}" />
+            <Button Content="variables" Command="{Binding OpenVariableLibraryCommand}" />
             <Button Content="settings" Command="{Binding ShowSettingsCommand}" />
         </MetroControls:WindowCommands>
     </MetroControls:MetroWindow.RightWindowCommands>
@@ -243,11 +244,13 @@
                 </StackPanel>
             </Grid>
 
-            <avalonEdit:TextEditor Name="mvvmTextEditor" Grid.Row="1" SyntaxHighlighting="ESL">
+            <!--<avalonEdit:TextEditor Name="mvvmTextEditor" Grid.Row="1" SyntaxHighlighting="ESL">
                 <Interactivity:Interaction.Behaviors>
                     <LocalControls:AvalonEditBehavior TextBindBehavior="{Binding SelectedEvent.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </Interactivity:Interaction.Behaviors>
-            </avalonEdit:TextEditor>
+            </avalonEdit:TextEditor>-->
+            <LocalControls:MvvmTextEditor x:Name="mvvmTextEditor" Text="{Binding SelectedEvent.Text}" Grid.Row="1" FontFamily="Consolas" FontSize="10pt"  SyntaxHighlighting="XML">
+            </LocalControls:MvvmTextEditor>
             <ListBox ItemsSource="{Binding SelectedEvent.Options}" Grid.Row="2" />
             
             <Button Content="Save" IsEnabled="{Binding SelectedEvent.IsChanged}" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />

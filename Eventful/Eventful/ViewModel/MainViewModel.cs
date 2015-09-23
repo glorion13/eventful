@@ -34,6 +34,7 @@ namespace Eventful.ViewModel
 
         private void InitialiseInAllModes()
         {
+            Variables = new ObservableCollection<string>();
             Decks = new ObservableCollection<Deck>();
             DeckFilter = "";
             DecksViewSource = new CollectionViewSource();
@@ -50,7 +51,7 @@ namespace Eventful.ViewModel
             mainDeck.Events.Add(new Event("Finding Timmy: A Bewildering Adventure"));
             Event ev = new Event("Cinding Timmy");
             ev.Text = "Hello world.";
-            ev.Options.Add(new Option());
+            //ev.Options.Add(new Option());
             mainDeck.Events.Add(ev);
             mainDeck.Events.Add(new Event("Ainding Timmy"));
             mainDeck.Events.Add(new Event("Binding Timmy"));
@@ -63,16 +64,18 @@ namespace Eventful.ViewModel
         {
             LoadDecksFromDisk();
             BuildTagsList();
+
+            MessengerInstance.Register<ObservableCollection<string>>(this, vars => Variables = new ObservableCollection<string>(vars));
         }
 
         private void BuildTagsList()
         {
-            foreach (Deck deck in Decks)
+            /*foreach (Deck deck in Decks)
                 foreach (Event ev in deck.Events)
                     foreach (Option option in ev.Options)
                         foreach (Result result in option.Results)
-                            if (result.Resolve() is Tag)
-                                MessengerInstance.Send<Tag>(new Tag("lol"));
+                            if (result.Parameter is Tag)
+                                MessengerInstance.Send<Tag>(new Tag("lol"));*/
         }
 
         private bool DeckTitleContains(object obj)
@@ -179,7 +182,7 @@ namespace Eventful.ViewModel
         }
         private async void ChangeAuthor(string text)
         {
-            string dialogResult = await ShowOkCancelInput("Change Author Name", text);
+            string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Change Author Name", text);
             if (dialogResult == null)
             {
             }
@@ -218,6 +221,7 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => StorageDirectory, ref storageDirectory, value);
+                DataStorage.StorageDirectory = StorageDirectory;
                 Properties.Settings.Default["StorageDirectory"] = StorageDirectory;
                 Properties.Settings.Default.Save();
             }
@@ -245,7 +249,7 @@ namespace Eventful.ViewModel
         private void LoadDecksFromDisk()
         {
             Decks.Clear();
-            foreach (Deck deck in DataStorage.LoadAllDecksFromDisk(StorageDirectory))
+            foreach (Deck deck in DataStorage.LoadAllDecksFromDisk())
                 Decks.Add(deck);
         }
 
@@ -348,7 +352,7 @@ namespace Eventful.ViewModel
         {
             if (Decks != null)
             {
-                string dialogResult = await ShowOkCancelInput("Create New Deck", text);
+                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Deck", text);
                 if (dialogResult == null)
                 {
                 }
@@ -365,7 +369,7 @@ namespace Eventful.ViewModel
         }
         private async void CreateDeck(Deck deck)
         {
-            bool success = DataStorage.SaveDeckToDisk(deck, StorageDirectory);
+            bool success = DataStorage.SaveDeckToDisk(deck);
             if (success)
             {
                 Decks.Add(deck);
@@ -373,7 +377,7 @@ namespace Eventful.ViewModel
             }
             else
             {
-                await ShowOkMessage("Couldn't Save Deck", "The deck was not saved successfully. Try again later and ensure the save folder is accessible.");
+                await MessageWindowsViewModel.ShowOkMessage("Couldn't Save Deck", "The deck was not saved successfully. Try again later and ensure the save folder is accessible.");
             }
         }
 
@@ -405,7 +409,7 @@ namespace Eventful.ViewModel
         {
             if (SelectedDeck != null)
             {
-                string dialogResult = await ShowOkCancelInput("Create New Event", text);
+                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Event", text);
                 if (dialogResult == null)
                 {
                 }
@@ -450,7 +454,7 @@ namespace Eventful.ViewModel
         private async void ExecuteRemoveDeckCommand()
         {
             if (SelectedDeck == null) return;
-            bool dialogResult = await ShowOkCancelMessage("Confirm Deck Deletion", String.Concat("Do you want to delete the deck \"", SelectedDeck.Title, "\"?"));
+            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Deck Deletion", String.Concat("Do you want to delete the deck \"", SelectedDeck.Title, "\"?"));
             if (dialogResult)
                 RemoveDeck(SelectedDeck);
         }
@@ -458,7 +462,7 @@ namespace Eventful.ViewModel
         {
             if (deck != null)
             {
-                DataStorage.DeleteDeck(deck, StorageDirectory);
+                DataStorage.DeleteDeck(deck);
                 Decks.Remove(deck);
             }
         }
@@ -485,7 +489,7 @@ namespace Eventful.ViewModel
         }
         private async void ExecuteRemoveEventCommand()
         {
-            bool dialogResult = await ShowOkCancelMessage("Confirm Event Deletion", String.Concat("Do you want to delete the event \"", SelectedEvent.Title, "\"?"));
+            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Event Deletion", String.Concat("Do you want to delete the event \"", SelectedEvent.Title, "\"?"));
             if (dialogResult)
                 RemoveEventFromDeck(SelectedEvent, SelectedDeck);
         }
@@ -493,7 +497,7 @@ namespace Eventful.ViewModel
         {
             if (ev != null && deck != null)
             {
-                DataStorage.DeleteEvent(ev, deck, StorageDirectory);
+                DataStorage.DeleteEvent(ev, deck);
                 deck.Events.Remove(ev);
             }
         }
@@ -527,7 +531,7 @@ namespace Eventful.ViewModel
         {
             if (SelectedDeck != null)
             {
-                string dialogResult = await ShowOkCancelInput("Change Deck Name", text);
+                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Change Deck Name", text);
                 if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
                     ChangeDeckName(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
                 else if (dialogResult == null)
@@ -537,7 +541,7 @@ namespace Eventful.ViewModel
                     ChangeDeckName("A deck title cannot be empty.");
                 else
                 {
-                    DataStorage.RenameDeck(SelectedDeck, dialogResult, StorageDirectory);
+                    DataStorage.RenameDeck(SelectedDeck, dialogResult);
                     SelectedDeck.Title = dialogResult;
                 }
             }
@@ -559,7 +563,7 @@ namespace Eventful.ViewModel
         {
             if (SelectedEvent != null && SelectedDeck != null)
             {
-                string dialogResult = await ShowOkCancelInput("Change Event Name", text);
+                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Change Event Name", text);
                 if (dialogResult == null)
                 {
                 }
@@ -567,7 +571,7 @@ namespace Eventful.ViewModel
                     ChangeEventName("An event title cannot be empty.");
                 else
                 {
-                    DataStorage.DeleteEvent(SelectedEvent, SelectedDeck, StorageDirectory);
+                    DataStorage.DeleteEvent(SelectedEvent, SelectedDeck);
                     SelectedEvent.Title = dialogResult;
                     SaveEvent(SelectedEvent, SelectedDeck);
                 }
@@ -605,11 +609,11 @@ namespace Eventful.ViewModel
             {
                 ev.Author = Author;
                 ev.Date = DateTime.Now;
-                bool success = DataStorage.SaveEventToDisk(ev, deck, StorageDirectory);
+                bool success = DataStorage.SaveEventToDisk(ev, deck);
                 if (success)
                     ev.IsChanged = false;
                 else
-                    await ShowOkMessage("Couldn't Save Event", "The event was not saved successfully. Try again later and ensure the save folder is accessible.");
+                    await MessageWindowsViewModel.ShowOkMessage("Couldn't Save Event", "The event was not saved successfully. Try again later and ensure the save folder is accessible.");
             }
         }
 
@@ -627,7 +631,7 @@ namespace Eventful.ViewModel
             {
                 if (SelectedEvent.IsChanged)
                 {
-                    bool dialogResult = await ShowOkCancelMessage("Sync Data", "You haven't saved your changes yet. If you sync they will be lost. Are you sure you want to sync?");
+                    bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Sync Data", "You haven't saved your changes yet. If you sync they will be lost. Are you sure you want to sync?");
                     if (dialogResult)
                         SyncAndKeepFocusOnSelectedEvent();
                 }
@@ -717,24 +721,6 @@ namespace Eventful.ViewModel
             RemoveEventFromDeck(ev, oldDeck);
         }
 
-        private async Task ShowOkMessage(string title, string body)
-        {
-            MetroWindow metroWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
-            await metroWindow.ShowMessageAsync(title, body, MessageDialogStyle.Affirmative);
-        }
-        private async Task<bool> ShowOkCancelMessage(string title, string body)
-        {
-            MetroWindow metroWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
-            MessageDialogResult dialogResult = await metroWindow.ShowMessageAsync(title, body, MessageDialogStyle.AffirmativeAndNegative);
-            return dialogResult == MessageDialogResult.Affirmative;
-        }
-        private async Task<string> ShowOkCancelInput(string title, string body)
-        {
-            MetroWindow metroWindow = System.Windows.Application.Current.MainWindow as MetroWindow;
-            string dialogResult = await metroWindow.ShowInputAsync(title, body);
-            return dialogResult;
-        }
-
         private RelayCommand openNewEventWindowCommand;
         public RelayCommand OpenNewEventWindowCommand
         {
@@ -764,6 +750,36 @@ namespace Eventful.ViewModel
         {
             TagLibraryViewModel vm = new TagLibraryViewModel();
             MessengerInstance.Send(vm);
+        }
+
+        private RelayCommand openVariableLibraryCommand;
+        public RelayCommand OpenVariableLibraryCommand
+        {
+            get
+            {
+                return openVariableLibraryCommand ?? (openVariableLibraryCommand = new RelayCommand(ExecuteOpenVariableLibraryCommand));
+            }
+        }
+        private void ExecuteOpenVariableLibraryCommand()
+        {
+            VariableLibraryViewModel vm = new VariableLibraryViewModel();
+            Variables = new ObservableCollection<string>();
+            Variables.Add("fasoli");
+            MessengerInstance.Send(Variables);
+            MessengerInstance.Send(vm);
+        }
+
+        private ObservableCollection<string> variables;
+        public ObservableCollection<string> Variables
+        {
+            get
+            {
+                return variables;
+            }
+            set
+            {
+                Set(() => Variables, ref variables, value);
+            }
         }
 
     }

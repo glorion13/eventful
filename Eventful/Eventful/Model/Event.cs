@@ -105,7 +105,7 @@ namespace Eventful.Model
             }
         }
 
-        private ObservableCollection<Option> options;
+        /*private ObservableCollection<Option> options;
         public ObservableCollection<Option> Options
         {
             get
@@ -116,6 +116,6 @@ namespace Eventful.Model
             {
                 Set(() => Options, ref options, value);
             }
-        }
+        }*/
     }
 }

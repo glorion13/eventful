@@ -45,6 +45,7 @@ namespace Eventful.ViewModel
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<EditEventViewModel>();
             SimpleIoc.Default.Register<TagLibraryViewModel>();
+            SimpleIoc.Default.Register<VariableLibraryViewModel>();
         }
 
         public MainViewModel Main
@@ -68,7 +69,14 @@ namespace Eventful.ViewModel
                 return ServiceLocator.Current.GetInstance<TagLibraryViewModel>();
             }
         }
-        
+        public VariableLibraryViewModel VariableLibrary
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<VariableLibraryViewModel>();
+            }
+        }
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels

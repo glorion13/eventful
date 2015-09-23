@@ -29,9 +29,9 @@ namespace Eventful.ViewModel
         {
             Tags = new ObservableCollection<Tag>();
             TagFilter = "";
-            TagsViewSource = new CollectionViewSource();
-            TagsViewSource.Source = Tags;
-            TagsViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
+            TagViewSource = new CollectionViewSource();
+            TagViewSource.Source = Tags;
+            TagViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
         }
         private void InitialiseInDesignMode()
         {
@@ -107,8 +107,8 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => TagFilter, ref tagFilter, value);
-                if (TagsViewSource != null)
-                    TagsViewSource.View.Filter = new Predicate<object>(TagTitleContains);
+                if (TagViewSource != null)
+                    TagViewSource.View.Filter = new Predicate<object>(TagTitleContains);
             }
         }
 
@@ -119,7 +119,7 @@ namespace Eventful.ViewModel
             return (CultureInfo.CurrentCulture.CompareInfo.IndexOf(tag.Title, TagFilter, CompareOptions.IgnoreCase) >= 0);
         }
 
-        public CollectionViewSource TagsViewSource { get; set; }
+        public CollectionViewSource TagViewSource { get; set; }
 
     }
 }

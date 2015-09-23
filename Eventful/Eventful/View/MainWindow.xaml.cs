@@ -23,6 +23,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Folding;
 
 namespace Eventful.View
 {
@@ -36,9 +37,24 @@ namespace Eventful.View
             InitializeComponent();
             Messenger.Default.Register<EditEventViewModel>(this, vm => OpenNewEventWindow(vm));
             Messenger.Default.Register<TagLibraryViewModel>(this, vm => OpenTagLibraryWindow(vm));
+            Messenger.Default.Register<VariableLibraryViewModel>(this, vm => OpenVariableLibraryWindow(vm));
 
-            SetupTextEditorSyntaxHighlight();
+            //SetupTextEditorSyntaxHighlight();
+            SetupTextEditorForFolding();
             SetupTextEditorAutocomplete();
+        }
+
+        FoldingManager textEditorFoldingManager;
+        XmlFoldingStrategy textEditorFoldingStrategy;
+        private void SetupTextEditorForFolding()
+        {
+            textEditorFoldingManager = FoldingManager.Install(mvvmTextEditor.TextArea);
+            textEditorFoldingStrategy = new XmlFoldingStrategy();
+        }
+
+        private void UpdateTextEditorFoldings()
+        {
+            textEditorFoldingStrategy.UpdateFoldings(textEditorFoldingManager, mvvmTextEditor.Document);
         }
 
         private void SetupTextEditorSyntaxHighlight()
@@ -62,18 +78,37 @@ namespace Eventful.View
         {
             if (e.Text == ":")
             {
-                // Open code completion after the user has pressed dot:
-                completionWindow = new CompletionWindow(mvvmTextEditor.TextArea);
-                IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                data.Add(new MyCompletionData("Item1"));
-                data.Add(new MyCompletionData("Item2"));
-                data.Add(new MyCompletionData("Item3"));
-                completionWindow.Show();
-                completionWindow.Closed += delegate
+                var kek = TextUtilities.GetNextCaretPosition(mvvmTextEditor.Document, mvvmTextEditor.CaretOffset, LogicalDirection.Backward, CaretPositioningMode.WordStart);
+                var lol = mvvmTextEditor.Document.GetText(kek, kek + mvvmTextEditor.CaretOffset);
+                if (lol == "tag:")
                 {
-                    completionWindow = null;
-                };
+                    // Open code completion after the user has pressed dot:
+                    completionWindow = new CompletionWindow(mvvmTextEditor.TextArea);
+                    IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+                    data.Add(new MyCompletionData("Kingslayer"));
+                    data.Add(new MyCompletionData("Nautical-looking"));
+                    completionWindow.Show();
+                    completionWindow.Closed += delegate
+                    {
+                        completionWindow = null;
+                    };
+                }
+                else
+                {
+                    // Open code completion after the user has pressed dot:
+                    completionWindow = new CompletionWindow(mvvmTextEditor.TextArea);
+                    IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+                    data.Add(new MyCompletionData("Item1"));
+                    data.Add(new MyCompletionData("Item2"));
+                    data.Add(new MyCompletionData("Item3"));
+                    completionWindow.Show();
+                    completionWindow.Closed += delegate
+                    {
+                        completionWindow = null;
+                    };
+                }
             }
+            UpdateTextEditorFoldings();
         }
 
         private void mvvmTextEditorTextAreaTextEntering(object sender, TextCompositionEventArgs e)
@@ -87,6 +122,7 @@ namespace Eventful.View
                     completionWindow.CompletionList.RequestInsertion(e);
                 }
             }
+            UpdateTextEditorFoldings();
         }
 
         private void OpenNewEventWindow(EditEventViewModel vm)
@@ -96,11 +132,40 @@ namespace Eventful.View
             newWindow.Show();
         }
 
+        MetroWindow tagLibraryWindow;
         private void OpenTagLibraryWindow(TagLibraryViewModel vm)
         {
-            MetroWindow newWindow = new TagLibraryWindow();
-            newWindow.DataContext = vm;
-            newWindow.Show();
+            if (tagLibraryWindow == null)
+            {
+                tagLibraryWindow = new TagLibraryWindow();
+                tagLibraryWindow.Closed += TagLibraryWindow_Closed;
+                tagLibraryWindow.DataContext = vm;
+                tagLibraryWindow.Show();
+            }
+            else
+                tagLibraryWindow.Activate();
+        }
+        private void TagLibraryWindow_Closed(object sender, EventArgs e)
+        {
+            tagLibraryWindow = null;
+        }
+
+        MetroWindow variableLibraryWindow;
+        private void OpenVariableLibraryWindow(VariableLibraryViewModel vm)
+        {
+            if (variableLibraryWindow == null)
+            {
+                variableLibraryWindow = new VariableLibraryWindow();
+                variableLibraryWindow.Closed += VariableLibraryWindow_Closed;
+                variableLibraryWindow.DataContext = vm;
+                variableLibraryWindow.Show();
+            }
+            else
+                variableLibraryWindow.Activate();
+        }
+        private void VariableLibraryWindow_Closed(object sender, EventArgs e)
+        {
+            variableLibraryWindow = null;
         }
     }
 

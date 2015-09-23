@@ -56,7 +56,7 @@ namespace Eventful.Controls
                 var editor = behavior.AssociatedObject as TextEditor;
                 if (editor.Document != null)
                 {
-                    editor.Document.Text = dependencyPropertyChangedEventArgs.NewValue.ToString();
+                    editor.Document.Text = dependencyPropertyChangedEventArgs.NewValue == null ? "" : dependencyPropertyChangedEventArgs.NewValue.ToString();
                 }
             }
         }

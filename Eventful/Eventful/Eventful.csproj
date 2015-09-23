@@ -14,6 +14,7 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <ExpressionBlendVersion>12.0.50429.0</ExpressionBlendVersion>
     <PublishUrl>G:\Documents\GitHub\eventful\Eventful\Publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -29,7 +30,6 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <ExpressionBlendVersion>12.0.50429.0</ExpressionBlendVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -51,7 +51,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>CDEB77383B6AF26BF5087109095126ED0A050A9D</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>4F3C4D0F7CC34B79878BB462CF064536A6CF5B81</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>Eventful_TemporaryKey.pfx</ManifestKeyFile>
@@ -140,6 +140,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controls\AvalonTextBehavior.cs" />
+    <Compile Include="Controls\MvvmTextEditor.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="EventEditor.xaml.cs">
@@ -151,13 +152,17 @@
     <Compile Include="Model\Event.cs" />
     <Compile Include="Model\Result.cs" />
     <Compile Include="Model\Tag.cs" />
-    <Compile Include="UnitTests\DataStorageTests.cs" />
     <Compile Include="ViewModel\EditEventViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\MessageWindowsViewModel.cs" />
     <Compile Include="ViewModel\TagLibraryViewModel.cs" />
+    <Compile Include="ViewModel\VariableLibraryViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\TagLibraryWindow.xaml.cs">
       <DependentUpon>TagLibraryWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\VariableLibraryWindow.xaml.cs">
+      <DependentUpon>VariableLibraryWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="EventEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -186,6 +191,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\VariableLibraryWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -205,6 +214,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Eventful_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
