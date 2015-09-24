@@ -30,7 +30,7 @@ namespace Eventful.ViewModel
             }
             else
             {
-                InitialiseInRealMode();              
+                InitialiseInRealMode();
             }
         }
 
@@ -41,7 +41,7 @@ namespace Eventful.ViewModel
             DeckFilter = "";
             DecksViewSource = new CollectionViewSource();
             DecksViewSource.Source = Decks;
-            EventsViewSource = new CollectionViewSource();    
+            EventsViewSource = new CollectionViewSource();
             DecksViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
             InitialiseAuthor();
             InitialiseStorageDirectory();
@@ -64,7 +64,7 @@ namespace Eventful.ViewModel
         }
         private void InitialiseInRealMode()
         {
-            Task.Factory.StartNew(() => LoadDecksFromDisk(TestDecks));
+            LoadDeckMappingsFromDisk();
             BuildTagsList();
 
             MessengerInstance.Register<ObservableCollection<string>>(this, vars => Variables = new ObservableCollection<string>(vars));
@@ -246,17 +246,17 @@ namespace Eventful.ViewModel
             {
                 string[] pathTokens = dialog.FileName.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
                 StorageDirectory = (pathTokens[pathTokens.Length - 1] == "Eventful") ? String.Concat(dialog.FileName, @"\") : String.Concat(dialog.FileName, @"\Eventful\");
-                LoadDecksFromDisk(TestDecks);
+                LoadDeckMappingsFromDisk();
             }
         }
 
-        List<Deck> TestDecks;
-        private async void LoadDecksFromDisk(List<Deck> decks)
+        private void LoadDeckMappingsFromDisk()
         {
-            decks = new List<Deck>();
-            //decks.Clear();
-            foreach (Deck deck in DataStorage.LoadAllDecksFromDisk())
-                Decks.Add(deck);
+            DataStorage.LoadAllDeckMappingsFromDisk(Decks);
+        }
+        private void LoadSelectedDeckEventMappingsFromDisk()
+        {
+            DataStorage.LoadDeckEventsFromDisk(SelectedDeck);
         }
 
         private Deck selectedDeck;
@@ -273,6 +273,10 @@ namespace Eventful.ViewModel
                 IsAddEventButtonEnabled = SelectedDeck == null ? false : true;
                 EventsViewSource.Source = SelectedDeck == null ? new ObservableCollection<Event>() : SelectedDeck.Events;
                 EventsViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
+                if (SelectedDeck != null)
+                {
+                    LoadSelectedDeckEventMappingsFromDisk();
+                }
             }
         }
 
@@ -606,7 +610,7 @@ namespace Eventful.ViewModel
         }
         private void ExecuteTextChangedCommand()
         {
-            
+
         }
 
         private RelayCommand saveEventCommand;
@@ -660,14 +664,14 @@ namespace Eventful.ViewModel
             }
             else
             {
-                LoadDecksFromDisk(TestDecks);
+                LoadDeckMappingsFromDisk();
             }
         }
         private void SyncAndKeepFocusOnSelectedEvent()
         {
             string deckTitle = SelectedDeck.Title;
             string eventTitle = SelectedEvent.Title;
-            LoadDecksFromDisk(TestDecks);
+            LoadDeckMappingsFromDisk();
             SelectedDeck = Decks.FirstOrDefault(d => d.Title == deckTitle);
             SelectedEvent = (SelectedDeck == null) ? null : SelectedDeck.Events.FirstOrDefault(e => e.Title == eventTitle);
         }
@@ -728,7 +732,7 @@ namespace Eventful.ViewModel
                     {
                         MoveEventToNewDeck(SelectedEvent, SelectedDeck, newDeck);
                         SelectedDeck = newDeck;
-                        SelectedEvent = newDeck.Events.FirstOrDefault(e => String.Equals(e.Title, currentEvent.Title, StringComparison.OrdinalIgnoreCase));
+                        SelectedEvent = newDeck.Events.FirstOrDefault(e => e.Id == currentEvent.Id);
                     }
                 }
             }

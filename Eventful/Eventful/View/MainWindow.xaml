@@ -138,7 +138,7 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveDeckButtonEnabled}" Command="{Binding RemoveDeckCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-            <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" ItemTemplate="{StaticResource DeckListItemTemplate}" VerticalScrollBarVisibility="Hidden" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
+            <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" ItemTemplate="{StaticResource DeckListItemTemplate}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=RemoveDeckCommand}" 
                                 Key="Delete"/>
@@ -181,7 +181,7 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveEventButtonEnabled}" Command="{Binding RemoveEventCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-            <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Hidden" ItemTemplate="{StaticResource EventListItemTemplate}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="1">
+            <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Auto" ItemTemplate="{StaticResource EventListItemTemplate}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=DuplicateEventCommand}" 
                                 Key="D" 

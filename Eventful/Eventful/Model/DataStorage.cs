@@ -69,16 +69,16 @@ namespace Eventful.Model
             }
         }
 
-        public static Event LoadEventFromDisk(string filename)
+        public static Event LoadEventFromDisk(string title)
         {
+            string fullpath = String.Concat(StorageDirectory, title);
             try
             {
                 XmlSerializer deserializer = new XmlSerializer(typeof(Event));
-                TextReader textReader = new StreamReader(filename);
-                Event ev;
+                TextReader textReader = new StreamReader(fullpath);
+                Event ev = new Event();
                 ev = (Event)deserializer.Deserialize(textReader);
                 textReader.Close();
-                ev.IsChanged = false;
                 return ev;
             }
             catch
@@ -86,38 +86,36 @@ namespace Eventful.Model
                 return null;
             }
         }
-        public static Deck LoadDeckFromDisk(string deckTitle)
+        public static async void LoadDeckEventsFromDisk(Deck deck)
         {
-            string fullpath = String.Concat(StorageDirectory, deckTitle);
-            if (!Directory.Exists(fullpath)) return null;
-            if (deckTitle.Length <= 0) return null;
-            if (deckTitle[0] == '.') return null;
-            Deck newDeck = new Deck(deckTitle);
+            string fullpath = String.Concat(StorageDirectory, deck.Title);
+            deck.Events.Clear();
             foreach (string file in Directory.EnumerateFiles(fullpath, "*.event"))
             {
-                Event newEvent = LoadEventFromDisk(file);
+                string subDirectory = file.Replace(DataStorage.StorageDirectory, "");
+                Event newEvent = await Task.Run(() => LoadEventFromDisk(subDirectory));
+                newEvent.IsChanged = false;
                 if (newEvent != null)
-                    newDeck.Events.Add(newEvent);
+                    deck.Events.Add(newEvent);
             }
-            return newDeck;
         }
-        public static List<Deck> LoadAllDecksFromDisk()
+        public static Deck LoadDeckMappingFromDisk(string deckMapping)
         {
-            List<Deck> decks = new List<Deck>();
-            try
+            string fullpath = String.Concat(StorageDirectory, deckMapping);
+            if (!Directory.Exists(fullpath)) return null;
+            if (deckMapping.Length <= 0) return null;
+            if (deckMapping[0] == '.') return null;
+            return new Deck(deckMapping);
+        }
+        public static void LoadAllDeckMappingsFromDisk(ObservableCollection<Deck> decks)
+        {
+            decks.Clear();
+            foreach (string folder in Directory.EnumerateDirectories(StorageDirectory))
             {
-                foreach (string directory in Directory.EnumerateDirectories(StorageDirectory))
-                {
-                    string subDirectory = directory.Replace(StorageDirectory, "");
-                    Deck deck = LoadDeckFromDisk(subDirectory);
-                    if (deck != null)
-                        decks.Add(deck);
-                }
-                return decks;
-            }
-            catch
-            {
-                return new List<Deck>();
+                string subDirectory = folder.Replace(DataStorage.StorageDirectory, "");
+                Deck deck = DataStorage.LoadDeckMappingFromDisk(subDirectory);
+                if (deck != null)
+                    decks.Add(deck);
             }
         }
 
