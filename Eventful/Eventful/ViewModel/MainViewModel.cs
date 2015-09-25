@@ -36,7 +36,7 @@ namespace Eventful.ViewModel
 
         private void InitialiseInAllModes()
         {
-            Variables = new ObservableCollection<string>();
+            Variables = new ObservableCollection<Variable>();
             Decks = new ObservableCollection<Deck>();
             DeckFilter = "";
             DecksViewSource = new CollectionViewSource();
@@ -66,9 +66,6 @@ namespace Eventful.ViewModel
         {
             LoadDeckMappingsFromDisk();
             BuildTagsList();
-
-            MessengerInstance.Register<ObservableCollection<string>>(this, vars => Variables = new ObservableCollection<string>(vars));
-            Variables.Add("player_name");
         }
 
         private void BuildTagsList()
@@ -274,9 +271,7 @@ namespace Eventful.ViewModel
                 EventsViewSource.Source = SelectedDeck == null ? new ObservableCollection<Event>() : SelectedDeck.Events;
                 EventsViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
                 if (SelectedDeck != null)
-                {
                     LoadSelectedDeckEventMappingsFromDisk();
-                }
             }
         }
 
@@ -331,18 +326,6 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => IsSettingsFlyoutVisible, ref isSettingsFlyoutVisible, value);
-            }
-        }
-        private bool isVariablesFlyoutVisible = false;
-        public bool IsVariablesFlyoutVisible
-        {
-            get
-            {
-                return isSettingsFlyoutVisible;
-            }
-            set
-            {
-                Set(() => IsVariablesFlyoutVisible, ref isVariablesFlyoutVisible, value);
             }
         }
 
@@ -784,11 +767,13 @@ namespace Eventful.ViewModel
         }
         private void ExecuteOpenVariableLibraryCommand()
         {
-            IsVariablesFlyoutVisible = true;
+            VariableLibraryViewModel vm = new VariableLibraryViewModel();
+            MessengerInstance.Send(vm);
+            MessengerInstance.Send<ObservableCollection<Variable>>(Variables);
         }
 
-        private ObservableCollection<string> variables;
-        public ObservableCollection<string> Variables
+        private ObservableCollection<Variable> variables;
+        public ObservableCollection<Variable> Variables
         {
             get
             {

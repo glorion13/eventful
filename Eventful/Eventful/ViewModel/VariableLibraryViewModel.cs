@@ -30,25 +30,25 @@ namespace Eventful.ViewModel
 
         private void InitialiseInRealMode()
         {
-            MessengerInstance.Register<ObservableCollection<string>>(this, vars => Variables = vars);
-            VariableFilter = "";
-            VariableViewSource = new CollectionViewSource();
-            VariableViewSource.Source = Variables;
-            VariableViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
+            MessengerInstance.Register<ObservableCollection<Variable>>(this, vars => Variables = vars);
         }
         private void InitialiseInDesignMode()
         {
-            Variables.Add("Kingslayer");
-            Variables.Add("Nautical-looking");
-            Variables.Add("fasoli");
+            Variables.Add(new Variable("Kingslayer", "Otan skotwneis vasilia."));
+            Variables.Add(new Variable("Nautical-looking", "Otan eisai mauros."));
+            Variables.Add(new Variable("fasoli", "posa fasolia exeis?"));
         }
         private void InitialiseInAllModes()
         {
-            Variables = new ObservableCollection<string>();
+            VariableFilter = "";
+            VariableViewSource = new CollectionViewSource();
+            Variables = new ObservableCollection<Variable>();
+            VariableViewSource.Source = Variables;
+            VariableViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
         }
 
-        private ObservableCollection<string> variables;
-        public ObservableCollection<string> Variables
+        private ObservableCollection<Variable> variables;
+        public ObservableCollection<Variable> Variables
         {
             get
             {
@@ -57,6 +57,11 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => Variables, ref variables, value);
+                if (Variables != null)
+                {
+                    VariableViewSource.Source = Variables;
+                    VariableViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
+                }
             }
         }
 
@@ -86,8 +91,8 @@ namespace Eventful.ViewModel
             }
         }
 
-        private string selectedVariable;
-        public string SelectedVariable
+        private Variable selectedVariable;
+        public Variable SelectedVariable
         {
             get
             {
@@ -117,9 +122,9 @@ namespace Eventful.ViewModel
 
         private bool VariableNameContains(object obj)
         {
-            string variable = obj as string;
+            Variable variable = obj as Variable;
             if (variable == null) return false;
-            return (CultureInfo.CurrentCulture.CompareInfo.IndexOf(variable, VariableFilter, CompareOptions.IgnoreCase) >= 0);
+            return (CultureInfo.CurrentCulture.CompareInfo.IndexOf(variable.Title, VariableFilter, CompareOptions.IgnoreCase) >= 0);
         }
 
         public CollectionViewSource VariableViewSource { get; set; }
@@ -134,16 +139,16 @@ namespace Eventful.ViewModel
         }
         private async void ExecuteRemoveVariableCommand()
         {
-            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Variable Deletion", String.Concat("Do you want to delete the variable \"", SelectedVariable, "\"?"));
+            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Variable Deletion", String.Concat("Do you want to delete the variable \"", SelectedVariable.Title, "\"?"));
             if (dialogResult)
                 RemoveVariable(SelectedVariable);
         }
-        private void RemoveVariable(string variable)
+        private void RemoveVariable(Variable variable)
         {
             if (variable != null)
             {
                 Variables.Remove(variable);
-                MessengerInstance.Send<ObservableCollection<string>>(Variables);
+                MessengerInstance.Send<ObservableCollection<Variable>>(Variables);
             }
         }
 
@@ -159,9 +164,40 @@ namespace Eventful.ViewModel
         {
             AddNewVariable("What is the name of the new variable? You can always change it later.");
         }
-        private void AddNewVariable(string text)
+        private async void AddNewVariable(string text)
         {
-
+            if (Variables != null)
+            {
+                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Variable", text);
+                if (dialogResult == null)
+                {
+                }
+                else if (Variables.Any(v => String.Equals(v.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
+                    AddNewVariable(String.Concat("A variable with the title \"", dialogResult, "\" already exists. Please enter a different title."));
+                else if (dialogResult == "")
+                    AddNewVariable("A variable title cannot be empty.");
+                else
+                {
+                    Variable tempVariable = new Variable(dialogResult);
+                    CreateVariable(tempVariable);
+                }
+            }
+        }
+        private async void CreateVariable(Variable variable)
+        {
+            Variables.Add(variable);
+            SelectedVariable = variable;
+            /*bool success = DataStorage.SaveDeckToDisk(deck);
+            if (success)
+            {
+                Decks.Add(deck);
+                SelectedDeck = deck;
+            }
+            else
+            {
+                await MessageWindowsViewModel.ShowOkMessage("Couldn't Save Deck", "The deck was not saved successfully. Try again later and ensure the save folder is accessible.");
+            }
+            */
         }
 
     }

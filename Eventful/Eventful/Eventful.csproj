@@ -152,6 +152,7 @@
     <Compile Include="Model\Event.cs" />
     <Compile Include="Model\Result.cs" />
     <Compile Include="Model\Tag.cs" />
+    <Compile Include="Model\Variable.cs" />
     <Compile Include="ViewModel\EditEventViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MessageWindowsViewModel.cs" />

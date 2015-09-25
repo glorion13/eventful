@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Eventful.View"
         mc:Ignorable="d"
-        DataContext="{Binding Source={StaticResource Locator}, Path=VariablesLibrary}"
+        DataContext="{Binding Source={StaticResource Locator}, Path=VariableLibrary}"
         xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:MvvmControls="http://www.galasoft.ch/mvvmlight"
         xmlns:Interactivity="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
@@ -51,7 +51,7 @@
             <Button Content="-" IsEnabled="{Binding IsRemoveVariableButtonEnabled}" Command="{Binding RemoveVariableCommand}" Grid.Column="2" />
         </Grid>
         <TextBox Text="{Binding VariableFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-        <DataGrid SelectionMode="Extended" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding VariableViewSource.View}" VerticalScrollBarVisibility="Hidden" SelectedItem="{Binding SelectedVariable, Mode=TwoWay}" Grid.Row="1">
+        <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="Column" ItemsSource="{Binding VariableViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedVariable, Mode=TwoWay}" Grid.Row="1">
             <DataGrid.InputBindings>
                 <KeyBinding Command="{Binding Path=RemoveVariableCommand}" 
                                 Key="Delete"/>
@@ -67,7 +67,8 @@
                 </Interactivity:EventTrigger>
             </Interactivity:Interaction.Triggers>
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding}" Width="*" />
+                <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*" />
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

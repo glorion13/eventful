@@ -29,16 +29,6 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <DataTemplate x:Key="DeckListItemTemplate">
-                <Grid>
-                    <TextBlock Text="{Binding Title}" />
-                </Grid>
-            </DataTemplate>
-            <DataTemplate x:Key="EventListItemTemplate">
-                <Grid>
-                    <TextBlock Text="{Binding Title}" />
-                </Grid>
-            </DataTemplate>
             <Style x:Key="GridSplitterStyle" TargetType="GridSplitter">
                 <Setter Property="Width">
                     <Setter.Value>2</Setter.Value>
@@ -138,7 +128,7 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveDeckButtonEnabled}" Command="{Binding RemoveDeckCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-            <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" ItemTemplate="{StaticResource DeckListItemTemplate}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
+            <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=RemoveDeckCommand}" 
                                 Key="Delete"/>
@@ -181,7 +171,7 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveEventButtonEnabled}" Command="{Binding RemoveEventCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-            <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Auto" ItemTemplate="{StaticResource EventListItemTemplate}" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="1">
+            <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=DuplicateEventCommand}" 
                                 Key="D" 
@@ -246,11 +236,6 @@
                 </StackPanel>
             </Grid>
 
-            <!--<avalonEdit:TextEditor Name="mvvmTextEditor" Grid.Row="1" SyntaxHighlighting="XML">
-                <Interactivity:Interaction.Behaviors>
-                    <LocalControls:AvalonEditBehavior TextBindBehavior="{Binding SelectedEvent.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                </Interactivity:Interaction.Behaviors>
-            </avalonEdit:TextEditor>-->
             <LocalControls:MvvmTextEditor SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding SelectedEvent.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt" Grid.Row="1" />
             <ListBox ItemsSource="{Binding SelectedEvent.Options}" Grid.Row="2" />
             

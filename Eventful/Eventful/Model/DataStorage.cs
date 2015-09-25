@@ -90,7 +90,7 @@ namespace Eventful.Model
         {
             string fullpath = String.Concat(StorageDirectory, deck.Title);
             deck.Events.Clear();
-            foreach (string file in Directory.EnumerateFiles(fullpath, "*.event"))
+            foreach (string file in await Task.Run(() => Directory.EnumerateFiles(fullpath, "*.event")))
             {
                 string subDirectory = file.Replace(DataStorage.StorageDirectory, "");
                 Event newEvent = await Task.Run(() => LoadEventFromDisk(subDirectory));
@@ -107,10 +107,10 @@ namespace Eventful.Model
             if (deckMapping[0] == '.') return null;
             return new Deck(deckMapping);
         }
-        public static void LoadAllDeckMappingsFromDisk(ObservableCollection<Deck> decks)
+        public static async void LoadAllDeckMappingsFromDisk(ObservableCollection<Deck> decks)
         {
             decks.Clear();
-            foreach (string folder in Directory.EnumerateDirectories(StorageDirectory))
+            foreach (string folder in await Task.Run(() => Directory.EnumerateDirectories(StorageDirectory)))
             {
                 string subDirectory = folder.Replace(DataStorage.StorageDirectory, "");
                 Deck deck = DataStorage.LoadDeckMappingFromDisk(subDirectory);
