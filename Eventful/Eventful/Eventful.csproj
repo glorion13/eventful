@@ -15,7 +15,7 @@
     <WarningLevel>4</WarningLevel>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <ExpressionBlendVersion>12.0.50429.0</ExpressionBlendVersion>
-    <PublishUrl>G:\Documents\GitHub\eventful\Eventful\Publish\</PublishUrl>
+    <PublishUrl>C:\Users\alexg\Desktop\Publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -25,7 +25,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>12</ApplicationRevision>
+    <ApplicationRevision>13</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -51,7 +51,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>15E8F7057ED33CA0CEF956A7BB38ABDB9783C1B9</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>FA98235457212FA7891CCF8762C2C7151846AA79</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>Eventful_TemporaryKey.pfx</ManifestKeyFile>

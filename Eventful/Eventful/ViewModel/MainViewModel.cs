@@ -652,11 +652,11 @@ namespace Eventful.ViewModel
         }
         private void SyncAndKeepFocusOnSelectedEvent()
         {
-            string deckTitle = SelectedDeck.Title;
-            string eventTitle = SelectedEvent.Title;
+            Deck tempSelectedDeck = SelectedDeck;
+            Event tempSelectedEvent = SelectedEvent;
             LoadDeckMappingsFromDisk();
-            SelectedDeck = Decks.FirstOrDefault(d => d.Title == deckTitle);
-            SelectedEvent = (SelectedDeck == null) ? null : SelectedDeck.Events.FirstOrDefault(e => e.Title == eventTitle);
+            SelectedDeck = tempSelectedDeck;
+            SelectedEvent = tempSelectedEvent;
         }
 
         private RelayCommand duplicateEventCommand;
@@ -715,7 +715,7 @@ namespace Eventful.ViewModel
                     {
                         MoveEventToNewDeck(SelectedEvent, SelectedDeck, newDeck);
                         SelectedDeck = newDeck;
-                        SelectedEvent = newDeck.Events.FirstOrDefault(e => e.Id == currentEvent.Id);
+                        SelectedEvent = currentEvent;
                     }
                 }
             }
