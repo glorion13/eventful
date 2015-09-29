@@ -363,8 +363,8 @@ namespace Eventful.ViewModel
                 }
                 else if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
                     AddNewDeck(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
-                else if (dialogResult == "")
-                    AddNewDeck("A deck title cannot be empty.");
+                else if (!FilenameStringCheck(dialogResult))
+                    AddNewDeck(filenameErrorMessage);
                 else
                 {
                     Deck tempDeck = new Deck(dialogResult);
@@ -418,15 +418,15 @@ namespace Eventful.ViewModel
                 if (dialogResult == null)
                 {
                 }
-                else if (dialogResult == "")
-                {
-                    AddNewEvent("An event title cannot be empty.");
-                }
-                else
+                else if (FilenameStringCheck(dialogResult))
                 {
                     Event tempEvent = new Event(dialogResult);
                     AddEventToDeck(tempEvent, SelectedDeck);
                     SelectedEvent = tempEvent;
+                }
+                else
+                {
+                    AddNewEvent(filenameErrorMessage);
                 }
             }
         }
@@ -467,8 +467,8 @@ namespace Eventful.ViewModel
         {
             if (deck != null)
             {
-                DataStorage.DeleteDeck(deck);
-                Decks.Remove(deck);
+                if (DataStorage.DeleteDeck(deck));
+                    Decks.Remove(deck);
             }
         }
 
@@ -502,8 +502,8 @@ namespace Eventful.ViewModel
         {
             if (ev != null && deck != null)
             {
-                DataStorage.DeleteEvent(ev, deck);
-                deck.Events.Remove(ev);
+                if (DataStorage.DeleteEvent(ev, deck));
+                    deck.Events.Remove(ev);
             }
         }
 
@@ -537,17 +537,22 @@ namespace Eventful.ViewModel
             if (SelectedDeck != null)
             {
                 string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Change Deck Name", text);
-                if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
-                    ChangeDeckName(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
-                else if (dialogResult == null)
+                if (dialogResult == null)
                 {
                 }
-                else if (dialogResult == "")
-                    ChangeDeckName("A deck title cannot be empty.");
+                else if (dialogResult == SelectedDeck.Title)
+                {
+                }
+                else if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
+                    ChangeDeckName(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
+                else if (!FilenameStringCheck(dialogResult))
+                {
+                    ChangeDeckName(filenameErrorMessage);
+                }
                 else
                 {
-                    DataStorage.RenameDeck(SelectedDeck, dialogResult);
-                    SelectedDeck.Title = dialogResult;
+                    if (DataStorage.RenameDeck(SelectedDeck, dialogResult))
+                        SelectedDeck.Title = dialogResult;
                 }
             }
         }
@@ -572,15 +577,45 @@ namespace Eventful.ViewModel
                 if (dialogResult == null)
                 {
                 }
-                else if (dialogResult == "")
-                    ChangeEventName("An event title cannot be empty.");
-                else
+                else if (dialogResult == SelectedEvent.Title)
                 {
-                    DataStorage.DeleteEvent(SelectedEvent, SelectedDeck);
-                    SelectedEvent.Title = dialogResult;
-                    SaveEvent(SelectedEvent, SelectedDeck);
                 }
+                else if (FilenameStringCheck(dialogResult))
+                {
+                    if (DataStorage.RenameEvent(SelectedEvent, SelectedDeck, dialogResult))
+                        SelectedEvent.Title = dialogResult;
+                    SelectedEvent.IsChanged = false;
+                }
+                else
+                    ChangeEventName(filenameErrorMessage);
             }
+        }
+
+        private string filenameErrorMessage = "A title cannot be empty, nor contain any of the following characters: \n \\ / : * ? \" < > |";
+        private bool FilenameStringCheck(string dialogResult)
+        {
+            if (dialogResult == "")
+                return false;
+            // \\ / : * ? \" < > | not allowed by Windows
+            if (dialogResult.Contains("\\"))
+                return false;
+            if (dialogResult.Contains("/"))
+                return false;
+            if (dialogResult.Contains(":"))
+                return false;
+            if (dialogResult.Contains("*"))
+                return false;
+            if (dialogResult.Contains("?"))
+                return false;
+            if (dialogResult.Contains("\""))
+                return false;
+            if (dialogResult.Contains("<"))
+                return false;
+            if (dialogResult.Contains(">"))
+                return false;
+            if (dialogResult.Contains("|"))
+                return false;
+            return true;
         }
 
         private RelayCommand eventTextChangedCommand;

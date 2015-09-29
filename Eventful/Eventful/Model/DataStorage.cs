@@ -33,21 +33,31 @@ namespace Eventful.Model
             }
         }
 
+        private static string GetEventFileName(Event ev)
+        {
+            return String.Concat(
+                ev.Title,
+                " #",
+                ev.Id,
+                ".event");
+        }
+
+        private static string GetDeckFilePath(Deck deck)
+        {
+            return String.Concat(
+                StorageDirectory,
+                deckDirectoryName,
+                deck.Title,
+                @"\");
+        }
+
         public static bool SaveEventToDisk(Event ev, Deck deck)
         {
             if (deck == null || ev == null || StorageDirectory == null) return false;
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(Event));
-                TextWriter textWriter = new StreamWriter(String.Concat(
-                    StorageDirectory,
-                    deckDirectoryName,
-                    RemoveIllegalCharactersFromFilename(deck.Title),
-                    @"\", RemoveIllegalCharactersFromFilename(ev.Title),
-                    " #",
-                    ev.Id,
-                    ".event"
-                    ));
+                TextWriter textWriter = new StreamWriter(String.Concat(GetDeckFilePath(deck), GetEventFileName(ev)));
                 serializer.Serialize(textWriter, ev);
                 textWriter.Close();
                 return true;
@@ -74,11 +84,7 @@ namespace Eventful.Model
         {
             try
             {
-                Directory.CreateDirectory(String.Concat(
-                    StorageDirectory,
-                    deckDirectoryName,
-                    RemoveIllegalCharactersFromFilename(deck.Title)
-                    ));
+                Directory.CreateDirectory(GetDeckFilePath(deck));
                 return true;
             }
             catch (DirectoryNotFoundException)
@@ -100,6 +106,8 @@ namespace Eventful.Model
             }
         }
 
+        
+
         public static Event LoadEventFromDisk(string path)
         {
             string fullpath = String.Concat(StorageDirectory, path);
@@ -117,17 +125,24 @@ namespace Eventful.Model
                 return null;
             }
         }
+        
         public static async void LoadDeckEventsFromDisk(Deck deck)
         {
-            string fullpath = String.Concat(StorageDirectory, deckDirectoryName, deck.Title);
             deck.Events.Clear();
-            foreach (string file in await Task.Run(() => EnumerateFilesTask(fullpath, "*.event")))
+            string fullpath = GetDeckFilePath(deck);
+            try
             {
-                string subDirectory = file.Replace(StorageDirectory, "");
-                Event newEvent = await Task.Run(() => LoadEventFromDisk(subDirectory));
-                newEvent.IsChanged = false;
-                if (newEvent != null)
-                    deck.Events.Add(newEvent);
+                foreach (string file in await Task.Run(() => EnumerateFilesTask(fullpath, "*.event")))
+                {
+                    string subDirectory = file.Replace(StorageDirectory, "");
+                    Event newEvent = await Task.Run(() => LoadEventFromDisk(subDirectory));
+                    newEvent.IsChanged = false;
+                    if (newEvent != null)
+                        deck.Events.Add(newEvent);
+                }
+            }
+            catch
+            {
             }
         }
 
@@ -143,7 +158,7 @@ namespace Eventful.Model
             }
         }
 
-        public static Deck LoadDeckMappingFromDisk(string deckMapping)
+        private static Deck CreateDeckMapping(string deckMapping)
         {
             string fullpath = String.Concat(StorageDirectory, deckMapping);
             deckMapping = deckMapping.Replace(deckDirectoryName, "");
@@ -160,7 +175,7 @@ namespace Eventful.Model
                 foreach (string folder in await Task.Run(() => EnumerateDirectoriesTask(String.Concat(StorageDirectory, deckDirectoryName))))
                 {
                     string subDirectory = folder.Replace(StorageDirectory, "");
-                    Deck deck = DataStorage.LoadDeckMappingFromDisk(subDirectory);
+                    Deck deck = CreateDeckMapping(subDirectory);
                     if (deck != null)
                         decks.Add(deck);
                 }
@@ -186,89 +201,92 @@ namespace Eventful.Model
             }
         }
 
-        public static void DeleteEvent(Event ev, Deck deck)
+        public static bool DeleteEvent(Event ev, Deck deck)
         {
-            BackupEvent(ev, deck);
+            return BackupEvent(ev, deck);
         }
-        public static void DeleteDeck(Deck deck)
+        public static bool DeleteDeck(Deck deck)
         {
-            BackupDeck(deck);
+            return BackupDeck(deck);
         }
 
-        private static void BackupEvent(Event ev, Deck deck)
+        private static string GetDateTime()
+        {
+            return DateTime.Now.ToString().Replace("/", "-").Replace(":", "-");
+        }
+
+        private static bool BackupEvent(Event ev, Deck deck)
         {
             try
             {
-                Directory.CreateDirectory(String.Concat(
-                    StorageDirectory, 
-                    deckDirectoryName, 
-                    RemoveIllegalCharactersFromFilename(deck.Title), 
-                    @"\", 
-                    ".Backups"
-                    ));
+                Directory.CreateDirectory(String.Concat(GetDeckFilePath(deck), ".Backups"));
                 Directory.Move(
+                    String.Concat(GetDeckFilePath(deck), GetEventFileName(ev)),
                     String.Concat(
-                        StorageDirectory, 
-                        deckDirectoryName,
-                        RemoveIllegalCharactersFromFilename(deck.Title), 
-                        @"\", 
-                        RemoveIllegalCharactersFromFilename(ev.Title), 
-                        " #", 
-                        ev.Id, 
-                        ".event"),
-                    String.Concat(
-                        StorageDirectory,
-                        deckDirectoryName,
-                        RemoveIllegalCharactersFromFilename(deck.Title),
-                        @"\", 
-                        @".Backups\", 
-                        RemoveIllegalCharactersFromFilename(ev.Title),
-                        " #", 
-                        ev.Id, 
-                        " ", 
-                        RemoveIllegalCharactersFromFilename(DateTime.Now.ToString()),
-                        ".event"
-                    ));
+                        GetDeckFilePath(deck),
+                        @".Backups\",
+                        GetDateTime(),
+                        " ",
+                        GetEventFileName(ev))
+                    );
+                return true;
             }
             catch
             {
-                System.Windows.MessageBox.Show("Backing up event failed.");
+                return false;
             }
         }
-        private static void BackupDeck(Deck deck)
+        private static bool BackupDeck(Deck deck)
         {
             try
             {
-                Directory.CreateDirectory(String.Concat(StorageDirectory, deckDirectoryName, ".Backups"));
-                Directory.Move(String.Concat(StorageDirectory, deckDirectoryName, RemoveIllegalCharactersFromFilename(deck.Title), @"\"), String.Concat(StorageDirectory, deckDirectoryName, @".Backups\", RemoveIllegalCharactersFromFilename(deck.Title), " ", RemoveIllegalCharactersFromFilename(DateTime.Now.ToString())));
+                string deckBackupsDirectory = String.Concat(StorageDirectory, deckDirectoryName, ".Backups\\");
+                Directory.CreateDirectory(deckBackupsDirectory);
+                Directory.Move(
+                    GetDeckFilePath(deck),
+                    String.Concat(deckBackupsDirectory, deck.Title, " ", GetDateTime())
+                    );
+                return true;
             }
             catch
             {
-                System.Windows.MessageBox.Show("Backing up deck failed.");
+                return false;
             }
         }
 
-        public static void RenameDeck(Deck deck, string newDeckTitle)
+        public static bool RenameDeck(Deck deck, string newDeckTitle)
         {
             try
             {
                 Directory.Move(
-                    String.Concat(StorageDirectory, deckDirectoryName, RemoveIllegalCharactersFromFilename(deck.Title), @"\"),
+                    GetDeckFilePath(deck),
                     String.Concat(StorageDirectory, deckDirectoryName, newDeckTitle, @"\")
                 );
+                return true;
             }
             catch
             {
-                System.Windows.MessageBox.Show("Moving of deck failed.");
+                return false;
             }
         }
 
-        private static string RemoveIllegalCharactersFromFilename(string filename)
+        public static bool RenameEvent(Event ev, Deck deck, string newEventTitle)
         {
-            string[] restrictedStrings = new string[] { "\\", "/", ":", "*", "?", "\"", "<", ">", "|" };
-            foreach (string restrictedString in restrictedStrings)
-                filename = filename.Replace(restrictedString, "");
-            return filename;
+            try
+            {
+                Event newEvent = new Event(ev);
+                newEvent.Title = newEventTitle;
+                newEvent.Id = ev.Id;
+                newEvent.IsChanged = false;
+                bool success = SaveEventToDisk(newEvent, deck);
+                if (success)
+                    DeleteEvent(ev, deck);
+                return success;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

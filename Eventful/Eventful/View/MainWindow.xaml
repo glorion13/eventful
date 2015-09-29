@@ -132,9 +132,9 @@
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=RemoveDeckCommand}" 
                                 Key="Delete"/>
-                    <KeyBinding Command="{Binding Path=DuplicateDeckCommand}" 
+                    <!--<KeyBinding Command="{Binding Path=DuplicateDeckCommand}" 
                                 Key="D"
-                                Modifiers="Control" />
+                                Modifiers="Control" />-->
                 </DataGrid.InputBindings>
                 <DataGrid.ContextMenu>
                     <ContextMenu>
