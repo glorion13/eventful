@@ -12,6 +12,7 @@ using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Windows;
 using System.ComponentModel;
+using Eventful.Model;
 
 namespace Eventful.Controls
 {
@@ -99,7 +100,6 @@ namespace Eventful.Controls
             }
             UpdateTextEditorFoldings();
         }
-
         private void mvvmTextEditorTextAreaTextEntering(object sender, TextCompositionEventArgs e)
         {
             if (e.Text.Length > 0 && completionWindow != null)
@@ -138,40 +138,5 @@ namespace Eventful.Controls
             base.OnTextChanged(e);
         }
 
-        /// Implements AvalonEdit ICompletionData interface to provide the entries in the
-        /// completion drop down.
-        public class MyCompletionData : ICompletionData
-        {
-            public MyCompletionData(string text)
-            {
-                this.Text = text;
-            }
-
-            public System.Windows.Media.ImageSource Image
-            {
-                get { return null; }
-            }
-
-            public double Priority { get { return 0; } }
-
-            public string Text { get; private set; }
-
-            // Use this property if you want to show a fancy UIElement in the list.
-            public object Content
-            {
-                get { return this.Text; }
-            }
-
-            public object Description
-            {
-                get { return "Description for " + this.Text; }
-            }
-
-            public void Complete(TextArea textArea, ISegment completionSegment,
-                EventArgs insertionRequestEventArgs)
-            {
-                textArea.Document.Replace(completionSegment, this.Text);
-            }
-        }
     }
 }

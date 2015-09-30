@@ -52,7 +52,7 @@ namespace Eventful.ViewModel
             Deck undeadDeck = new Deck("Undead Army");
             mainDeck.Events.Add(new Event("Finding Timmy: A Bewildering Adventure"));
             Event ev = new Event("Cinding Timmy");
-            ev.Text = "Hello world.";
+            ev.StartingScreen.Text = "Hello world.";
             //ev.Options.Add(new Option());
             mainDeck.Events.Add(ev);
             mainDeck.Events.Add(new Event("Ainding Timmy"));
@@ -467,7 +467,7 @@ namespace Eventful.ViewModel
         {
             if (deck != null)
             {
-                if (DataStorage.DeleteDeck(deck));
+                if (DataStorage.DeleteDeck(deck))
                     Decks.Remove(deck);
             }
         }
@@ -502,7 +502,7 @@ namespace Eventful.ViewModel
         {
             if (ev != null && deck != null)
             {
-                if (DataStorage.DeleteEvent(ev, deck));
+                if (DataStorage.DeleteEvent(ev, deck))
                     deck.Events.Remove(ev);
             }
         }
@@ -583,8 +583,10 @@ namespace Eventful.ViewModel
                 else if (FilenameStringCheck(dialogResult))
                 {
                     if (DataStorage.RenameEvent(SelectedEvent, SelectedDeck, dialogResult))
+                    {
                         SelectedEvent.Title = dialogResult;
-                    SelectedEvent.IsChanged = false;
+                        SelectedEvent.IsChanged = false;
+                    }
                 }
                 else
                     ChangeEventName(filenameErrorMessage);
@@ -817,6 +819,19 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => Variables, ref variables, value);
+            }
+        }
+
+        private MyCompletionData data = new MyCompletionData("skata");
+        public MyCompletionData Data
+        {
+            get
+            {
+                return data;
+            }
+            set
+            {
+                Set(() => Data, ref data, value);
             }
         }
 

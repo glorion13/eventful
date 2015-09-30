@@ -236,10 +236,15 @@
                 </StackPanel>
             </Grid>
 
-            <LocalControls:MvvmTextEditor SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding SelectedEvent.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt" Grid.Row="1" />
-            <ListBox ItemsSource="{Binding SelectedEvent.Options}" Grid.Row="2" />
+            <LocalControls:MvvmTextEditor SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding SelectedEvent.StartingScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt" Grid.Row="1" />
+            <!--<ListBox ItemsSource="{Binding SelectedEvent.Options}" Grid.Row="2" />-->
+            <DataGrid Grid.Row="2" SelectionMode="Single" Margin="0,5" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column"  ItemsSource="{Binding SelectedEvent.StartingScreen.Options}" VerticalScrollBarVisibility="Auto">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Actions" Binding="{Binding Text}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
             
-            <Button Content="Save" IsEnabled="{Binding SelectedEvent.IsChanged}" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />
+            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />
         </Grid>
 
         <Border Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />

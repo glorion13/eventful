@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 
 namespace Eventful.Model
 {
@@ -20,8 +18,20 @@ namespace Eventful.Model
         public Event(Event ev)
         {
             Title = ev.Title;
-            Text = ev.Text;
             Author = ev.Author;
+        }
+
+        private Screen startingScreen = new Screen();
+        public Screen StartingScreen
+        {
+            get
+            {
+                return startingScreen;
+            }
+            set
+            {
+                Set(() => StartingScreen, ref startingScreen, value);
+            }
         }
 
         private string title;
@@ -34,7 +44,6 @@ namespace Eventful.Model
             set
             {
                 Set(() => Title, ref title, value);
-                IsChanged = true;
             }
         }
 
@@ -48,21 +57,6 @@ namespace Eventful.Model
             set
             {
                 Set(() => Id, ref id, value);
-                IsChanged = true;
-            }
-        }
-
-        private string text = "<EventBody>\n\n</EventBody>";
-        public string Text
-        {
-            get
-            {
-                return text;
-            }
-            set
-            {
-                Set(() => Text, ref text, value);
-                IsChanged = true;
             }
         }
 
@@ -92,30 +86,5 @@ namespace Eventful.Model
             }
         }
 
-        private bool isChanged = false;
-        public bool IsChanged
-        {
-            get
-            {
-                return isChanged;
-            }
-            set
-            {
-                Set(() => IsChanged, ref isChanged, value);
-            }
-        }
-
-        /*private ObservableCollection<Option> options;
-        public ObservableCollection<Option> Options
-        {
-            get
-            {
-                return options;
-            }
-            set
-            {
-                Set(() => Options, ref options, value);
-            }
-        }*/
     }
 }

@@ -183,7 +183,8 @@ namespace Eventful.ViewModel
                 }
             }
         }
-        private async void CreateVariable(Variable variable)
+
+        private void CreateVariable(Variable variable)
         {
             Variables.Add(variable);
             SelectedVariable = variable;
