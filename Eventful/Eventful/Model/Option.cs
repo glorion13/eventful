@@ -5,6 +5,28 @@ namespace Eventful.Model
 {
     public class Option : ViewModelBase
     {
+        public Option()
+        {
+        }
+
+        public Option(int parentId)
+        {
+            ResultingScreen = new Screen(parentId + 1);
+        }
+
+        private int screenId = 0;
+        public int ScreenId
+        {
+            get
+            {
+                return screenId;
+            }
+            set
+            {
+                Set(() => ScreenId, ref screenId, value);
+            }
+        }
+
         private Screen resultingScreen;
         public Screen ResultingScreen
         {

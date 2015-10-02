@@ -36,8 +36,6 @@ namespace Eventful.ViewModel
 
         private void InitialiseInAllModes()
         {
-            Variables = new ObservableCollection<Variable>();
-            Decks = new ObservableCollection<Deck>();
             DeckFilter = "";
             DecksViewSource = new CollectionViewSource();
             DecksViewSource.Source = Decks;
@@ -121,7 +119,7 @@ namespace Eventful.ViewModel
             }
         }
 
-        private ObservableCollection<Deck> decks;
+        private ObservableCollection<Deck> decks = new ObservableCollection<Deck>();
         public ObservableCollection<Deck> Decks
         {
             get
@@ -287,6 +285,46 @@ namespace Eventful.ViewModel
                 Set(() => SelectedEvent, ref selectedEvent, value);
                 IsEditEventVisible = SelectedEvent == null ? false : true;
                 IsRemoveEventButtonEnabled = SelectedEvent == null ? false : true;
+                if (SelectedEvent != null)
+                {
+                    Screens.Clear();
+                    Screens.Add(SelectedEvent.StartingScreen);
+                }
+            }
+        }
+
+        private object selectedOption;
+        public object SelectedOption
+        {
+            get
+            {
+                return selectedOption;
+            }
+            set
+            {
+                Set(() => SelectedOption, ref selectedOption, value);
+                if (SelectedOption != null)
+                {
+                    if (typeof(Option) == SelectedOption.GetType())
+                    {
+                        for (int i = Screens.Count - 1; i > ((Option)SelectedOption).ScreenId; i--)
+                            Screens.RemoveAt(i);
+                        Screens.Add(((Option)SelectedOption).ResultingScreen);
+                    }
+                }
+            }
+        }
+
+        private ObservableCollection<Screen> screens = new ObservableCollection<Screen>();
+        public ObservableCollection<Screen> Screens
+        {
+            get
+            {
+                return screens;
+            }
+            set
+            {
+                Set(() => Screens, ref screens, value);
             }
         }
 
@@ -585,7 +623,7 @@ namespace Eventful.ViewModel
                     if (DataStorage.RenameEvent(SelectedEvent, SelectedDeck, dialogResult))
                     {
                         SelectedEvent.Title = dialogResult;
-                        SelectedEvent.IsChanged = false;
+                        //SelectedEvent.IsChanged = false;
                     }
                 }
                 else
@@ -653,7 +691,9 @@ namespace Eventful.ViewModel
                 ev.Date = DateTime.Now;
                 bool success = DataStorage.SaveEventToDisk(ev, deck);
                 if (success)
-                    ev.IsChanged = false;
+                {
+                    //ev.IsChanged = false;
+                }
                 else
                     await MessageWindowsViewModel.ShowOkMessage("Couldn't Save Event", "The event was not saved successfully. Try again later and ensure the save folder is accessible.");
             }
@@ -671,7 +711,8 @@ namespace Eventful.ViewModel
         {
             if (SelectedEvent != null)
             {
-                if (SelectedEvent.IsChanged)
+                //if (SelectedEvent.IsChanged)
+                if (false)
                 {
                     bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Sync Data", "You haven't saved your changes yet. If you sync they will be lost. Are you sure you want to sync?");
                     if (dialogResult)
@@ -809,7 +850,7 @@ namespace Eventful.ViewModel
             MessengerInstance.Send<ObservableCollection<Variable>>(Variables);
         }
 
-        private ObservableCollection<Variable> variables;
+        private ObservableCollection<Variable> variables = new ObservableCollection<Variable>();
         public ObservableCollection<Variable> Variables
         {
             get

@@ -203,7 +203,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="60" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="100" />
                 <RowDefinition Height="30" />
             </Grid.RowDefinitions>
             <Grid>
@@ -236,14 +235,33 @@
                 </StackPanel>
             </Grid>
 
-            <LocalControls:MvvmTextEditor SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding SelectedEvent.StartingScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt" Grid.Row="1" />
-            <!--<ListBox ItemsSource="{Binding SelectedEvent.Options}" Grid.Row="2" />-->
-            <DataGrid Grid.Row="2" SelectionMode="Single" Margin="0,5" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column"  ItemsSource="{Binding SelectedEvent.StartingScreen.Options}" VerticalScrollBarVisibility="Auto">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Actions" Binding="{Binding Text}" Width="*" />
-                </DataGrid.Columns>
-            </DataGrid>
-            
+            <ListView Grid.Row="1" ItemsSource="{Binding Screens}" Margin="0,5">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="200" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="600" />
+                            </Grid.ColumnDefinitions>
+                            <LocalControls:MvvmTextEditor SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt" Grid.Row="0" />
+                            <DataGrid Grid.Row="1" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding DataContext.SelectedOption, RelativeSource={RelativeSource FindAncestor, AncestorType=ListView}}" ItemsSource="{Binding Options}" VerticalScrollBarVisibility="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Actions" Binding="{Binding Text}" Width="*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
             <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />
         </Grid>
 
