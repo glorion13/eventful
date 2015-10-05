@@ -307,8 +307,10 @@ namespace Eventful.ViewModel
                 {
                     if (typeof(Option) == SelectedOption.GetType())
                     {
-                        for (int i = Screens.Count - 1; i > ((Option)SelectedOption).ScreenId; i--)
+                        int index = Screens.FirstOrDefault(scr => scr.Options.Contains((Option)SelectedOption)).Id;
+                        for (int i = Screens.Count - 1; i > index; i--)
                             Screens.RemoveAt(i);
+                        ((Option)SelectedOption).ResultingScreen.Id = index;
                         Screens.Add(((Option)SelectedOption).ResultingScreen);
                     }
                 }

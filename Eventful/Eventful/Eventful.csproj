@@ -140,8 +140,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\AutoScrollingListView.cs" />
     <Compile Include="Controls\AvalonTextBehavior.cs" />
     <Compile Include="Controls\MvvmTextEditor.cs" />
+    <Compile Include="Controls\SpellCheckBehavior.cs" />
+    <Compile Include="Controls\SpellingErrorColorizer.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="EventEditor.xaml.cs">
