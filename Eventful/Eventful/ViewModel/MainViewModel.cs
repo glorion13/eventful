@@ -287,38 +287,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        private Option selectedOption;
-        public Option SelectedOption
-        {
-            get
-            {
-                return selectedOption;
-            }
-            set
-            {
-                Set(() => SelectedOption, ref selectedOption, value);
-                if (SelectedOption != null)
-                {
-                    if (SelectedScreen.Options.Contains(SelectedOption))
-                    Screens.Add(SelectedOption.ResultingScreen);
-                    SelectedScreen = SelectedOption.ResultingScreen;
-                }
-            }
-        }
-
-        private ObservableCollection<Screen> screens = new ObservableCollection<Screen>();
-        public ObservableCollection<Screen> Screens
-        {
-            get
-            {
-                return screens;
-            }
-            set
-            {
-                Set(() => Screens, ref screens, value);
-            }
-        }
-
         private Event selectedEvent;
         public Event SelectedEvent
         {

@@ -256,7 +256,7 @@
                                     <LocalControls:SpellCheckBehavior />
                                 </Interactivity:Interaction.Behaviors>
                             </LocalControls:MvvmTextEditor>
-                            <DataGrid Grid.Row="1" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding DataContext.SelectedOption, RelativeSource={RelativeSource FindAncestor, AncestorType=AutoScrollingListView}}" ItemsSource="{Binding Options}" VerticalScrollBarVisibility="Auto">
+                            <DataGrid Grid.Row="1" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding DataContext.SelectedOption, RelativeSource={RelativeSource FindAncestor, AncestorType=ListView}}" ItemsSource="{Binding Options}" VerticalScrollBarVisibility="Auto">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Actions" Binding="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </DataGrid.Columns>
