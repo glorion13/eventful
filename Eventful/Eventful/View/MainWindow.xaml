@@ -13,6 +13,7 @@
     xmlns:LocalControls="clr-namespace:Eventful.Controls"
     xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+    xmlns:dragdrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
     Title="Eventful" Height="768" Width="1024"
     Icon="../Images/Pencil.ico"
     ShowTitleBar="True"  
@@ -128,7 +129,7 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveDeckButtonEnabled}" Command="{Binding RemoveDeckCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-            <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
+            <DataGrid dragdrop:DragDrop.IsDropTarget="True" dragdrop:DragDrop.DropHandler="{Binding}" SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=RemoveDeckCommand}" 
                                 Key="Delete"/>
@@ -171,7 +172,7 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveEventButtonEnabled}" Command="{Binding RemoveEventCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-            <DataGrid SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="1">
+            <DataGrid dragdrop:DragDrop.IsDragSource="True" SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=DuplicateEventCommand}" 
                                 Key="D" 
@@ -211,13 +212,14 @@
                     <RowDefinition Height="20" />
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0">
-                    <MetroControls:SplitButton VerticalAlignment="Center" FontSize="22" MaxWidth="150" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedDeck, Mode=OneWay}" ItemsSource="{Binding Decks}" DisplayMemberPath="Title">
+                    <!--<MetroControls:SplitButton VerticalAlignment="Center" FontSize="22" MaxWidth="150" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedDeck, Mode=OneWay}" ItemsSource="{Binding Decks}" DisplayMemberPath="Title">
                         <Interactivity:Interaction.Triggers>
                             <Interactivity:EventTrigger EventName="SelectionChanged">
                                 <MvvmControls:EventToCommand Command="{Binding MoveEventToDeckCommand}" PassEventArgsToCommand="True" />
                             </Interactivity:EventTrigger>
                         </Interactivity:Interaction.Triggers>
-                    </MetroControls:SplitButton>
+                    </MetroControls:SplitButton>-->
+                    <TextBlock Text="{Binding SelectedDeck.Title}" FontSize="28" />
                     <TextBlock Text=" > " FontSize="28" />
                     <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28">
                         <Interactivity:Interaction.Triggers>

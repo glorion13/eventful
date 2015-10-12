@@ -17,10 +17,12 @@ using System.Collections.Generic;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using Eventful.Auxiliary;
+using GongSolutions.Wpf.DragDrop;
+using System.Windows;
 
 namespace Eventful.ViewModel
 {
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase, IDropTarget
     {
         public MainViewModel()
         {
@@ -311,6 +313,26 @@ namespace Eventful.ViewModel
                     Screens.Add(SelectedEvent.StartingScreen);
                 }
             }
+        }
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            Event sourceItem = dropInfo.Data as Event;
+            Deck targetItem = dropInfo.TargetItem as Deck;
+
+            if (sourceItem != null && targetItem != null)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Move;
+            }
+        }
+
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            Event sourceItem = dropInfo.Data as Event;
+            Deck targetItem = dropInfo.TargetItem as Deck;
+            MoveEventToNewDeck(sourceItem, SelectedDeck, targetItem);
         }
 
         private object selectedOption;
