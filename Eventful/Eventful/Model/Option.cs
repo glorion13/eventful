@@ -1,11 +1,10 @@
 ﻿using GalaSoft.MvvmLight;
-using System.Collections.ObjectModel;
 
 namespace Eventful.Model
 {
     public class Option : ViewModelBase
     {
-        private Screen resultingScreen;
+        private Screen resultingScreen = new Screen();
         public Screen ResultingScreen
         {
             get

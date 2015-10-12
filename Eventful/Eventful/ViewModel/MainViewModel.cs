@@ -16,6 +16,7 @@ using System.Windows.Documents;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
+using Eventful.Auxiliary;
 
 namespace Eventful.ViewModel
 {
@@ -36,15 +37,11 @@ namespace Eventful.ViewModel
 
         private void InitialiseInAllModes()
         {
-            Variables = new ObservableCollection<Variable>();
-            Decks = new ObservableCollection<Deck>();
             DeckFilter = "";
             DecksViewSource = new CollectionViewSource();
             DecksViewSource.Source = Decks;
             EventsViewSource = new CollectionViewSource();
             DecksViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
-            InitialiseAuthor();
-            InitialiseStorageDirectory();
         }
         private void InitialiseInDesignMode()
         {
@@ -64,6 +61,8 @@ namespace Eventful.ViewModel
         }
         private void InitialiseInRealMode()
         {
+            InitialiseAuthor();
+            InitialiseStorageDirectory();
             LoadDeckMappingsFromDisk();
             BuildTagsList();
         }
@@ -121,7 +120,7 @@ namespace Eventful.ViewModel
             }
         }
 
-        private ObservableCollection<Deck> decks;
+        private ObservableCollection<Deck> decks = new ObservableCollection<Deck>();
         public ObservableCollection<Deck> Decks
         {
             get
@@ -275,6 +274,51 @@ namespace Eventful.ViewModel
             }
         }
 
+        private Screen selectedScreen;
+        public Screen SelectedScreen
+        {
+            get
+            {
+                return selectedScreen;
+            }
+            set
+            {
+                Set(() => SelectedScreen, ref selectedScreen, value);
+            }
+        }
+
+        private Option selectedOption;
+        public Option SelectedOption
+        {
+            get
+            {
+                return selectedOption;
+            }
+            set
+            {
+                Set(() => SelectedOption, ref selectedOption, value);
+                if (SelectedOption != null)
+                {
+                    if (SelectedScreen.Options.Contains(SelectedOption))
+                    Screens.Add(SelectedOption.ResultingScreen);
+                    SelectedScreen = SelectedOption.ResultingScreen;
+                }
+            }
+        }
+
+        private ObservableCollection<Screen> screens = new ObservableCollection<Screen>();
+        public ObservableCollection<Screen> Screens
+        {
+            get
+            {
+                return screens;
+            }
+            set
+            {
+                Set(() => Screens, ref screens, value);
+            }
+        }
+
         private Event selectedEvent;
         public Event SelectedEvent
         {
@@ -285,6 +329,12 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => SelectedEvent, ref selectedEvent, value);
+                if (SelectedEvent != null)
+                {
+                    Screens.Clear();
+                    Screens.Add(SelectedEvent.StartingScreen);
+                    SelectedScreen = SelectedEvent.StartingScreen;
+                }
                 IsEditEventVisible = SelectedEvent == null ? false : true;
                 IsRemoveEventButtonEnabled = SelectedEvent == null ? false : true;
             }
@@ -363,7 +413,7 @@ namespace Eventful.ViewModel
                 }
                 else if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
                     AddNewDeck(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
-                else if (!FilenameStringCheck(dialogResult))
+                else if (!StringChecker.FilenameStringCheck(dialogResult))
                     AddNewDeck(filenameErrorMessage);
                 else
                 {
@@ -418,7 +468,7 @@ namespace Eventful.ViewModel
                 if (dialogResult == null)
                 {
                 }
-                else if (FilenameStringCheck(dialogResult))
+                else if (StringChecker.FilenameStringCheck(dialogResult))
                 {
                     Event tempEvent = new Event(dialogResult);
                     AddEventToDeck(tempEvent, SelectedDeck);
@@ -545,7 +595,7 @@ namespace Eventful.ViewModel
                 }
                 else if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
                     ChangeDeckName(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
-                else if (!FilenameStringCheck(dialogResult))
+                else if (!StringChecker.FilenameStringCheck(dialogResult))
                 {
                     ChangeDeckName(filenameErrorMessage);
                 }
@@ -580,12 +630,12 @@ namespace Eventful.ViewModel
                 else if (dialogResult == SelectedEvent.Title)
                 {
                 }
-                else if (FilenameStringCheck(dialogResult))
+                else if (StringChecker.FilenameStringCheck(dialogResult))
                 {
                     if (DataStorage.RenameEvent(SelectedEvent, SelectedDeck, dialogResult))
                     {
                         SelectedEvent.Title = dialogResult;
-                        SelectedEvent.IsChanged = false;
+                        //SelectedEvent.IsChanged = false;
                     }
                 }
                 else
@@ -594,31 +644,6 @@ namespace Eventful.ViewModel
         }
 
         private string filenameErrorMessage = "A title cannot be empty, nor contain any of the following characters: \n \\ / : * ? \" < > |";
-        private bool FilenameStringCheck(string dialogResult)
-        {
-            if (dialogResult == "")
-                return false;
-            // \\ / : * ? \" < > | not allowed by Windows
-            if (dialogResult.Contains("\\"))
-                return false;
-            if (dialogResult.Contains("/"))
-                return false;
-            if (dialogResult.Contains(":"))
-                return false;
-            if (dialogResult.Contains("*"))
-                return false;
-            if (dialogResult.Contains("?"))
-                return false;
-            if (dialogResult.Contains("\""))
-                return false;
-            if (dialogResult.Contains("<"))
-                return false;
-            if (dialogResult.Contains(">"))
-                return false;
-            if (dialogResult.Contains("|"))
-                return false;
-            return true;
-        }
 
         private RelayCommand eventTextChangedCommand;
         public RelayCommand EventTextChangedCommand
@@ -653,7 +678,9 @@ namespace Eventful.ViewModel
                 ev.Date = DateTime.Now;
                 bool success = DataStorage.SaveEventToDisk(ev, deck);
                 if (success)
-                    ev.IsChanged = false;
+                {
+                    //ev.IsChanged = false;
+                }
                 else
                     await MessageWindowsViewModel.ShowOkMessage("Couldn't Save Event", "The event was not saved successfully. Try again later and ensure the save folder is accessible.");
             }
@@ -671,7 +698,7 @@ namespace Eventful.ViewModel
         {
             if (SelectedEvent != null)
             {
-                if (SelectedEvent.IsChanged)
+                if (SelectedEvent != null)// IsChanged
                 {
                     bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Sync Data", "You haven't saved your changes yet. If you sync they will be lost. Are you sure you want to sync?");
                     if (dialogResult)
@@ -809,7 +836,7 @@ namespace Eventful.ViewModel
             MessengerInstance.Send<ObservableCollection<Variable>>(Variables);
         }
 
-        private ObservableCollection<Variable> variables;
+        private ObservableCollection<Variable> variables = new ObservableCollection<Variable>();
         public ObservableCollection<Variable> Variables
         {
             get

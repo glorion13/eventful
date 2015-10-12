@@ -24,6 +24,7 @@ namespace Eventful.Controls
 
         public MvvmTextEditor()
         {
+            TextArea.TextView.LineTransformers.Add(new SpellingErrorColorizer());
             SetupTextEditorForFolding();
             SetupTextEditorAutocomplete();
             //SetupTextEditorSyntaxHighlight();

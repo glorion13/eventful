@@ -136,7 +136,7 @@ namespace Eventful.Model
                 {
                     string subDirectory = file.Replace(StorageDirectory, "");
                     Event newEvent = await Task.Run(() => LoadEventFromDisk(subDirectory));
-                    newEvent.IsChanged = false;
+                    //newEvent.IsChanged = false;
                     if (newEvent != null)
                         deck.Events.Add(newEvent);
                 }
@@ -277,7 +277,7 @@ namespace Eventful.Model
                 Event newEvent = new Event(ev);
                 newEvent.Title = newEventTitle;
                 newEvent.Id = ev.Id;
-                newEvent.IsChanged = false;
+                //newEvent.IsChanged = false;
                 bool success = SaveEventToDisk(newEvent, deck);
                 if (success)
                     DeleteEvent(ev, deck);

@@ -58,10 +58,6 @@
             </StackPanel>
         </Grid>
 
-        <avalonEdit:TextEditor IsReadOnly="True"  Name="mvvmTextEditor" Grid.Row="1" SyntaxHighlighting="ESL">
-            <Interactivity:Interaction.Behaviors>
-                <LocalControls:AvalonEditBehavior TextBindBehavior="{Binding SelectedEvent.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            </Interactivity:Interaction.Behaviors>
-        </avalonEdit:TextEditor>
+
     </Grid>
 </MetroControls:MetroWindow>
