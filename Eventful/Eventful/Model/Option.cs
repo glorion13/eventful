@@ -17,7 +17,7 @@ namespace Eventful.Model
             }
         }
 
-        private string text;
+        private string text = "Enter text here";
         public string Text
         {
             get

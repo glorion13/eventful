@@ -235,13 +235,13 @@
                 </StackPanel>
             </Grid>
 
-            <ListView Margin="0,5" ItemsSource="{Binding Screens}" SelectedItem="{Binding SelectedScreen}" Grid.Row="1">
-                <ListView.ItemsPanel>
+            <LocalControls:AutoScrollingListView Grid.Row="1" ItemsSource="{Binding Screens}" Margin="0,5">
+                <LocalControls:AutoScrollingListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
                     </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
+                </LocalControls:AutoScrollingListView.ItemsPanel>
+                <LocalControls:AutoScrollingListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
                             <Grid.RowDefinitions>
@@ -250,22 +250,21 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="600" />
-                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <LocalControls:MvvmTextEditor SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt" Grid.Row="0">
+                            <LocalControls:MvvmTextEditor HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt" Grid.Row="0">
                                 <Interactivity:Interaction.Behaviors>
                                     <LocalControls:SpellCheckBehavior />
                                 </Interactivity:Interaction.Behaviors>
                             </LocalControls:MvvmTextEditor>
-                            <DataGrid Grid.Row="1" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column"  ItemsSource="{Binding Options}" SelectedItem="{Binding DataContext.SelectedOption, RelativeSource={RelativeSource AncestorType=ListView}}" VerticalScrollBarVisibility="Auto">
+                            <DataGrid Grid.Row="1" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding DataContext.SelectedOption, RelativeSource={RelativeSource FindAncestor, AncestorType=AutoScrollingListView}}" ItemsSource="{Binding Options}" VerticalScrollBarVisibility="Auto">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Actions" Binding="{Binding Text}" Width="*" />
+                                    <DataGridTextColumn Header="Actions" Binding="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </LocalControls:AutoScrollingListView.ItemTemplate>
+            </LocalControls:AutoScrollingListView>
 
             <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />
         </Grid>

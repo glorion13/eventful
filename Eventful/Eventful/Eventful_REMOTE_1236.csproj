@@ -140,7 +140,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Auxiliary\StringChecker.cs" />
     <Compile Include="Controls\AutoScrollingListView.cs" />
     <Compile Include="Controls\AvalonTextBehavior.cs" />
     <Compile Include="Controls\MvvmTextEditor.cs" />

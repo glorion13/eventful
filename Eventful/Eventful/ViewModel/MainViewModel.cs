@@ -337,6 +337,48 @@ namespace Eventful.ViewModel
                 }
                 IsEditEventVisible = SelectedEvent == null ? false : true;
                 IsRemoveEventButtonEnabled = SelectedEvent == null ? false : true;
+                if (SelectedEvent != null)
+                {
+                    Screens.Clear();
+                    Screens.Add(SelectedEvent.StartingScreen);
+                }
+            }
+        }
+
+        private object selectedOption;
+        public object SelectedOption
+        {
+            get
+            {
+                return selectedOption;
+            }
+            set
+            {
+                Set(() => SelectedOption, ref selectedOption, value);
+                if (SelectedOption != null)
+                {
+                    if (typeof(Option) == SelectedOption.GetType())
+                    {
+                        int index = Screens.FirstOrDefault(scr => scr.Options.Contains((Option)SelectedOption)).Id;
+                        for (int i = Screens.Count - 1; i > index; i--)
+                            Screens.RemoveAt(i);
+                        ((Option)SelectedOption).ResultingScreen.Id = index;
+                        Screens.Add(((Option)SelectedOption).ResultingScreen);
+                    }
+                }
+            }
+        }
+
+        private ObservableCollection<Screen> screens = new ObservableCollection<Screen>();
+        public ObservableCollection<Screen> Screens
+        {
+            get
+            {
+                return screens;
+            }
+            set
+            {
+                Set(() => Screens, ref screens, value);
             }
         }
 
@@ -699,6 +741,7 @@ namespace Eventful.ViewModel
             if (SelectedEvent != null)
             {
                 if (SelectedEvent != null)// IsChanged
+                //if (SelectedEvent.IsChanged)
                 {
                     bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Sync Data", "You haven't saved your changes yet. If you sync they will be lost. Are you sure you want to sync?");
                     if (dialogResult)

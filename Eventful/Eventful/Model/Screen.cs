@@ -9,6 +9,11 @@ namespace Eventful.Model
         {
         }
 
+        public Screen(int parentId)
+        {
+            Id = parentId + 1;
+        }
+
         private string text = "<EventBody>\n\n</EventBody>";
         public string Text
         {
@@ -19,6 +24,19 @@ namespace Eventful.Model
             set
             {
                 Set(() => Text, ref text, value);
+            }
+        }
+
+        private int id = 0;
+        public int Id
+        {
+            get
+            {
+                return id;
+            }
+            set
+            {
+                Set(() => Id, ref id, value);
             }
         }
 
