@@ -13,6 +13,8 @@
     xmlns:LocalControls="clr-namespace:Eventful.Controls"
     xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+    xmlns:NetworkModel="clr-namespace:NetworkModel;assembly=NetworkModel"
+    xmlns:NetworkUI="clr-namespace:NetworkUI;assembly=NetworkUI"
     xmlns:dragdrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
     Title="Eventful" Height="768" Width="1024"
     Icon="../Images/Pencil.ico"
@@ -39,6 +41,17 @@
                 </Setter>
                 <Setter Property="VerticalAlignment">
                     <Setter.Value>Stretch</Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="HorizontalGridSplitterStyle" TargetType="GridSplitter">
+                <Setter Property="Height">
+                    <Setter.Value>2</Setter.Value>
+                </Setter>
+                <Setter Property="HorizontalAlignment">
+                    <Setter.Value>Stretch</Setter.Value>
+                </Setter>
+                <Setter Property="VerticalAlignment">
+                    <Setter.Value>Center</Setter.Value>
                 </Setter>
             </Style>
             <Converters:BooleanToVisibilityConverter x:Key="BoolToVisibility" />
@@ -203,6 +216,8 @@
         <Grid Grid.Row="0" Grid.Column="2" Margin="5" Visibility="{Binding IsEditEventVisible, Converter={StaticResource BoolToVisibility}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="60" />
+                <RowDefinition Height="200" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="30" />
             </Grid.RowDefinitions>
@@ -212,13 +227,6 @@
                     <RowDefinition Height="20" />
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0">
-                    <!--<MetroControls:SplitButton VerticalAlignment="Center" FontSize="22" MaxWidth="150" IsTextSearchEnabled="True" SelectedItem="{Binding SelectedDeck, Mode=OneWay}" ItemsSource="{Binding Decks}" DisplayMemberPath="Title">
-                        <Interactivity:Interaction.Triggers>
-                            <Interactivity:EventTrigger EventName="SelectionChanged">
-                                <MvvmControls:EventToCommand Command="{Binding MoveEventToDeckCommand}" PassEventArgsToCommand="True" />
-                            </Interactivity:EventTrigger>
-                        </Interactivity:Interaction.Triggers>
-                    </MetroControls:SplitButton>-->
                     <TextBlock Text="{Binding SelectedDeck.Title}" FontSize="28" />
                     <TextBlock Text=" > " FontSize="28" />
                     <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28">
@@ -237,38 +245,44 @@
                 </StackPanel>
             </Grid>
 
-            <LocalControls:AutoScrollingListView Grid.Row="1" ItemsSource="{Binding Screens}" Margin="0,5">
-                <LocalControls:AutoScrollingListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </LocalControls:AutoScrollingListView.ItemsPanel>
-                <LocalControls:AutoScrollingListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="200" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="600" />
-                            </Grid.ColumnDefinitions>
-                            <LocalControls:MvvmTextEditor HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt" Grid.Row="0">
-                                <Interactivity:Interaction.Behaviors>
-                                    <LocalControls:SpellCheckBehavior />
-                                </Interactivity:Interaction.Behaviors>
-                            </LocalControls:MvvmTextEditor>
-                            <DataGrid Grid.Row="1" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding DataContext.SelectedOption, RelativeSource={RelativeSource FindAncestor, AncestorType=ListView}}" ItemsSource="{Binding Options}" VerticalScrollBarVisibility="Auto">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Actions" Binding="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
-                    </DataTemplate>
-                </LocalControls:AutoScrollingListView.ItemTemplate>
-            </LocalControls:AutoScrollingListView>
+            <ScrollViewer Grid.Row="1">
+                <ScrollViewer.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Create Node" Command="{Binding CreateNode}" ToolTip="Creates a new node"/>
+                    </ContextMenu>
+                </ScrollViewer.ContextMenu>
+                <NetworkUI:NetworkView NodesSource="{Binding Test}" ConnectionsSource="{Binding Connections}">
+                    <NetworkUI:NetworkView.NodeItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Rectangle Fill="AliceBlue" />
+                                <TextBlock Text="{Binding}" />
+                            </Grid>
+                        </DataTemplate>
+                    </NetworkUI:NetworkView.NodeItemTemplate>
+                    <NetworkUI:NetworkView.ConnectionItemTemplate>
+                        <DataTemplate>
+                            <Rectangle Fill="Black" />
+                        </DataTemplate>
+                    </NetworkUI:NetworkView.ConnectionItemTemplate>
+                </NetworkUI:NetworkView>
+            </ScrollViewer>
+            <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="3" Width="80" HorizontalAlignment="Right" />
+            <LocalControls:MvvmTextEditor HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt" Grid.Row="2">
+                <Interactivity:Interaction.Behaviors>
+                    <LocalControls:SpellCheckBehavior />
+                </Interactivity:Interaction.Behaviors>
+            </LocalControls:MvvmTextEditor>
+            <GridSplitter Grid.Row="3" Style="{StaticResource HorizontalGridSplitterStyle}" />
+
+            <DataGrid Grid.Row="3" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding DataContext.SelectedOption, RelativeSource={RelativeSource FindAncestor, AncestorType=ListView}}" ItemsSource="{Binding Options}" VerticalScrollBarVisibility="Auto">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Actions" Binding="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="4" Width="80" HorizontalAlignment="Right" />
         </Grid>
 
         <Border Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
