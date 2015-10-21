@@ -4,18 +4,10 @@ using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.IO;
 using System.Windows.Data;
-using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
-using System.Threading.Tasks;
 using System.Linq;
 using WPFFolderBrowser;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Collections.Generic;
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Document;
 using Eventful.Auxiliary;
 using GongSolutions.Wpf.DragDrop;
 using System.Windows;
@@ -51,8 +43,6 @@ namespace Eventful.ViewModel
             Deck undeadDeck = new Deck("Undead Army");
             mainDeck.Events.Add(new Event("Finding Timmy: A Bewildering Adventure"));
             Event ev = new Event("Cinding Timmy");
-            ev.StartingScreen.Text = "Hello world.";
-            //ev.Options.Add(new Option());
             mainDeck.Events.Add(ev);
             mainDeck.Events.Add(new Event("Ainding Timmy"));
             mainDeck.Events.Add(new Event("Binding Timmy"));
@@ -66,17 +56,6 @@ namespace Eventful.ViewModel
             InitialiseAuthor();
             InitialiseStorageDirectory();
             LoadDeckMappingsFromDisk();
-            BuildTagsList();
-        }
-
-        private void BuildTagsList()
-        {
-            /*foreach (Deck deck in Decks)
-                foreach (Event ev in deck.Events)
-                    foreach (Option option in ev.Options)
-                        foreach (Result result in option.Results)
-                            if (result.Parameter is Tag)
-                                MessengerInstance.Send<Tag>(new Tag("lol"));*/
         }
 
         private bool DeckTitleContains(object obj)
@@ -267,12 +246,27 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => SelectedDeck, ref selectedDeck, value);
-                IsRemoveDeckButtonEnabled = SelectedDeck == null ? false : true;
-                IsAddEventButtonEnabled = SelectedDeck == null ? false : true;
+                IsRemoveDeckButtonEnabled = !(SelectedDeck == null);
+                IsAddEventButtonEnabled = !(SelectedDeck == null);
                 EventsViewSource.Source = SelectedDeck == null ? new ObservableCollection<Event>() : SelectedDeck.Events;
                 EventsViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
                 if (SelectedDeck != null)
                     LoadSelectedDeckEventMappingsFromDisk();
+            }
+        }
+
+        private Event selectedEvent;
+        public Event SelectedEvent
+        {
+            get
+            {
+                return selectedEvent;
+            }
+            set
+            {
+                Set(() => SelectedEvent, ref selectedEvent, value);
+                IsEditEventVisible = !(SelectedEvent == null);
+                IsRemoveEventButtonEnabled = !(SelectedEvent == null);
             }
         }
 
@@ -289,29 +283,16 @@ namespace Eventful.ViewModel
             }
         }
 
-        private Event selectedEvent;
-        public Event SelectedEvent
+        private object selectedOption;
+        public object SelectedOption
         {
             get
             {
-                return selectedEvent;
+                return selectedOption;
             }
             set
             {
-                Set(() => SelectedEvent, ref selectedEvent, value);
-                if (SelectedEvent != null)
-                {
-                    Screens.Clear();
-                    Screens.Add(SelectedEvent.StartingScreen);
-                    SelectedScreen = SelectedEvent.StartingScreen;
-                }
-                IsEditEventVisible = SelectedEvent == null ? false : true;
-                IsRemoveEventButtonEnabled = SelectedEvent == null ? false : true;
-                if (SelectedEvent != null)
-                {
-                    Screens.Clear();
-                    Screens.Add(SelectedEvent.StartingScreen);
-                }
+                Set(() => SelectedOption, ref selectedOption, value);
             }
         }
 
@@ -326,50 +307,11 @@ namespace Eventful.ViewModel
                 dropInfo.Effects = DragDropEffects.Move;
             }
         }
-
-
         public void Drop(IDropInfo dropInfo)
         {
             Event sourceItem = dropInfo.Data as Event;
             Deck targetItem = dropInfo.TargetItem as Deck;
             MoveEventToNewDeck(sourceItem, SelectedDeck, targetItem);
-        }
-
-        private object selectedOption;
-        public object SelectedOption
-        {
-            get
-            {
-                return selectedOption;
-            }
-            set
-            {
-                Set(() => SelectedOption, ref selectedOption, value);
-                if (SelectedOption != null)
-                {
-                    if (typeof(Option) == SelectedOption.GetType())
-                    {
-                        int index = Screens.FirstOrDefault(scr => scr.Options.Contains((Option)SelectedOption)).Id;
-                        for (int i = Screens.Count - 1; i > index; i--)
-                            Screens.RemoveAt(i);
-                        ((Option)SelectedOption).ResultingScreen.Id = index;
-                        Screens.Add(((Option)SelectedOption).ResultingScreen);
-                    }
-                }
-            }
-        }
-
-        private ObservableCollection<Screen> screens = new ObservableCollection<Screen>();
-        public ObservableCollection<Screen> Screens
-        {
-            get
-            {
-                return screens;
-            }
-            set
-            {
-                Set(() => Screens, ref screens, value);
-            }
         }
 
         private bool isStatusbarVisible = true;
@@ -395,6 +337,20 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => IsEditEventVisible, ref isEditEventVisible, value);
+                IsEditEventNotVisible = !IsEditEventVisible;
+            }
+        }
+
+        private bool isEditEventNotVisible = true;
+        public bool IsEditEventNotVisible
+        {
+            get
+            {
+                return isEditEventNotVisible;
+            }
+            set
+            {
+                Set(() => IsEditEventNotVisible, ref isEditEventNotVisible, value);
             }
         }
 
@@ -409,6 +365,18 @@ namespace Eventful.ViewModel
             {
                 Set(() => IsSettingsFlyoutVisible, ref isSettingsFlyoutVisible, value);
             }
+        }
+        private RelayCommand showSettingsCommand;
+        public RelayCommand ShowSettingsCommand
+        {
+            get
+            {
+                return showSettingsCommand ?? (showSettingsCommand = new RelayCommand(ExecuteShowSettingsCommand));
+            }
+        }
+        private void ExecuteShowSettingsCommand()
+        {
+            IsSettingsFlyoutVisible = !IsSettingsFlyoutVisible;
         }
 
         private bool isAddDeckButtonEnabled = true;
@@ -589,19 +557,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        private RelayCommand showSettingsCommand;
-        public RelayCommand ShowSettingsCommand
-        {
-            get
-            {
-                return showSettingsCommand ?? (showSettingsCommand = new RelayCommand(ExecuteShowSettingsCommand));
-            }
-        }
-        private void ExecuteShowSettingsCommand()
-        {
-            IsSettingsFlyoutVisible = !IsSettingsFlyoutVisible;
-        }
-
         private RelayCommand changeDeckNameCommand;
         public RelayCommand ChangeDeckNameCommand
         {
@@ -687,7 +642,19 @@ namespace Eventful.ViewModel
         }
         private void ExecuteTextChangedCommand()
         {
+        }
 
+        private RelayCommand<object> selectedScreenChangedCommand;
+        public RelayCommand<object> SelectedScreenChangedCommand
+        {
+            get
+            {
+                return selectedScreenChangedCommand ?? (selectedScreenChangedCommand = new RelayCommand<object>(ExecuteSelectedScreenChangedCommand));
+            }
+        }
+        private void ExecuteSelectedScreenChangedCommand(object screen)
+        {
+            SelectedScreen = screen as Screen;
         }
 
         private RelayCommand saveEventCommand;
@@ -710,9 +677,7 @@ namespace Eventful.ViewModel
                 ev.Date = DateTime.Now;
                 bool success = DataStorage.SaveEventToDisk(ev, deck);
                 if (success)
-                {
-                    //ev.IsChanged = false;
-                }
+                    ev.IsChanged = false;
                 else
                     await MessageWindowsViewModel.ShowOkMessage("Couldn't Save Event", "The event was not saved successfully. Try again later and ensure the save folder is accessible.");
             }
@@ -730,8 +695,7 @@ namespace Eventful.ViewModel
         {
             if (SelectedEvent != null)
             {
-                if (SelectedEvent != null)// IsChanged
-                //if (SelectedEvent.IsChanged)
+                if (SelectedEvent.IsChanged)
                 {
                     bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Sync Data", "You haven't saved your changes yet. If you sync they will be lost. Are you sure you want to sync?");
                     if (dialogResult)

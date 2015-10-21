@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using System.Collections.ObjectModel;
 
 namespace Eventful.Model
 {
@@ -29,6 +30,20 @@ namespace Eventful.Model
                 Set(() => Text, ref text, value);
             }
         }
+
+        private ObservableCollection<int> actions = new ObservableCollection<int>();
+        public ObservableCollection<int> Actions
+        {
+            get
+            {
+                return actions;
+            }
+            set
+            {
+                Set(() => Actions, ref actions, value);
+            }
+        }
+
 
     }
 }

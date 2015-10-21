@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using System;
+using System.Collections.ObjectModel;
 
 namespace Eventful.Model
 {
@@ -8,27 +9,30 @@ namespace Eventful.Model
     {
         public Event()
         {
+            Screens.Add(new Screen());
         }
         public Event(string title)
         {
+            Screens.Add(new Screen());
             Title = title;
         }
         public Event(Event ev)
         {
+            Screens.Add(new Screen());
             Title = ev.Title;
             Author = ev.Author;
         }
 
-        private Screen startingScreen = new Screen();
-        public Screen StartingScreen
+        private ObservableCollection<Screen> screens = new ObservableCollection<Screen>();
+        public ObservableCollection<Screen> Screens
         {
             get
             {
-                return startingScreen;
+                return screens;
             }
             set
             {
-                Set(() => StartingScreen, ref startingScreen, value);
+                Set(() => Screens, ref screens, value);
             }
         }
 
@@ -68,6 +72,19 @@ namespace Eventful.Model
             set
             {
                 Set(() => Author, ref author, value);
+            }
+        }
+
+        private bool isChanged;
+        public bool IsChanged
+        {
+            get
+            {
+                return isChanged;
+            }
+            set
+            {
+                Set(() => IsChanged, ref isChanged, value);
             }
         }
 

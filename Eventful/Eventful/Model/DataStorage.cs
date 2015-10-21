@@ -277,7 +277,7 @@ namespace Eventful.Model
                 Event newEvent = new Event(ev);
                 newEvent.Title = newEventTitle;
                 newEvent.Id = ev.Id;
-                //newEvent.IsChanged = false;
+                newEvent.IsChanged = false;
                 bool success = SaveEventToDisk(newEvent, deck);
                 if (success)
                     DeleteEvent(ev, deck);

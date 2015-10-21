@@ -9,9 +9,17 @@ namespace Eventful.Model
         {
         }
 
-        public Screen(int parentId)
+        private string title;
+        public string Title
         {
-            Id = parentId + 1;
+            get
+            {
+                return title;
+            }
+            set
+            {
+                Set(() => Title, ref title, value);
+            }
         }
 
         private string text = "<EventBody>\n\n</EventBody>";
@@ -24,19 +32,6 @@ namespace Eventful.Model
             set
             {
                 Set(() => Text, ref text, value);
-            }
-        }
-
-        private int id = 0;
-        public int Id
-        {
-            get
-            {
-                return id;
-            }
-            set
-            {
-                Set(() => Id, ref id, value);
             }
         }
 

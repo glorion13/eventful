@@ -212,13 +212,15 @@
         </Grid>
         <GridSplitter Grid.Row="0" Grid.Column="1" Style="{StaticResource GridSplitterStyle}" />
 
-        <TextBlock Text="No events selected to edit." Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <TextBlock Text="No events selected to edit." Visibility="{Binding IsEditEventNotVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
         <Grid Grid.Row="0" Grid.Column="2" Margin="5" Visibility="{Binding IsEditEventVisible, Converter={StaticResource BoolToVisibility}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="60" />
                 <RowDefinition Height="200" />
+                <RowDefinition Height="5" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="150" />
                 <RowDefinition Height="30" />
             </Grid.RowDefinitions>
             <Grid>
@@ -251,12 +253,17 @@
                         <MenuItem Header="Create Node" Command="{Binding CreateNode}" ToolTip="Creates a new node"/>
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
-                <NetworkUI:NetworkView NodesSource="{Binding Test}" ConnectionsSource="{Binding Connections}">
+                <NetworkUI:NetworkView NodesSource="{Binding SelectedEvent.Screens}" ConnectionsSource="{Binding Connections}" >
+                    <Interactivity:Interaction.Triggers>
+                        <Interactivity:EventTrigger EventName="SelectionChanged">
+                            <Interactivity:InvokeCommandAction CommandParameter="{Binding}" Command="{Binding SelectedScreenChangedCommand}" />
+                        </Interactivity:EventTrigger>
+                    </Interactivity:Interaction.Triggers>
                     <NetworkUI:NetworkView.NodeItemTemplate>
                         <DataTemplate>
                             <Grid>
                                 <Rectangle Fill="AliceBlue" />
-                                <TextBlock Text="{Binding}" />
+                                <TextBlock Text="{Binding Text}" />
                             </Grid>
                         </DataTemplate>
                     </NetworkUI:NetworkView.NodeItemTemplate>
@@ -269,20 +276,20 @@
             </ScrollViewer>
             <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-            <LocalControls:MvvmTextEditor HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt" Grid.Row="2">
+            <LocalControls:MvvmTextEditor Grid.Row="3" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt">
                 <Interactivity:Interaction.Behaviors>
                     <LocalControls:SpellCheckBehavior />
                 </Interactivity:Interaction.Behaviors>
             </LocalControls:MvvmTextEditor>
-            <GridSplitter Grid.Row="3" Style="{StaticResource HorizontalGridSplitterStyle}" />
+            <GridSplitter Grid.Row="4" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-            <DataGrid Grid.Row="3" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding DataContext.SelectedOption, RelativeSource={RelativeSource FindAncestor, AncestorType=ListView}}" ItemsSource="{Binding Options}" VerticalScrollBarVisibility="Auto">
+            <DataGrid Grid.Row="5" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding SelectedOption}" ItemsSource="{Binding SelectedScreen.Options}" VerticalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Actions" Binding="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="4" Width="80" HorizontalAlignment="Right" />
+            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="6" Width="80" IsEnabled="{Binding SelectedEvent.IsChanged}" HorizontalAlignment="Right" />
         </Grid>
 
         <Border Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
