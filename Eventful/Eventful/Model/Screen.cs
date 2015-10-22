@@ -9,7 +9,7 @@ namespace Eventful.Model
         {
         }
 
-        private string title;
+        private string title = "Untitled Screen";
         public string Title
         {
             get
@@ -19,6 +19,32 @@ namespace Eventful.Model
             set
             {
                 Set(() => Title, ref title, value);
+            }
+        }
+
+        private int x;
+        public int X
+        {
+            get
+            {
+                return x;
+            }
+            set
+            {
+                Set(() => X, ref x, value);
+            }
+        }
+
+        private int y;
+        public int Y
+        {
+            get
+            {
+                return y;
+            }
+            set
+            {
+                Set(() => Y, ref y, value);
             }
         }
 
@@ -47,5 +73,20 @@ namespace Eventful.Model
                 Set(() => Options, ref options, value);
             }
         }
+
+        private bool isSelected;
+        public bool IsSelected
+        {
+            get
+            {
+                return isSelected;
+            }
+            set
+            {
+                Set(() => IsSelected, ref isSelected, value);
+                MessengerInstance.Send<Screen>(this);
+            }
+        }
+
     }
 }

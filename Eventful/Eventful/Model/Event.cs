@@ -9,16 +9,13 @@ namespace Eventful.Model
     {
         public Event()
         {
-            Screens.Add(new Screen());
         }
         public Event(string title)
         {
-            Screens.Add(new Screen());
             Title = title;
         }
         public Event(Event ev)
         {
-            Screens.Add(new Screen());
             Title = ev.Title;
             Author = ev.Author;
         }

@@ -55,7 +55,13 @@ namespace Eventful.ViewModel
         {
             InitialiseAuthor();
             InitialiseStorageDirectory();
+            InitialiseMessengerService();
             LoadDeckMappingsFromDisk();
+        }
+
+        private void InitialiseMessengerService()
+        {
+            MessengerInstance.Register<Screen>(this, screen => SelectedScreen = screen);
         }
 
         private bool DeckTitleContains(object obj)
@@ -267,6 +273,8 @@ namespace Eventful.ViewModel
                 Set(() => SelectedEvent, ref selectedEvent, value);
                 IsEditEventVisible = !(SelectedEvent == null);
                 IsRemoveEventButtonEnabled = !(SelectedEvent == null);
+                if (SelectedEvent == null)
+                    SelectedScreen = null;
             }
         }
 
@@ -434,6 +442,20 @@ namespace Eventful.ViewModel
             {
                 await MessageWindowsViewModel.ShowOkMessage("Couldn't Save Deck", "The deck was not saved successfully. Try again later and ensure the save folder is accessible.");
             }
+        }
+
+        private RelayCommand addScreenCommand;
+        public RelayCommand AddScreenCommand
+        {
+            get
+            {
+                return addScreenCommand ?? (addScreenCommand = new RelayCommand(ExecuteAddScreenCommand));
+            }
+        }
+        private void ExecuteAddScreenCommand()
+        {
+            if (SelectedEvent != null)
+                SelectedEvent.Screens.Add(new Screen());   
         }
 
         private bool isAddEventButtonEnabled = false;
@@ -642,19 +664,6 @@ namespace Eventful.ViewModel
         }
         private void ExecuteTextChangedCommand()
         {
-        }
-
-        private RelayCommand<object> selectedScreenChangedCommand;
-        public RelayCommand<object> SelectedScreenChangedCommand
-        {
-            get
-            {
-                return selectedScreenChangedCommand ?? (selectedScreenChangedCommand = new RelayCommand<object>(ExecuteSelectedScreenChangedCommand));
-            }
-        }
-        private void ExecuteSelectedScreenChangedCommand(object screen)
-        {
-            SelectedScreen = screen as Screen;
         }
 
         private RelayCommand saveEventCommand;

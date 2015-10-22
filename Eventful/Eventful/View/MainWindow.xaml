@@ -54,6 +54,21 @@
                     <Setter.Value>Center</Setter.Value>
                 </Setter>
             </Style>
+            <Style TargetType="{x:Type NetworkUI:NodeItem}">
+                <Setter Property="X" Value="{Binding X}" />
+                <Setter Property="Y" Value="{Binding Y}" />
+                <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+            </Style>
+            <Style TargetType="{x:Type NetworkUI:ConnectorItem}">
+                <Setter Property="Hotspot" Value="{Binding Hotspot, Mode=OneWayToSource}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type NetworkUI:ConnectorItem}">
+                            <Rectangle Stroke="Black" Fill="White" Cursor="Hand" Width="12" Height="12" RadiusX="1" RadiusY="1" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
             <Converters:BooleanToVisibilityConverter x:Key="BoolToVisibility" />
             <Converters:DateTimeToStringConverter x:Key="DateToString" />
             <Properties:Settings x:Key="Settings" />
@@ -218,6 +233,7 @@
                 <RowDefinition Height="60" />
                 <RowDefinition Height="200" />
                 <RowDefinition Height="5" />
+                <RowDefinition Height="60" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="5" />
                 <RowDefinition Height="150" />
@@ -250,46 +266,52 @@
             <ScrollViewer Grid.Row="1">
                 <ScrollViewer.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Create Node" Command="{Binding CreateNode}" ToolTip="Creates a new node"/>
+                        <MenuItem Header="Add New Screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
-                <NetworkUI:NetworkView NodesSource="{Binding SelectedEvent.Screens}" ConnectionsSource="{Binding Connections}" >
-                    <Interactivity:Interaction.Triggers>
-                        <Interactivity:EventTrigger EventName="SelectionChanged">
-                            <Interactivity:InvokeCommandAction CommandParameter="{Binding}" Command="{Binding SelectedScreenChangedCommand}" />
-                        </Interactivity:EventTrigger>
-                    </Interactivity:Interaction.Triggers>
+                <NetworkUI:NetworkView NodesSource="{Binding SelectedEvent.Screens}" ConnectionsSource="{Binding SelectedScreen.Options}" >
                     <NetworkUI:NetworkView.NodeItemTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <Rectangle Fill="AliceBlue" />
-                                <TextBlock Text="{Binding Text}" />
+                            <Grid Width="120" Height="60">
+                                <Rectangle Stroke="Orange" Fill="White" RadiusX="4" RadiusY="4" />
+                                <Grid Margin="-8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" MinWidth="10" />
+                                        <ColumnDefinition Width="Auto" MaxWidth="20" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="1" Text="{Binding Title}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <NetworkUI:ConnectorItem Grid.Column="0" DataContext="{Binding Connectors[3]}" />
+                                    <ItemsControl Grid.Column="2" ItemsSource="{Binding SelectedScreen.Options}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <VirtualizingStackPanel Orientation="Vertical" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </Grid>
                             </Grid>
                         </DataTemplate>
                     </NetworkUI:NetworkView.NodeItemTemplate>
-                    <NetworkUI:NetworkView.ConnectionItemTemplate>
-                        <DataTemplate>
-                            <Rectangle Fill="Black" />
-                        </DataTemplate>
-                    </NetworkUI:NetworkView.ConnectionItemTemplate>
                 </NetworkUI:NetworkView>
             </ScrollViewer>
             <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-            <LocalControls:MvvmTextEditor Grid.Row="3" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt">
+            <TextBox Grid.Row="3" FontSize="28" Text="{Binding SelectedScreen.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <LocalControls:MvvmTextEditor Grid.Row="4" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt">
                 <Interactivity:Interaction.Behaviors>
                     <LocalControls:SpellCheckBehavior />
                 </Interactivity:Interaction.Behaviors>
             </LocalControls:MvvmTextEditor>
-            <GridSplitter Grid.Row="4" Style="{StaticResource HorizontalGridSplitterStyle}" />
+            <GridSplitter Grid.Row="5" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-            <DataGrid Grid.Row="5" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding SelectedOption}" ItemsSource="{Binding SelectedScreen.Options}" VerticalScrollBarVisibility="Auto">
+            <DataGrid Grid.Row="6" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding SelectedOption}" ItemsSource="{Binding SelectedScreen.Options}" VerticalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Actions" Binding="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="6" Width="80" IsEnabled="{Binding SelectedEvent.IsChanged}" HorizontalAlignment="Right" />
+            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="7" Width="80" IsEnabled="{Binding SelectedEvent.IsChanged}" HorizontalAlignment="Right" />
         </Grid>
 
         <Border Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
