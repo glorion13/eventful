@@ -160,6 +160,7 @@
     <Compile Include="Controls\MvvmTextEditor.cs" />
     <Compile Include="Controls\SpellCheckBehavior.cs" />
     <Compile Include="Controls\SpellingErrorColorizer.cs" />
+    <Compile Include="Converters\NonNullToVisibilityConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="EventEditor.xaml.cs">

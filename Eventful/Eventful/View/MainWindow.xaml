@@ -70,6 +70,7 @@
                 </Setter>
             </Style>
             <Converters:BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+            <Converters:NonNullToVisibilityConverter x:Key="NonNullToVisibility" />
             <Converters:DateTimeToStringConverter x:Key="DateToString" />
             <Properties:Settings x:Key="Settings" />
         </ResourceDictionary>
@@ -135,8 +136,9 @@
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="250" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
@@ -200,7 +202,7 @@
                 <Button Content="-" IsEnabled="{Binding IsRemoveEventButtonEnabled}" Command="{Binding RemoveEventCommand}" Grid.Column="2" />
             </Grid>
             <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
-            <DataGrid dragdrop:DragDrop.IsDragSource="True" SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Grid.Row="1">
+            <DataGrid dragdrop:DragDrop.IsDragSource="True" SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Visibility="{Binding SelectedDeck, Converter={StaticResource NonNullToVisibility}}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=DuplicateEventCommand}" 
                                 Key="D" 
@@ -210,7 +212,7 @@
                 </DataGrid.InputBindings>
                 <DataGrid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Open event in new window" Command="{Binding OpenNewEventWindowCommand}" />
+                        <MenuItem Header="View event in new window" Command="{Binding OpenNewEventWindowCommand}" />
                         <MenuItem Header="Duplicate event" Command="{Binding DuplicateEventCommand}" />
                         <MenuItem Header="Delete event" Command="{Binding RemoveEventCommand}" />
                     </ContextMenu>
@@ -225,48 +227,28 @@
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
-        <GridSplitter Grid.Row="0" Grid.Column="1" Style="{StaticResource GridSplitterStyle}" />
+        <GridSplitter Grid.Row="0" Grid.Column="1" Visibility="{Binding SelectedEvent, Converter={StaticResource NonNullToVisibility}}" Style="{StaticResource GridSplitterStyle}" />
 
-        <TextBlock Text="No events selected to edit." Visibility="{Binding IsEditEventNotVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
-        <Grid Grid.Row="0" Grid.Column="2" Margin="5" Visibility="{Binding IsEditEventVisible, Converter={StaticResource BoolToVisibility}}">
+        <Grid Grid.Row="0" Grid.Column="2" Margin="5" Visibility="{Binding SelectedEvent, Converter={StaticResource NonNullToVisibility}}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="60" />
-                <RowDefinition Height="200" />
-                <RowDefinition Height="5" />
-                <RowDefinition Height="60" />
+                <RowDefinition Height="30" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="5" />
-                <RowDefinition Height="150" />
                 <RowDefinition Height="30" />
             </Grid.RowDefinitions>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="20" />
-                </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal" Grid.Row="0">
-                    <TextBlock Text="{Binding SelectedDeck.Title}" FontSize="28" />
-                    <TextBlock Text=" > " FontSize="28" />
-                    <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28">
-                        <Interactivity:Interaction.Triggers>
-                            <Interactivity:EventTrigger EventName="MouseDown">
-                                <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
-                            </Interactivity:EventTrigger>
-                        </Interactivity:Interaction.Triggers>
-                    </TextBlock>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Grid.Row="1">
-                    <TextBlock Text="Last saved by " FontWeight="Light" FontSize="12" />
-                    <TextBlock Text="{Binding SelectedEvent.Author}" FontWeight="Bold" FontSize="12" />
-                    <TextBlock Text=" on " FontWeight="Light" FontSize="12" />
-                    <TextBlock Text="{Binding SelectedEvent.Date, Converter={StaticResource DateToString}}" FontWeight="Normal"  FontSize="12" />
-                </StackPanel>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="30" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Screens" Grid.Column="0" FontSize="20" />
+                <Button Content="+" IsEnabled="{Binding IsAddScreenButtonEnabled}" Command="{Binding AddScreenCommand}" Grid.Column="1" />
+                <Button Content="-" IsEnabled="{Binding IsRemoveScreenButtonEnabled}" Command="{Binding RemoveScreenCommand}" Grid.Column="2" />
             </Grid>
-
             <ScrollViewer Grid.Row="1">
                 <ScrollViewer.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Add New Screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>
+                        <!--<MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>-->
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
                 <NetworkUI:NetworkView NodesSource="{Binding SelectedEvent.Screens}" ConnectionsSource="{Binding SelectedScreen.Options}" >
@@ -295,27 +277,61 @@
                     </NetworkUI:NetworkView.NodeItemTemplate>
                 </NetworkUI:NetworkView>
             </ScrollViewer>
-            <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
+            <!--<TextBox Text="{Binding ScreenFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />-->
+        </Grid>
+        <GridSplitter Grid.Row="0" Grid.Column="2" Visibility="{Binding SelectedScreen, Converter={StaticResource NonNullToVisibility}}" Style="{StaticResource GridSplitterStyle}" />
+        
+        <TextBlock Text="Select a screen to start editing." Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <Grid Grid.Row="0" Grid.Column="3" Margin="5" Visibility="{Binding SelectedScreen, Converter={StaticResource NonNullToVisibility}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="150" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="20" />
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Row="0">
+                    <TextBlock Text="{Binding SelectedDeck.Title}" FontSize="28" />
+                    <TextBlock Text=" > " FontSize="28" />
+                    <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28">
+                        <Interactivity:Interaction.Triggers>
+                            <Interactivity:EventTrigger EventName="MouseDown">
+                                <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
+                            </Interactivity:EventTrigger>
+                        </Interactivity:Interaction.Triggers>
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Grid.Row="1">
+                    <TextBlock Text="Last saved by " FontWeight="Light" FontSize="12" />
+                    <TextBlock Text="{Binding SelectedEvent.Author}" FontWeight="Bold" FontSize="12" />
+                    <TextBlock Text=" on " FontWeight="Light" FontSize="12" />
+                    <TextBlock Text="{Binding SelectedEvent.Date, Converter={StaticResource DateToString}}" FontWeight="Normal"  FontSize="12" />
+                </StackPanel>
+            </Grid>
 
-            <TextBox Grid.Row="3" FontSize="28" Text="{Binding SelectedScreen.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <LocalControls:MvvmTextEditor Grid.Row="4" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt">
+            <LocalControls:MvvmTextEditor Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt">
                 <Interactivity:Interaction.Behaviors>
                     <LocalControls:SpellCheckBehavior />
                 </Interactivity:Interaction.Behaviors>
             </LocalControls:MvvmTextEditor>
-            <GridSplitter Grid.Row="5" Style="{StaticResource HorizontalGridSplitterStyle}" />
+            <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-            <DataGrid Grid.Row="6" SelectionMode="Single" CanUserDeleteRows="True" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="Column" SelectedItem="{Binding SelectedOption}" ItemsSource="{Binding SelectedScreen.Options}" VerticalScrollBarVisibility="Auto">
+            <DataGrid Grid.Row="3" SelectionMode="Single" CanUserDeleteRows="False" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="None" SelectedItem="{Binding SelectedOption}" ItemsSource="{Binding SelectedScreen.Options}" VerticalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Actions" Binding="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <DataGridTextColumn Header="Options" Binding="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
 
-            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="7" Width="80" IsEnabled="{Binding SelectedEvent.IsChanged}" HorizontalAlignment="Right" />
+            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="4" Width="80" IsEnabled="{Binding SelectedEvent.IsChanged}" HorizontalAlignment="Right" />
         </Grid>
 
-        <Border Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-        <Grid Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
+        <Border Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+        <Grid Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="80" />
                 <ColumnDefinition Width="30" />

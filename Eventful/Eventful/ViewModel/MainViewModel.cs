@@ -36,6 +36,7 @@ namespace Eventful.ViewModel
             DecksViewSource.Source = Decks;
             EventsViewSource = new CollectionViewSource();
             DecksViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
+            ScreensViewSource = new CollectionViewSource();
         }
         private void InitialiseInDesignMode()
         {
@@ -76,6 +77,12 @@ namespace Eventful.ViewModel
             if (ev == null) return false;
             return (CultureInfo.CurrentCulture.CompareInfo.IndexOf(ev.Title, EventFilter, CompareOptions.IgnoreCase) >= 0);
         }
+        private bool ScreenTitleContains(object obj)
+        {
+            Screen screen = obj as Screen;
+            if (screen == null) return false;
+            return (CultureInfo.CurrentCulture.CompareInfo.IndexOf(screen.Title, ScreenFilter, CompareOptions.IgnoreCase) >= 0);
+        }
 
         private string deckFilter;
         public string DeckFilter
@@ -107,6 +114,22 @@ namespace Eventful.ViewModel
             }
         }
 
+        private string screenFilter;
+        public string ScreenFilter
+        {
+            get
+            {
+                return screenFilter;
+            }
+            set
+            {
+                Set(() => ScreenFilter, ref screenFilter, value);
+                if (ScreensViewSource != null)
+                    ScreensViewSource.View.Filter = new Predicate<object>(ScreenTitleContains);
+            }
+        }
+
+
         private ObservableCollection<Deck> decks = new ObservableCollection<Deck>();
         public ObservableCollection<Deck> Decks
         {
@@ -122,6 +145,7 @@ namespace Eventful.ViewModel
 
         public CollectionViewSource DecksViewSource { get; set; }
         public CollectionViewSource EventsViewSource { get; set; }
+        public CollectionViewSource ScreensViewSource { get; set; }
 
         private void InitialiseAuthor()
         {
@@ -271,8 +295,10 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => SelectedEvent, ref selectedEvent, value);
-                IsEditEventVisible = !(SelectedEvent == null);
                 IsRemoveEventButtonEnabled = !(SelectedEvent == null);
+                IsAddScreenButtonEnabled = !(SelectedEvent == null);
+                ScreensViewSource.Source = SelectedEvent == null ? new ObservableCollection<Screen>() : SelectedEvent.Screens;
+                ScreensViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
                 if (SelectedEvent == null)
                     SelectedScreen = null;
             }
@@ -288,6 +314,7 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => SelectedScreen, ref selectedScreen, value);
+                IsRemoveScreenButtonEnabled = !(SelectedScreen == null);
             }
         }
 
@@ -332,33 +359,6 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => IsStatusbarVisible, ref isStatusbarVisible, value);
-            }
-        }
-
-        private bool isEditEventVisible = false;
-        public bool IsEditEventVisible
-        {
-            get
-            {
-                return isEditEventVisible;
-            }
-            set
-            {
-                Set(() => IsEditEventVisible, ref isEditEventVisible, value);
-                IsEditEventNotVisible = !IsEditEventVisible;
-            }
-        }
-
-        private bool isEditEventNotVisible = true;
-        public bool IsEditEventNotVisible
-        {
-            get
-            {
-                return isEditEventNotVisible;
-            }
-            set
-            {
-                Set(() => IsEditEventNotVisible, ref isEditEventNotVisible, value);
             }
         }
 
@@ -456,6 +456,43 @@ namespace Eventful.ViewModel
         {
             if (SelectedEvent != null)
                 SelectedEvent.Screens.Add(new Screen());   
+        }
+        private RelayCommand removeScreenCommand;
+        public RelayCommand RemoveScreenCommand
+        {
+            get
+            {
+                return removeScreenCommand ?? (removeScreenCommand = new RelayCommand(ExecuteRemoveScreenCommand));
+            }
+        }
+        private void ExecuteRemoveScreenCommand()
+        {
+            if (SelectedScreen != null)
+                SelectedEvent.Screens.Remove(SelectedScreen);
+        }
+        private bool isAddScreenButtonEnabled = false;
+        public bool IsAddScreenButtonEnabled
+        {
+            get
+            {
+                return isAddScreenButtonEnabled;
+            }
+            set
+            {
+                Set(() => IsAddScreenButtonEnabled, ref isAddScreenButtonEnabled, value);
+            }
+        }
+        private bool isRemoveScreenButtonEnabled = false;
+        public bool IsRemoveScreenButtonEnabled
+        {
+            get
+            {
+                return isRemoveScreenButtonEnabled;
+            }
+            set
+            {
+                Set(() => IsRemoveScreenButtonEnabled, ref isRemoveScreenButtonEnabled, value);
+            }
         }
 
         private bool isAddEventButtonEnabled = false;

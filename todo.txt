@@ -1,3 +1,11 @@
+- Draw arrows on UI
+- Add 'actions' to each 'option
+- Change autocomplete based on tags and vars
+- Somehow store tags and vars, then build list of 'events' that contain each tag
+- Select 'option' from every
+- Playtest event
+
+
 <tag:KingSlayer>
 Hello there. I am <info:PlayerBackground> too!
 </tag:KingSlayer>
