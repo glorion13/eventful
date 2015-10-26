@@ -21,6 +21,7 @@ namespace Eventful.Controls
         FoldingManager textEditorFoldingManager;
         XmlFoldingStrategy textEditorFoldingStrategy;
         CompletionWindow completionWindow;
+        int characterOffset;
 
         public MvvmTextEditor()
         {
@@ -60,8 +61,8 @@ namespace Eventful.Controls
             {
                 completionWindow = new CompletionWindow(base.TextArea);
                 IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                data.Add(new MyCompletionData("var:"));
-                data.Add(new MyCompletionData("tag:"));
+                foreach (AutocompleteTree kek in AutocompleteData)
+                    data.Add(kek.ParentNode);
                 completionWindow.Show();
                 completionWindow.Closed += delegate
                 {
@@ -77,8 +78,8 @@ namespace Eventful.Controls
                     {
                         completionWindow = new CompletionWindow(base.TextArea);
                         IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                        data.Add(new MyCompletionData("Kingslayer"));
-                        data.Add(new MyCompletionData("Nautical-looking"));
+                        data.Add(new AutocompleteData("Kingslayer"));
+                        data.Add(new AutocompleteData("Nautical-looking"));
                         completionWindow.Show();
                         completionWindow.Closed += delegate
                         {
@@ -89,8 +90,8 @@ namespace Eventful.Controls
                     {
                         completionWindow = new CompletionWindow(base.TextArea);
                         IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                        data.Add(new MyCompletionData("player_name"));
-                        data.Add(new MyCompletionData("player_background"));
+                        data.Add(new AutocompleteData("player_name"));
+                        data.Add(new AutocompleteData("player_background"));
                         completionWindow.Show();
                         completionWindow.Closed += delegate
                         {
@@ -137,6 +138,15 @@ namespace Eventful.Controls
         {
             SetCurrentValue(DocumentTextProperty, Text);
             base.OnTextChanged(e);
+        }
+
+        public static DependencyProperty AutocompleteDataProperty = DependencyProperty.Register(
+            "AutocompleteData", typeof(IList<AutocompleteTree>), typeof(MvvmTextEditor));
+
+        public IList<AutocompleteTree> AutocompleteData
+        {
+            get { return (IList<AutocompleteTree>) GetValue(AutocompleteDataProperty); }
+            set { SetValue(AutocompleteDataProperty, value); }
         }
 
     }

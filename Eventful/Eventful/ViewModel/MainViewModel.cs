@@ -54,6 +54,7 @@ namespace Eventful.ViewModel
         }
         private void InitialiseInRealMode()
         {
+            AutocompleteData.Add(new AutocompleteTree(new AutocompleteData("hehehe")));
             InitialiseAuthor();
             InitialiseStorageDirectory();
             InitialiseMessengerService();
@@ -892,8 +893,21 @@ namespace Eventful.ViewModel
             }
         }
 
-        private MyCompletionData data = new MyCompletionData("skata");
-        public MyCompletionData Data
+        private ObservableCollection<AutocompleteTree> autocompleteData = new ObservableCollection<AutocompleteTree>();
+        public ObservableCollection<AutocompleteTree> AutocompleteData
+        {
+            get
+            {
+                return autocompleteData;
+            }
+            set
+            {
+                Set(() => AutocompleteData, ref autocompleteData, value);
+            }
+        }
+
+        private AutocompleteData data = new AutocompleteData("skata");
+        public AutocompleteData Data
         {
             get
             {

@@ -7,9 +7,9 @@ namespace Eventful.Model
 {
     /// Implements AvalonEdit ICompletionData interface to provide the entries in the
     /// completion drop down.
-    public class MyCompletionData : ICompletionData
+    public class AutocompleteData : ICompletionData
     {
-        public MyCompletionData(string text)
+        public AutocompleteData(string text)
         {
             this.Text = text;
         }
