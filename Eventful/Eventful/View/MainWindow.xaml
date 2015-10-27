@@ -314,7 +314,7 @@
                 </StackPanel>
             </Grid>
 
-            <LocalControls:MvvmTextEditor Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" AutocompleteData="{Binding AutocompleteData, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt">
+            <LocalControls:MvvmTextEditor Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" AutocompleteTrees="{Binding AutocompleteTrees, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt">
                 <Interactivity:Interaction.Behaviors>
                     <LocalControls:SpellCheckBehavior />
                 </Interactivity:Interaction.Behaviors>

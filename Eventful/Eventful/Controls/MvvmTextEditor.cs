@@ -13,6 +13,7 @@ using System;
 using System.Windows;
 using System.ComponentModel;
 using Eventful.Model;
+using System.Linq;
 
 namespace Eventful.Controls
 {
@@ -20,8 +21,7 @@ namespace Eventful.Controls
     {
         FoldingManager textEditorFoldingManager;
         XmlFoldingStrategy textEditorFoldingStrategy;
-        CompletionWindow completionWindow;
-        int characterOffset;
+        AutocompleteTree lastSelectedAutocompleteTree;
 
         public MvvmTextEditor()
         {
@@ -55,65 +55,58 @@ namespace Eventful.Controls
             textEditorFoldingStrategy.UpdateFoldings(textEditorFoldingManager, base.Document);
         }
 
+        private void PopupCompletionWindow(IList<AutocompleteTree> trees)
+        {
+            CompletionWindow completionWindow = new CompletionWindow(base.TextArea);
+            IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+            foreach (AutocompleteTree completionOption in trees)
+                data.Add(completionOption.ParentNode);
+            completionWindow.Show();
+            completionWindow.Closed += delegate
+            {
+                AutocompleteData chosenOption = completionWindow.CompletionList.ListBox.SelectedItem as AutocompleteData;
+                AutocompleteTree chosenTree = AutocompleteTrees.FirstOrDefault(tree => tree.ParentNode == chosenOption);
+                if (chosenTree != null)
+                {
+                    lastSelectedAutocompleteTree = chosenTree;
+                }
+            };
+        }
+
         private void mvvmTextEditorTextAreaTextEntered(object sender, TextCompositionEventArgs e)
         {
             if (e.Text == "<")
             {
-                completionWindow = new CompletionWindow(base.TextArea);
-                IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                foreach (AutocompleteTree kek in AutocompleteData)
-                    data.Add(kek.ParentNode);
-                completionWindow.Show();
-                completionWindow.Closed += delegate
-                {
-                    string kek = completionWindow.CompletionList.ListBox.SelectedItem.ToString();
-                    completionWindow = null;
-                };
+                PopupCompletionWindow(AutocompleteTrees);
             }
-            if (e.Text == ":")
+            if (e.Text == ".")
             {
-                if (base.Document.TextLength >= 4)
-                {
-                    string threeCharacterOffset = base.Document.GetText(base.CaretOffset - 4, 3);
-                    if (threeCharacterOffset == "tag")
-                    {
-                        completionWindow = new CompletionWindow(base.TextArea);
-                        IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                        data.Add(new AutocompleteData("Kingslayer"));
-                        data.Add(new AutocompleteData("Nautical-looking"));
-                        completionWindow.Show();
-                        completionWindow.Closed += delegate
-                        {
-                            completionWindow = null;
-                        };
-                    }
-                    else if (threeCharacterOffset == "var")
-                    {
-                        completionWindow = new CompletionWindow(base.TextArea);
-                        IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                        data.Add(new AutocompleteData("player_name"));
-                        data.Add(new AutocompleteData("player_background"));
-                        completionWindow.Show();
-                        completionWindow.Closed += delegate
-                        {
-                            completionWindow = null;
-                        };
-                    }
-                }
+                string lastWord = GetLast(Text, lastSelectedAutocompleteTree.ParentNode.Text.Length);
+                // Need TO DO this
+                if (lastSelectedAutocompleteTree.ParentNode.ToString() == lastWord)
+                    PopupCompletionWindow(lastSelectedAutocompleteTree.ChildrenNodes);
             }
+
             UpdateTextEditorFoldings();
         }
+
+
+        private string GetLast(string source, int tail_length)
+        {
+            if (tail_length >= source.Length)
+                return source;
+            return source.Substring(source.Length - tail_length);
+        }
+
         private void mvvmTextEditorTextAreaTextEntering(object sender, TextCompositionEventArgs e)
         {
-            if (e.Text.Length > 0 && completionWindow != null)
+            /*if (e.Text.Length > 0 && completionWindow != null)
             {
                 if (!char.IsLetterOrDigit(e.Text[0]))
                 {
-                    // Whenever a non-letter is typed while the completion window is open,
-                    // insert the currently selected element.
                     completionWindow.CompletionList.RequestInsertion(e);
                 }
-            }
+            }*/
         }
 
         public static readonly DependencyProperty DocumentTextProperty = DependencyProperty.Register(
@@ -142,9 +135,9 @@ namespace Eventful.Controls
         }
 
         public static DependencyProperty AutocompleteDataProperty = DependencyProperty.Register(
-            "AutocompleteData", typeof(IList<AutocompleteTree>), typeof(MvvmTextEditor));
+            "AutocompleteTrees", typeof(IList<AutocompleteTree>), typeof(MvvmTextEditor));
 
-        public IList<AutocompleteTree> AutocompleteData
+        public IList<AutocompleteTree> AutocompleteTrees
         {
             get { return (IList<AutocompleteTree>) GetValue(AutocompleteDataProperty); }
             set { SetValue(AutocompleteDataProperty, value); }

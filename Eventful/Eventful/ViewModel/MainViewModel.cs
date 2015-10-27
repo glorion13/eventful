@@ -54,7 +54,20 @@ namespace Eventful.ViewModel
         }
         private void InitialiseInRealMode()
         {
-            AutocompleteData.Add(new AutocompleteTree(new AutocompleteData("var:")));
+            AutocompleteTree varTree = new AutocompleteTree();
+            varTree.ParentNode = new AutocompleteData("var:");
+            varTree.ChildrenNodes = new ObservableCollection<AutocompleteTree>();
+            AutocompleteData kingslayer = new AutocompleteData("Kingslayer");
+            AutocompleteData nauticalLooking = new AutocompleteData("Nautical-looking");
+            varTree.ChildrenNodes.Add(new AutocompleteTree(kingslayer));
+            varTree.ChildrenNodes.Add(new AutocompleteTree(nauticalLooking));
+
+            AutocompleteTree tagTree = new AutocompleteTree();
+            tagTree.ParentNode = new AutocompleteData("tag:");
+
+            AutocompleteTrees.Add(varTree);
+            AutocompleteTrees.Add(tagTree);
+
             InitialiseAuthor();
             InitialiseStorageDirectory();
             InitialiseMessengerService();
@@ -893,29 +906,16 @@ namespace Eventful.ViewModel
             }
         }
 
-        private ObservableCollection<AutocompleteTree> autocompleteData = new ObservableCollection<AutocompleteTree>();
-        public ObservableCollection<AutocompleteTree> AutocompleteData
+        private ObservableCollection<AutocompleteTree> autocompleteTrees = new ObservableCollection<AutocompleteTree>();
+        public ObservableCollection<AutocompleteTree> AutocompleteTrees
         {
             get
             {
-                return autocompleteData;
+                return autocompleteTrees;
             }
             set
             {
-                Set(() => AutocompleteData, ref autocompleteData, value);
-            }
-        }
-
-        private AutocompleteData data = new AutocompleteData("skata");
-        public AutocompleteData Data
-        {
-            get
-            {
-                return data;
-            }
-            set
-            {
-                Set(() => Data, ref data, value);
+                Set(() => AutocompleteTrees, ref autocompleteTrees, value);
             }
         }
 
