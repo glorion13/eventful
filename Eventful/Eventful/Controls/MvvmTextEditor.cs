@@ -66,6 +66,7 @@ namespace Eventful.Controls
                 completionWindow.Show();
                 completionWindow.Closed += delegate
                 {
+                    string kek = completionWindow.CompletionList.ListBox.SelectedItem.ToString();
                     completionWindow = null;
                 };
             }

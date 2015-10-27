@@ -39,5 +39,10 @@ namespace Eventful.Model
         {
             textArea.Document.Replace(completionSegment, this.Text);
         }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 }

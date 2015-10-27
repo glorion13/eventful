@@ -54,7 +54,7 @@ namespace Eventful.ViewModel
         }
         private void InitialiseInRealMode()
         {
-            AutocompleteData.Add(new AutocompleteTree(new AutocompleteData("hehehe")));
+            AutocompleteData.Add(new AutocompleteTree(new AutocompleteData("var:")));
             InitialiseAuthor();
             InitialiseStorageDirectory();
             InitialiseMessengerService();

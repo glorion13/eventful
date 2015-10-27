@@ -167,7 +167,7 @@
       <DependentUpon>EventEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\AutocompleteTree.cs" />
-    <Compile Include="Model\MyCompletionData.cs" />
+    <Compile Include="Model\AutocompleteData.cs" />
     <Compile Include="Model\Option.cs" />
     <Compile Include="Model\DataStorage.cs" />
     <Compile Include="Model\Deck.cs" />
