@@ -60,7 +60,7 @@
                 <Setter Property="IsSelected" Value="{Binding IsSelected}" />
             </Style>
             <Style TargetType="{x:Type NetworkUI:ConnectorItem}">
-                <Setter Property="Hotspot" Value="{Binding Hotspot, Mode=OneWayToSource}" />
+                <Setter Property="Hotspot" Value="{Binding Hotspot, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type NetworkUI:ConnectorItem}">
@@ -258,18 +258,23 @@
                                 <Rectangle Stroke="Orange" Fill="White" RadiusX="4" RadiusY="4" />
                                 <Grid Margin="-8">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" MinWidth="10" />
-                                        <ColumnDefinition Width="Auto" MaxWidth="20" />
+                                        <ColumnDefinition Width="20" MaxWidth="20" />
+                                        <ColumnDefinition Width="*" MinWidth="40" />
+                                        <ColumnDefinition Width="20" MaxWidth="20" />
                                     </Grid.ColumnDefinitions>
+                                    <NetworkUI:ConnectorItem Grid.Column="0" />
                                     <TextBlock Grid.Column="1" Text="{Binding Title}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    <NetworkUI:ConnectorItem Grid.Column="0" DataContext="{Binding Connectors[3]}" />
                                     <ItemsControl Grid.Column="2" ItemsSource="{Binding SelectedScreen.Options}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <VirtualizingStackPanel Orientation="Vertical" />
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Text}" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
                                     </ItemsControl>
                                 </Grid>
                             </Grid>

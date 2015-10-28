@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using Eventful.Auxiliary;
 using GongSolutions.Wpf.DragDrop;
 using System.Windows;
+using System.Collections;
 
 namespace Eventful.ViewModel
 {
@@ -54,29 +55,29 @@ namespace Eventful.ViewModel
         }
         private void InitialiseInRealMode()
         {
-            AutocompleteTree varTree = new AutocompleteTree();
-            varTree.ParentNode = new AutocompleteData("var:");
-            varTree.ChildrenNodes = new ObservableCollection<AutocompleteTree>();
-            AutocompleteData kingslayer = new AutocompleteData("Kingslayer");
-            AutocompleteData nauticalLooking = new AutocompleteData("Nautical-looking");
-            varTree.ChildrenNodes.Add(new AutocompleteTree(kingslayer));
-            varTree.ChildrenNodes.Add(new AutocompleteTree(nauticalLooking));
-
-            AutocompleteTree tagTree = new AutocompleteTree();
-            tagTree.ParentNode = new AutocompleteData("tag:");
-
-            AutocompleteTrees.Add(varTree);
-            AutocompleteTrees.Add(tagTree);
-
             InitialiseAuthor();
             InitialiseStorageDirectory();
             InitialiseMessengerService();
             LoadDeckMappingsFromDisk();
+            InitialiseAutocompletion();
+        }
+
+        private void InitialiseAutocompletion()
+        {
+            AutocompleteTrees.Add("var", Variables);
+            AutocompleteTrees.Add("tag", Tags);
         }
 
         private void InitialiseMessengerService()
         {
-            MessengerInstance.Register<Screen>(this, screen => SelectedScreen = screen);
+            MessengerInstance.Register<Screen>(this, screen => SelectScreen(screen));
+        }
+
+        private void SelectScreen(Screen screen)
+        {
+            if (SelectedDeck == null) return;
+            if (SelectedEvent == null) return;
+            SelectedScreen = screen;
         }
 
         private bool DeckTitleContains(object obj)
@@ -290,6 +291,8 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => SelectedDeck, ref selectedDeck, value);
+                SelectedEvent = null;
+                SelectedScreen = null;
                 IsRemoveDeckButtonEnabled = !(SelectedDeck == null);
                 IsAddEventButtonEnabled = !(SelectedDeck == null);
                 EventsViewSource.Source = SelectedDeck == null ? new ObservableCollection<Event>() : SelectedDeck.Events;
@@ -309,12 +312,11 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => SelectedEvent, ref selectedEvent, value);
+                SelectedScreen = null;
                 IsRemoveEventButtonEnabled = !(SelectedEvent == null);
                 IsAddScreenButtonEnabled = !(SelectedEvent == null);
                 ScreensViewSource.Source = SelectedEvent == null ? new ObservableCollection<Screen>() : SelectedEvent.Screens;
                 ScreensViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
-                if (SelectedEvent == null)
-                    SelectedScreen = null;
             }
         }
 
@@ -469,7 +471,7 @@ namespace Eventful.ViewModel
         private void ExecuteAddScreenCommand()
         {
             if (SelectedEvent != null)
-                SelectedEvent.Screens.Add(new Screen());   
+                SelectedEvent.Screens.Add(new Screen(SelectedEvent));   
         }
         private RelayCommand removeScreenCommand;
         public RelayCommand RemoveScreenCommand
@@ -695,7 +697,7 @@ namespace Eventful.ViewModel
                     if (DataStorage.RenameEvent(SelectedEvent, SelectedDeck, dialogResult))
                     {
                         SelectedEvent.Title = dialogResult;
-                        //SelectedEvent.IsChanged = false;
+                        SelectedEvent.IsChanged = false;
                     }
                 }
                 else
@@ -704,18 +706,6 @@ namespace Eventful.ViewModel
         }
 
         private string filenameErrorMessage = "A title cannot be empty, nor contain any of the following characters: \n \\ / : * ? \" < > |";
-
-        private RelayCommand eventTextChangedCommand;
-        public RelayCommand EventTextChangedCommand
-        {
-            get
-            {
-                return eventTextChangedCommand ?? (eventTextChangedCommand = new RelayCommand(ExecuteTextChangedCommand));
-            }
-        }
-        private void ExecuteTextChangedCommand()
-        {
-        }
 
         private RelayCommand saveEventCommand;
         public RelayCommand SaveEventCommand
@@ -893,6 +883,19 @@ namespace Eventful.ViewModel
             MessengerInstance.Send<ObservableCollection<Variable>>(Variables);
         }
 
+        private ObservableCollection<Variable> tags = new ObservableCollection<Variable>();
+        public ObservableCollection<Variable> Tags
+        {
+            get
+            {
+                return tags;
+            }
+            set
+            {
+                Set(() => Tags, ref tags, value);
+            }
+        }
+
         private ObservableCollection<Variable> variables = new ObservableCollection<Variable>();
         public ObservableCollection<Variable> Variables
         {
@@ -906,8 +909,8 @@ namespace Eventful.ViewModel
             }
         }
 
-        private ObservableCollection<AutocompleteTree> autocompleteTrees = new ObservableCollection<AutocompleteTree>();
-        public ObservableCollection<AutocompleteTree> AutocompleteTrees
+        private Hashtable autocompleteTrees = new Hashtable();
+        public Hashtable AutocompleteTrees
         {
             get
             {
@@ -916,6 +919,19 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => AutocompleteTrees, ref autocompleteTrees, value);
+            }
+        }
+
+        private string selectedText;
+        public string SelectedText
+        {
+            get
+            {
+                return selectedText;
+            }
+            set
+            {
+                Set(() => SelectedText, ref selectedText, value);
             }
         }
 

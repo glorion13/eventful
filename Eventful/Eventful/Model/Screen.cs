@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
+using System.Xml.Serialization;
 
 namespace Eventful.Model
 {
@@ -7,6 +8,11 @@ namespace Eventful.Model
     {
         public Screen()
         {
+        }
+
+        public Screen(Event parentEvent)
+        {
+            ParentEvent = parentEvent;
         }
 
         private string title = "Untitled Screen";
@@ -19,6 +25,8 @@ namespace Eventful.Model
             set
             {
                 Set(() => Title, ref title, value);
+                if (ParentEvent != null)
+                    ParentEvent.IsChanged = true;
             }
         }
 
@@ -32,6 +40,8 @@ namespace Eventful.Model
             set
             {
                 Set(() => X, ref x, value);
+                if (ParentEvent != null)
+                    ParentEvent.IsChanged = true;
             }
         }
 
@@ -45,6 +55,8 @@ namespace Eventful.Model
             set
             {
                 Set(() => Y, ref y, value);
+                if (ParentEvent != null)
+                    ParentEvent.IsChanged = true;
             }
         }
 
@@ -58,6 +70,23 @@ namespace Eventful.Model
             set
             {
                 Set(() => Text, ref text, value);
+                if (ParentEvent != null)
+                    ParentEvent.IsChanged = true;
+            }
+        }
+
+        [XmlIgnore]
+        private Event parentEvent;
+        [XmlIgnore]
+        public Event ParentEvent
+        {
+            get
+            {
+                return parentEvent;
+            }
+            set
+            {
+                Set(() => ParentEvent, ref parentEvent, value);
             }
         }
 

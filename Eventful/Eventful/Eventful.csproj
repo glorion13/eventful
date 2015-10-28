@@ -166,7 +166,6 @@
     <Compile Include="EventEditor.xaml.cs">
       <DependentUpon>EventEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\AutocompleteTree.cs" />
     <Compile Include="Model\AutocompleteData.cs" />
     <Compile Include="Model\Option.cs" />
     <Compile Include="Model\DataStorage.cs" />

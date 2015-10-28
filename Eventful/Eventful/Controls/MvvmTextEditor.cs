@@ -8,12 +8,11 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Windows;
-using System.ComponentModel;
 using Eventful.Model;
 using System.Linq;
+using System.Collections;
 
 namespace Eventful.Controls
 {
@@ -21,7 +20,7 @@ namespace Eventful.Controls
     {
         FoldingManager textEditorFoldingManager;
         XmlFoldingStrategy textEditorFoldingStrategy;
-        AutocompleteTree lastSelectedAutocompleteTree;
+        CompletionWindow completionWindow;
 
         public MvvmTextEditor()
         {
@@ -49,64 +48,92 @@ namespace Eventful.Controls
         {
             base.TextArea.TextEntering += mvvmTextEditorTextAreaTextEntering;
             base.TextArea.TextEntered += mvvmTextEditorTextAreaTextEntered;
+            base.TextArea.Caret.PositionChanged += mvvmTextEditorTextAreaCaretPositionChanged;
         }
+
+        private void mvvmTextEditorTextAreaCaretPositionChanged(object sender, EventArgs e)
+        {
+            if (CaretOffset > 0)
+            {
+                if (Text[CaretOffset - 1] == '<')
+                    PopupCompletionWindow(AutocompleteTrees.Keys);
+                if (Text[CaretOffset - 1] == '.')
+                {
+                    string word = FindXmlPropertyName(base.Text);
+                    if (AutocompleteTrees.ContainsKey(word))
+                        PopupCompletionWindow(AutocompleteTrees[word] as ICollection);
+                }
+            }
+        }
+
         public void UpdateTextEditorFoldings()
         {
             textEditorFoldingStrategy.UpdateFoldings(textEditorFoldingManager, base.Document);
         }
 
-        private void PopupCompletionWindow(IList<AutocompleteTree> trees)
+        private void PopupCompletionWindow(ICollection list)
         {
-            CompletionWindow completionWindow = new CompletionWindow(base.TextArea);
+            if (list == null) return;
+            completionWindow = new CompletionWindow(base.TextArea);
             IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-            foreach (AutocompleteTree completionOption in trees)
-                data.Add(completionOption.ParentNode);
+            foreach (var completionOption in list)
+            {
+                if (typeof(Variable) == completionOption.GetType())
+                    data.Add(new AutocompleteData(((Variable)completionOption).Title, ((Variable)completionOption).Description));
+                if (typeof(Tag) == completionOption.GetType())
+                    data.Add(new AutocompleteData(((Tag)completionOption).Title));
+                if (typeof(string) == completionOption.GetType())
+                    data.Add(new AutocompleteData((string)completionOption));
+            }
             completionWindow.Show();
             completionWindow.Closed += delegate
             {
-                AutocompleteData chosenOption = completionWindow.CompletionList.ListBox.SelectedItem as AutocompleteData;
-                AutocompleteTree chosenTree = AutocompleteTrees.FirstOrDefault(tree => tree.ParentNode == chosenOption);
-                if (chosenTree != null)
-                {
-                    lastSelectedAutocompleteTree = chosenTree;
-                }
+                completionWindow = null;
             };
         }
 
         private void mvvmTextEditorTextAreaTextEntered(object sender, TextCompositionEventArgs e)
         {
-            if (e.Text == "<")
+            if (e.Text == ">")
             {
-                PopupCompletionWindow(AutocompleteTrees);
+                string word = FindXmlPropertyName(Text);
+                if (word.Length > 0)
+                {
+                    if (word[0] != '/')
+                    {
+                        word = word.Split(' ')[0];
+                        int offset = base.CaretOffset;
+                        Text = Text.Insert(offset, "\n");
+                        offset++;
+                        Text = Text.Insert(offset, "\n</" + word + ">");
+                        base.CaretOffset = offset;
+                    }
+                }
             }
-            if (e.Text == ".")
-            {
-                string lastWord = GetLast(Text, lastSelectedAutocompleteTree.ParentNode.Text.Length);
-                // Need TO DO this
-                if (lastSelectedAutocompleteTree.ParentNode.ToString() == lastWord)
-                    PopupCompletionWindow(lastSelectedAutocompleteTree.ChildrenNodes);
-            }
-
             UpdateTextEditorFoldings();
         }
 
-
-        private string GetLast(string source, int tail_length)
+        private string FindXmlPropertyName(string text)
         {
-            if (tail_length >= source.Length)
-                return source;
-            return source.Substring(source.Length - tail_length);
+            string word = "";
+            for (int i = base.CaretOffset - 2; i >= 0; i--)
+            {
+                if (text[i] == '<')
+                    break;
+                word = text[i] + word;
+            }
+            return word;
         }
 
         private void mvvmTextEditorTextAreaTextEntering(object sender, TextCompositionEventArgs e)
         {
-            /*if (e.Text.Length > 0 && completionWindow != null)
+            if (e.Text.Length > 0 && completionWindow != null)
             {
                 if (!char.IsLetterOrDigit(e.Text[0]))
                 {
                     completionWindow.CompletionList.RequestInsertion(e);
                 }
-            }*/
+            }
         }
 
         public static readonly DependencyProperty DocumentTextProperty = DependencyProperty.Register(
@@ -135,11 +162,11 @@ namespace Eventful.Controls
         }
 
         public static DependencyProperty AutocompleteDataProperty = DependencyProperty.Register(
-            "AutocompleteTrees", typeof(IList<AutocompleteTree>), typeof(MvvmTextEditor));
+            "AutocompleteTrees", typeof(Hashtable), typeof(MvvmTextEditor));
 
-        public IList<AutocompleteTree> AutocompleteTrees
+        public Hashtable AutocompleteTrees
         {
-            get { return (IList<AutocompleteTree>) GetValue(AutocompleteDataProperty); }
+            get { return (Hashtable) GetValue(AutocompleteDataProperty); }
             set { SetValue(AutocompleteDataProperty, value); }
         }
 

@@ -72,19 +72,6 @@ namespace Eventful.Model
             }
         }
 
-        private bool isChanged;
-        public bool IsChanged
-        {
-            get
-            {
-                return isChanged;
-            }
-            set
-            {
-                Set(() => IsChanged, ref isChanged, value);
-            }
-        }
-
         private DateTime date = DateTime.Now;
         public DateTime Date
         {
@@ -95,6 +82,19 @@ namespace Eventful.Model
             set
             {
                 Set(() => Date, ref date, value);
+            }
+        }
+
+        private bool isChanged = false;
+        public bool IsChanged
+        {
+            get
+            {
+                return isChanged;
+            }
+            set
+            {
+                Set(() => IsChanged, ref isChanged, value);
             }
         }
 

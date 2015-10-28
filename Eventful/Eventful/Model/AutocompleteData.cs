@@ -9,9 +9,17 @@ namespace Eventful.Model
     /// completion drop down.
     public class AutocompleteData : ICompletionData
     {
+        public AutocompleteData()
+        {
+        }
         public AutocompleteData(string text)
         {
             this.Text = text;
+        }
+        public AutocompleteData(string text, string description)
+        {
+            this.Text = text;
+            this.DescriptionText = text;
         }
 
         public System.Windows.Media.ImageSource Image
@@ -29,9 +37,21 @@ namespace Eventful.Model
             get { return this.Text; }
         }
 
+        private string descriptionText;
+        public string DescriptionText
+        {
+            get
+            {
+                return descriptionText;
+            }
+            set
+            {
+                descriptionText = value;
+            }
+        }
         public object Description
         {
-            get { return "Description for " + this.Text; }
+            get { return DescriptionText; }
         }
 
         public void Complete(TextArea textArea, ISegment completionSegment,

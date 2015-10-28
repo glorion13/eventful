@@ -51,6 +51,37 @@ namespace Eventful.Model
                 @"\");
         }
 
+        public static bool SaveVariableToDisk(Variable variable)
+        {
+            if (StorageDirectory == null) return false;
+            if (variable == null) return false;
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Variable));
+                TextWriter textWriter = new StreamWriter(String.Concat(variableDirectoryName, variable.Title));
+                serializer.Serialize(textWriter, variable);
+                textWriter.Close();
+                return true;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                try
+                {
+                    CreateInitialDirectories();
+                    SaveVariableToDisk(variable);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         public static bool SaveEventToDisk(Event ev, Deck deck)
         {
             if (deck == null || ev == null || StorageDirectory == null) return false;
@@ -75,7 +106,7 @@ namespace Eventful.Model
                     return false;
                 }
             }
-            catch
+            catch (Exception e)
             {
                 return false;
             }
@@ -117,6 +148,8 @@ namespace Eventful.Model
                 TextReader textReader = new StreamReader(fullpath);
                 Event ev = new Event();
                 ev = (Event)deserializer.Deserialize(textReader);
+                foreach (Screen screen in ev.Screens)
+                    screen.ParentEvent = ev;
                 textReader.Close();
                 return ev;
             }
@@ -136,7 +169,7 @@ namespace Eventful.Model
                 {
                     string subDirectory = file.Replace(StorageDirectory, "");
                     Event newEvent = await Task.Run(() => LoadEventFromDisk(subDirectory));
-                    //newEvent.IsChanged = false;
+                    newEvent.IsChanged = false;
                     if (newEvent != null)
                         deck.Events.Add(newEvent);
                 }

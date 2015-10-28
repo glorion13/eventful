@@ -1,10 +1,29 @@
 ﻿using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Eventful.Model
 {
     public class Option : ViewModelBase
     {
+        public Option()
+        {
+        }
+
+        private Point hotspot;
+        public Point Hotspot
+        {
+            get
+            {
+                return hotspot;
+            }
+            set
+            {
+                Set(() => Hotspot, ref hotspot, value);
+                string test = "";
+            }
+        }
+
         private Screen resultingScreen = new Screen();
         public Screen ResultingScreen
         {
@@ -28,19 +47,6 @@ namespace Eventful.Model
             set
             {
                 Set(() => Text, ref text, value);
-            }
-        }
-
-        private ObservableCollection<int> actions = new ObservableCollection<int>();
-        public ObservableCollection<int> Actions
-        {
-            get
-            {
-                return actions;
-            }
-            set
-            {
-                Set(() => Actions, ref actions, value);
             }
         }
 
