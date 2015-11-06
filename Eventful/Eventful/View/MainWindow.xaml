@@ -251,34 +251,28 @@
                         <!--<MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>-->
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
-                <NetworkUI:NetworkView NodesSource="{Binding SelectedEvent.Screens}" ConnectionsSource="{Binding SelectedScreen.Options}" >
+                <NetworkUI:NetworkView NodesSource="{Binding SelectedEvent.Screens}" ConnectionsSource="{Binding ScreenConnections}" >
                     <NetworkUI:NetworkView.NodeItemTemplate>
                         <DataTemplate>
-                            <Grid Width="120" Height="60">
+                            <Grid Width="120" Height="60" IsSharedSizeScope="True">
                                 <Rectangle Stroke="Orange" Fill="White" RadiusX="4" RadiusY="4" />
-                                <Grid Margin="-8">
+                                <Grid Margin="-8" IsSharedSizeScope="True">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="20" MaxWidth="20" />
                                         <ColumnDefinition Width="*" MinWidth="40" />
-                                        <ColumnDefinition Width="20" MaxWidth="20" />
+                                        <ColumnDefinition Width="40" />
                                     </Grid.ColumnDefinitions>
                                     <NetworkUI:ConnectorItem Grid.Column="0" />
                                     <TextBlock Grid.Column="1" Text="{Binding Title}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    <ItemsControl Grid.Column="2" ItemsSource="{Binding SelectedScreen.Options}">
+                                    <ItemsControl Grid.Column="2" ItemsSource="{Binding Options}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <StackPanel IsItemsHost="True" Orientation="Vertical" />
+                                                <StackPanel />
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock>
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Text" Value="EDW" />
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
+                                                <NetworkUI:ConnectorItem />
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
