@@ -60,7 +60,7 @@
                 <Setter Property="IsSelected" Value="{Binding IsSelected}" />
             </Style>
             <Style TargetType="{x:Type NetworkUI:ConnectorItem}">
-                <Setter Property="Hotspot" Value="{Binding Hotspot, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Setter Property="Hotspot" Value="{Binding Hotspot, Mode=OneWayToSource}" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type NetworkUI:ConnectorItem}">
@@ -251,28 +251,35 @@
                         <!--<MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>-->
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
-                <NetworkUI:NetworkView NodesSource="{Binding SelectedEvent.Screens}" ConnectionsSource="{Binding ScreenConnections}" >
+                <NetworkUI:NetworkView x:Name="networkViewControl" NodesSource="{Binding SelectedEvent.Screens}" ConnectionsSource="{Binding ScreenConnections}" >
                     <NetworkUI:NetworkView.NodeItemTemplate>
                         <DataTemplate>
-                            <Grid Width="120" Height="60" IsSharedSizeScope="True">
-                                <Rectangle Stroke="Orange" Fill="White" RadiusX="4" RadiusY="4" />
-                                <Grid Margin="-8" IsSharedSizeScope="True">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="20" MaxWidth="20" />
-                                        <ColumnDefinition Width="*" MinWidth="40" />
-                                        <ColumnDefinition Width="40" />
-                                    </Grid.ColumnDefinitions>
-                                    <NetworkUI:ConnectorItem Grid.Column="0" />
-                                    <TextBlock Grid.Column="1" Text="{Binding Title}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    <ItemsControl Grid.Column="2" ItemsSource="{Binding Options}">
+                            <Grid>
+                                <Rectangle Stroke="Green" Fill="White" RadiusX="4" RadiusY="4" />
+                                <Grid IsSharedSizeScope="True">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="12" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="30" />
+                                    </Grid.RowDefinitions>
+                                    <NetworkUI:ConnectorItem Margin="0,-12,0,0" Grid.Row="0" />
+                                    <TextBlock Margin="8,0,8,0"  Grid.Row="1" Text="{Binding Title}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <ItemsControl Grid.Row="2" HorizontalAlignment="Center" ItemsSource="{Binding Options}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <StackPanel />
+                                                <StackPanel Orientation="Horizontal" />
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <NetworkUI:ConnectorItem />
+                                                <StackPanel>
+                                                    <Label Content="{Binding Index}" />
+                                                    <NetworkUI:ConnectorItem>
+                                                        <NetworkUI:ConnectorItem.ToolTip>
+                                                            <ToolTip Content="{Binding Text}" />
+                                                        </NetworkUI:ConnectorItem.ToolTip>
+                                                    </NetworkUI:ConnectorItem>
+                                                </StackPanel>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -326,11 +333,32 @@
             </LocalControls:MvvmTextEditor>
             <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-            <DataGrid Grid.Row="3" SelectionMode="Single" CanUserDeleteRows="False" CanUserAddRows="True" AutoGenerateColumns="False" HeadersVisibility="None" SelectedItem="{Binding SelectedOption}" ItemsSource="{Binding SelectedScreen.Options}" VerticalScrollBarVisibility="Auto">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Options" Binding="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
-                </DataGrid.Columns>
-            </DataGrid>
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="25" />
+                </Grid.ColumnDefinitions>
+                <DataGrid Grid.Column="0" CanUserAddRows="False" SelectionMode="Single" AutoGenerateColumns="False" HeadersVisibility="None" SelectedItem="{Binding SelectedOption}" ItemsSource="{Binding SelectedScreen.Options}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn SortDirection="Ascending" Header="Index" Binding="{Binding Index}" IsReadOnly="True" Width="10" />
+                        <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <Button Content="+" Command="{Binding AddOptionCommand}" />
+                        <Button Content="-" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding RemoveOptionCommand}" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
+                        <Button FontFamily="Marlett" Content="5" Command="{Binding MoveOptionUpCommand}" />
+                        <Button FontFamily="Marlett" Content="6" Command="{Binding MoveOptionDownCommand}" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
 
             <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="4" Width="80" IsEnabled="{Binding SelectedEvent.IsChanged}" HorizontalAlignment="Right" />
         </Grid>

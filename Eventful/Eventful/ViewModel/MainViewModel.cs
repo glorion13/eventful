@@ -334,8 +334,8 @@ namespace Eventful.ViewModel
             }
         }
 
-        private object selectedOption;
-        public object SelectedOption
+        private Option selectedOption;
+        public Option SelectedOption
         {
             get
             {
@@ -935,5 +935,72 @@ namespace Eventful.ViewModel
             }
         }
 
+        private RelayCommand addOptionCommand;
+        public RelayCommand AddOptionCommand
+        {
+            get
+            {
+                return addOptionCommand ?? (addOptionCommand = new RelayCommand(ExecuteAddOptionCommand));
+            }
+        }
+        private void ExecuteAddOptionCommand()
+        {
+            if (SelectedScreen == null) return;
+            Option newOption = new Option();
+            newOption.Index = SelectedScreen.Options.Count + 1;
+            SelectedScreen.Options.Add(newOption);
+        }
+
+        private RelayCommand removeOptionCommand;
+        public RelayCommand RemoveOptionCommand
+        {
+            get
+            {
+                return removeOptionCommand ?? (removeOptionCommand = new RelayCommand(ExecuteRemoveOptionCommand));
+            }
+        }
+        private void ExecuteRemoveOptionCommand()
+        {
+            if (SelectedOption == null) return;
+            if (SelectedScreen == null) return;
+            foreach (Option option in SelectedScreen.Options)
+                if (option.Index > SelectedOption.Index)
+                    option.Index--;
+            SelectedScreen.Options.Remove(SelectedOption);
+        }
+
+        private RelayCommand moveOptionUpCommand;
+        public RelayCommand MoveOptionUpCommand
+        {
+            get
+            {
+                return moveOptionUpCommand ?? (moveOptionUpCommand = new RelayCommand(ExecuteMoveOptionUpCommand));
+            }
+        }
+        private void ExecuteMoveOptionUpCommand()
+        {
+            if (SelectedOption == null) return;
+            if (SelectedScreen == null) return;
+            Option optionAbove = SelectedScreen.Options.FirstOrDefault(opt => opt.Index == SelectedOption.Index - 1);
+            optionAbove.Index = SelectedOption.Index;
+            SelectedOption.Index--;
+        }
+
+        private RelayCommand moveOptionDownCommand;
+        public RelayCommand MoveOptionDownCommand
+        {
+            get
+            {
+                return moveOptionDownCommand ?? (moveOptionDownCommand = new RelayCommand(ExecuteMoveOptionDownCommand));
+            }
+        }
+        private void ExecuteMoveOptionDownCommand()
+        {
+            if (SelectedOption == null) return;
+            if (SelectedScreen == null) return;
+            Option optionAbove = SelectedScreen.Options.FirstOrDefault(opt => opt.Index == SelectedOption.Index + 1);
+            optionAbove.Index = SelectedOption.Index;
+            SelectedOption.Index++;
+        }
     }
 }

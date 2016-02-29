@@ -20,7 +20,19 @@ namespace Eventful.Model
             set
             {
                 Set(() => Hotspot, ref hotspot, value);
-                string test = "";
+            }
+        }
+
+        private int index;
+        public int Index
+        {
+            get
+            {
+                return index;
+            }
+            set
+            {
+                Set(() => Index, ref index, value);
             }
         }
 

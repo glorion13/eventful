@@ -2,6 +2,8 @@
 using MahApps.Metro.Controls;
 using GalaSoft.MvvmLight.Messaging;
 using Eventful.ViewModel;
+using NetworkUI;
+using System.Windows.Input;
 
 namespace Eventful.View
 {
