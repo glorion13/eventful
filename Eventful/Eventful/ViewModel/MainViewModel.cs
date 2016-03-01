@@ -330,6 +330,7 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => SelectedScreen, ref selectedScreen, value);
+                SelectedOption = null;
                 IsRemoveScreenButtonEnabled = !(SelectedScreen == null);
             }
         }
@@ -481,11 +482,22 @@ namespace Eventful.ViewModel
                 return removeScreenCommand ?? (removeScreenCommand = new RelayCommand(ExecuteRemoveScreenCommand));
             }
         }
-        private void ExecuteRemoveScreenCommand()
+        private async void ExecuteRemoveScreenCommand()
         {
-            if (SelectedScreen != null)
-                SelectedEvent.Screens.Remove(SelectedScreen);
+            if (SelectedScreen == null) return;
+            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Screen Deletion", String.Concat("Do you want to delete the screen \"", SelectedScreen.Title, "\"?"));
+            if (dialogResult)
+                RemoveScreen(SelectedScreen);
         }
+        private void RemoveScreen(Screen screen)
+        {
+            // TO-DO: Edit the DataStorage
+            //if (deck != null)
+            //if (DataStorage.DeleteDeck(deck))
+            SelectedEvent.Screens.Remove(screen);
+            SelectedScreen = null;
+        }
+
         private bool isAddScreenButtonEnabled = false;
         public bool IsAddScreenButtonEnabled
         {
