@@ -15,6 +15,7 @@
     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
     xmlns:NetworkModel="clr-namespace:NetworkModel;assembly=NetworkModel"
     xmlns:NetworkUI="clr-namespace:NetworkUI;assembly=NetworkUI"
+    xmlns:arrow="clr-namespace:Controls.ArrowLine"
     xmlns:dragdrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
     Title="Eventful" Height="768" Width="1024"
     Icon="../Images/Pencil.ico"
@@ -32,6 +33,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
             <Style x:Key="GridSplitterStyle" TargetType="GridSplitter">
                 <Setter Property="Width">
                     <Setter.Value>2</Setter.Value>
@@ -43,6 +45,7 @@
                     <Setter.Value>Stretch</Setter.Value>
                 </Setter>
             </Style>
+            
             <Style x:Key="HorizontalGridSplitterStyle" TargetType="GridSplitter">
                 <Setter Property="Height">
                     <Setter.Value>2</Setter.Value>
@@ -54,25 +57,42 @@
                     <Setter.Value>Center</Setter.Value>
                 </Setter>
             </Style>
-            <Style TargetType="{x:Type NetworkUI:NodeItem}">
-                <Setter Property="X" Value="{Binding X}" />
-                <Setter Property="Y" Value="{Binding Y}" />
-                <Setter Property="IsSelected" Value="{Binding IsSelected}" />
-            </Style>
-            <Style TargetType="{x:Type NetworkUI:ConnectorItem}">
-                <Setter Property="Hotspot" Value="{Binding Hotspot, Mode=OneWayToSource}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type NetworkUI:ConnectorItem}">
-                            <Rectangle Stroke="Black" Fill="White" Cursor="Hand" Width="12" Height="12" RadiusX="1" RadiusY="1" />
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
+            
             <Converters:BooleanToVisibilityConverter x:Key="BoolToVisibility" />
             <Converters:NonNullToVisibilityConverter x:Key="NonNullToVisibility" />
             <Converters:DateTimeToStringConverter x:Key="DateToString" />
             <Properties:Settings x:Key="Settings" />
+
+            <ControlTemplate x:Key="nodeOutputTemplate">
+                <StackPanel>
+                    <Label Content="{Binding Index}" />
+                    <Rectangle Width="{Binding Width}" Height="{Binding Height}" Fill="Transparent" Stroke="Black" />
+                    <StackPanel.ToolTip>
+                        <ToolTip Content="{Binding Text}" />
+                    </StackPanel.ToolTip>
+                </StackPanel>
+            </ControlTemplate>
+            <ControlTemplate x:Key="nodeTemplate">
+                <StackPanel>
+                    <Grid>
+                        <Rectangle Fill="White" Width="{Binding Width}" Height="{Binding Height}" Stroke="Blue" />
+                        <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Title}"/>
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding Options}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Thumb Template="{StaticResource nodeOutputTemplate}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ControlTemplate>
+
         </ResourceDictionary>
     </MetroControls:MetroWindow.Resources>
 
@@ -251,43 +271,47 @@
                         <!--<MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>-->
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
-                <NetworkUI:NetworkView x:Name="networkViewControl" NodesSource="{Binding SelectedEvent.Screens}" ConnectionsSource="{Binding ScreenConnections}" >
-                    <NetworkUI:NetworkView.NodeItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Rectangle Stroke="Green" Fill="White" RadiusX="4" RadiusY="4" />
-                                <Grid IsSharedSizeScope="True">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="12" />
-                                        <RowDefinition Height="*" />
-                                        <RowDefinition Height="30" />
-                                    </Grid.RowDefinitions>
-                                    <NetworkUI:ConnectorItem Margin="0,-12,0,0" Grid.Row="0" />
-                                    <TextBlock Margin="8,0,8,0"  Grid.Row="1" Text="{Binding Title}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    <ItemsControl Grid.Row="2" HorizontalAlignment="Center" ItemsSource="{Binding Options}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Horizontal" />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel>
-                                                    <Label Content="{Binding Index}" />
-                                                    <NetworkUI:ConnectorItem>
-                                                        <NetworkUI:ConnectorItem.ToolTip>
-                                                            <ToolTip Content="{Binding Text}" />
-                                                        </NetworkUI:ConnectorItem.ToolTip>
-                                                    </NetworkUI:ConnectorItem>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </Grid>
-                            </Grid>
-                        </DataTemplate>
-                    </NetworkUI:NetworkView.NodeItemTemplate>
-                </NetworkUI:NetworkView>
+                <Canvas>
+                    <ItemsControl ItemsSource="{Binding Connections}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <arrow:ArrowLine X1="{Binding SourceX}" Y1="{Binding SourceY}" X2="{Binding Target.InputX}" Y2="{Binding Target.InputY}" Stroke="Black" StrokeThickness="2" ArrowEnds="Middle" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ItemsControl ItemsSource="{Binding SelectedEvent.Screens}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style>
+                                <Setter Property="Canvas.Left" Value="{Binding X}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Thumb Focusable="True" Template="{StaticResource nodeTemplate}">
+                                    <Interactivity:Interaction.Triggers>
+                                        <Interactivity:EventTrigger EventName="DragDelta">
+                                            <MvvmControls:EventToCommand Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True" />
+                                        </Interactivity:EventTrigger>
+                                        <Interactivity:EventTrigger EventName="GotFocus">
+                                            <MvvmControls:EventToCommand Command="{Binding GotFocusCommand}" />
+                                        </Interactivity:EventTrigger>
+                                    </Interactivity:Interaction.Triggers>
+                                </Thumb>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Canvas>
             </ScrollViewer>
             <!--<TextBox Text="{Binding ScreenFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />-->
         </Grid>

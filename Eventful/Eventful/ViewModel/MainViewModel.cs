@@ -77,7 +77,7 @@ namespace Eventful.ViewModel
         {
             if (SelectedDeck == null) return;
             if (SelectedEvent == null) return;
-            SelectedScreen = screen;
+            SelectedScreen = screen.IsSelected ? screen : null;
         }
 
         private bool DeckTitleContains(object obj)

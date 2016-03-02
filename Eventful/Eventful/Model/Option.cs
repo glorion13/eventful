@@ -10,16 +10,95 @@ namespace Eventful.Model
         {
         }
 
-        private Point hotspot;
-        public Point Hotspot
+        private Screen source;
+        public Screen Source
         {
             get
             {
-                return hotspot;
+                return source;
             }
             set
             {
-                Set(() => Hotspot, ref hotspot, value);
+                Set(() => Source, ref source, value);
+                Update();
+            }
+        }
+
+        private Screen target;
+        public Screen Target
+        {
+            get
+            {
+                return target;
+            }
+            set
+            {
+                Set(() => Target, ref target, value);
+                Update();
+            }
+        }
+
+        private double sourceX;
+        public double SourceX
+        {
+            get
+            {
+                return sourceX;
+            }
+            set
+            {
+                Set(() => SourceX, ref sourceX, value);
+            }
+        }
+
+        private double sourceY;
+        public double SourceY
+        {
+            get
+            {
+                return sourceY;
+            }
+            set
+            {
+                Set(() => SourceY, ref sourceY, value);
+            }
+        }
+
+        public void Update()
+        {
+            if (Source != null)
+                UpdateSource();
+        }
+
+        public void UpdateSource()
+        {
+            SourceX = Source.X + (Width / 2) + (Source.GetOptionIndex(this) * Width);
+            SourceY = Source.Y + (Height) + Source.Height;
+        }
+
+        private double width = 10;
+        public double Width
+        {
+            get
+            {
+                return width;
+            }
+            set
+            {
+                Set(() => Width, ref width, value);
+            }
+        }
+
+        private double height = 10;
+        public double Height
+        {
+            get
+            {
+                return height;
+            }
+            set
+            {
+                Set(() => Height, ref height, value);
             }
         }
 
@@ -36,7 +115,7 @@ namespace Eventful.Model
             }
         }
 
-        private Screen resultingScreen = new Screen();
+        /*private Screen resultingScreen = new Screen();
         public Screen ResultingScreen
         {
             get
@@ -47,7 +126,7 @@ namespace Eventful.Model
             {
                 Set(() => ResultingScreen, ref resultingScreen, value);
             }
-        }
+        }*/
 
         private string text = "Enter text here";
         public string Text
