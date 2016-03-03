@@ -9,7 +9,7 @@ namespace Eventful.Model
 {
     public static class DataStorage
     {
-        public static string DefaultStorageDirectory = String.Concat(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"\Eventful\");
+        public static string DefaultStorageDirectory = string.Concat(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"\Eventful\");
         public static string StorageDirectory = DefaultStorageDirectory;
 
         private static string deckDirectoryName = "decks\\";
@@ -35,7 +35,7 @@ namespace Eventful.Model
 
         private static string GetEventFileName(Event ev)
         {
-            return String.Concat(
+            return string.Concat(
                 ev.Title,
                 " #",
                 ev.Id,
@@ -137,11 +137,9 @@ namespace Eventful.Model
             }
         }
 
-        
-
         public static Event LoadEventFromDisk(string path)
         {
-            string fullpath = String.Concat(StorageDirectory, path);
+            string fullpath = string.Concat(StorageDirectory, path);
             try
             {
                 XmlSerializer deserializer = new XmlSerializer(typeof(Event));
@@ -149,7 +147,14 @@ namespace Eventful.Model
                 Event ev = new Event();
                 ev = (Event)deserializer.Deserialize(textReader);
                 foreach (Screen screen in ev.Screens)
+                {
                     screen.ParentEvent = ev;
+                    foreach (Option option in screen.Options)
+                    {
+                        option.Source = screen;
+                        option.UpdateTargetFromId();
+                    }
+                }
                 textReader.Close();
                 return ev;
             }
@@ -169,13 +174,18 @@ namespace Eventful.Model
                 {
                     string subDirectory = file.Replace(StorageDirectory, "");
                     Event newEvent = await Task.Run(() => LoadEventFromDisk(subDirectory));
-                    newEvent.IsChanged = false;
                     if (newEvent != null)
+                    {
+                        newEvent.IsChanged = false;
                         deck.Events.Add(newEvent);
+                    }
+                    if (newEvent == null)
+                        await ViewModel.MessageWindowsViewModel.ShowOkMessage("Problem Loading Event", $"Event from file {subDirectory} was not loaded successfully.");
                 }
             }
             catch
             {
+                await ViewModel.MessageWindowsViewModel.ShowOkMessage("Problem Loading Deck", "An error occurred while trying to load the deck's events.");
             }
         }
 
@@ -252,7 +262,7 @@ namespace Eventful.Model
         {
             try
             {
-                Directory.CreateDirectory(String.Concat(GetDeckFilePath(deck), ".Backups"));
+                Directory.CreateDirectory(string.Concat(GetDeckFilePath(deck), ".Backups"));
                 Directory.Move(
                     String.Concat(GetDeckFilePath(deck), GetEventFileName(ev)),
                     String.Concat(

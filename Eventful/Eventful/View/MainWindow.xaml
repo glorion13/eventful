@@ -65,18 +65,14 @@
 
             <ControlTemplate x:Key="nodeOutputTemplate">
                 <StackPanel>
-                    <Label Content="{Binding Index}" />
                     <Rectangle Width="{Binding Width}" Height="{Binding Height}" Fill="Transparent" Stroke="Black" />
-                    <StackPanel.ToolTip>
-                        <ToolTip Content="{Binding Text}" />
-                    </StackPanel.ToolTip>
                 </StackPanel>
             </ControlTemplate>
             <ControlTemplate x:Key="nodeTemplate">
                 <StackPanel>
                     <Grid>
                         <Rectangle Fill="White" Width="{Binding Width}" Height="{Binding Height}" Stroke="Blue" />
-                        <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Title}"/>
+                        <TextBlock Text="{Binding Name}"/>
                     </Grid>
                     <ItemsControl ItemsSource="{Binding Options}">
                         <ItemsControl.ItemsPanel>
@@ -86,7 +82,16 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Thumb Template="{StaticResource nodeOutputTemplate}" />
+                                <Thumb Canvas.Left="{Binding Hotspot.InputX}" Canvas.Top="{Binding Hotspot.InputY}" Width="{Binding Width}" Height="{Binding Height}">
+                                    <Interactivity:Interaction.Triggers>
+                                        <Interactivity:EventTrigger EventName="DragDelta">
+                                            <MvvmControls:EventToCommand Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True" />
+                                        </Interactivity:EventTrigger>
+                                        <Interactivity:EventTrigger EventName="DragCompleted">
+                                            <MvvmControls:EventToCommand Command="{Binding DropCommand}" />
+                                        </Interactivity:EventTrigger>
+                                    </Interactivity:Interaction.Triggers>
+                                </Thumb>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -268,7 +273,7 @@
             <ScrollViewer Grid.Row="1">
                 <ScrollViewer.ContextMenu>
                     <ContextMenu>
-                        <!--<MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>-->
+                        <MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
                 <Canvas>
@@ -280,7 +285,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <arrow:ArrowLine X1="{Binding SourceX}" Y1="{Binding SourceY}" X2="{Binding Target.InputX}" Y2="{Binding Target.InputY}" Stroke="Black" StrokeThickness="2" ArrowEnds="Middle" />
+                                <arrow:ArrowLine Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibility}}" X1="{Binding SourceX}" Y1="{Binding SourceY}" X2="{Binding Target.InputX}" Y2="{Binding Target.InputY}" Stroke="Black" StrokeThickness="2" ArrowEnds="Middle" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -315,9 +320,9 @@
             </ScrollViewer>
             <!--<TextBox Text="{Binding ScreenFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />-->
         </Grid>
-        <GridSplitter Grid.Row="0" Grid.Column="2" Visibility="{Binding SelectedScreen, Converter={StaticResource NonNullToVisibility}}" Style="{StaticResource GridSplitterStyle}" />
+        <GridSplitter Grid.Row="0" Grid.Column="2" Visibility="{Binding SelectedEvent, Converter={StaticResource NonNullToVisibility}}" Style="{StaticResource GridSplitterStyle}" />
         
-        <TextBlock Text="Select a screen to start editing." Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <!--<TextBlock Text="Select a screen to start editing." Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" />-->
         <Grid Grid.Row="0" Grid.Column="3" Margin="5" Visibility="{Binding SelectedScreen, Converter={StaticResource NonNullToVisibility}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="60" />

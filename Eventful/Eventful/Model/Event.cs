@@ -46,6 +46,15 @@ namespace Eventful.Model
             }
         }
 
+        public void AddScreen()
+        {
+            Screen screen = new Screen();
+            screen.ParentEvent = this;
+            screen.X = 10;
+            screen.Y = 10;
+            Screens.Add(screen);
+        }
+
         private Guid id = Guid.NewGuid();
         public Guid Id
         {

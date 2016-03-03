@@ -317,6 +317,7 @@ namespace Eventful.ViewModel
                 IsAddScreenButtonEnabled = !(SelectedEvent == null);
                 ScreensViewSource.Source = SelectedEvent == null ? new ObservableCollection<Screen>() : SelectedEvent.Screens;
                 ScreensViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
+                InitialiseConnections();
             }
         }
 
@@ -472,7 +473,10 @@ namespace Eventful.ViewModel
         private void ExecuteAddScreenCommand()
         {
             if (SelectedEvent != null)
-                SelectedEvent.Screens.Add(new Screen(SelectedEvent));   
+            {
+                SelectedEvent.AddScreen();
+                InitialiseConnections();
+            }
         }
         private RelayCommand removeScreenCommand;
         public RelayCommand RemoveScreenCommand
@@ -491,10 +495,8 @@ namespace Eventful.ViewModel
         }
         private void RemoveScreen(Screen screen)
         {
-            // TO-DO: Edit the DataStorage
-            //if (deck != null)
-            //if (DataStorage.DeleteDeck(deck))
             SelectedEvent.Screens.Remove(screen);
+            InitialiseConnections();
             SelectedScreen = null;
         }
 
@@ -958,9 +960,8 @@ namespace Eventful.ViewModel
         private void ExecuteAddOptionCommand()
         {
             if (SelectedScreen == null) return;
-            Option newOption = new Option();
-            newOption.Index = SelectedScreen.Options.Count + 1;
-            SelectedScreen.Options.Add(newOption);
+            SelectedScreen.AddOption();
+            InitialiseConnections();
         }
 
         private RelayCommand removeOptionCommand;
@@ -979,6 +980,7 @@ namespace Eventful.ViewModel
                 if (option.Index > SelectedOption.Index)
                     option.Index--;
             SelectedScreen.Options.Remove(SelectedOption);
+            InitialiseConnections();
         }
 
         private RelayCommand moveOptionUpCommand;
@@ -1013,6 +1015,28 @@ namespace Eventful.ViewModel
             Option optionAbove = SelectedScreen.Options.FirstOrDefault(opt => opt.Index == SelectedOption.Index + 1);
             optionAbove.Index = SelectedOption.Index;
             SelectedOption.Index++;
+        }
+
+        private void InitialiseConnections()
+        {
+            Connections.Clear();
+            if (SelectedEvent != null)
+                foreach (Screen screen in SelectedEvent.Screens)
+                    foreach (Option option in screen.Options)
+                        Connections.Add(option);
+        }
+
+        private ObservableCollection<Option> connections = new ObservableCollection<Option>();
+        public ObservableCollection<Option> Connections
+        {
+            get
+            {
+                return connections;
+            }
+            set
+            {
+                Set(() => Connections, ref connections, value);
+            }
         }
     }
 }

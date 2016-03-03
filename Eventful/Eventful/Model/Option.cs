@@ -1,6 +1,11 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls.Primitives;
+using System.Xml.Serialization;
 
 namespace Eventful.Model
 {
@@ -10,7 +15,9 @@ namespace Eventful.Model
         {
         }
 
-        private Screen source;
+        [XmlIgnore]
+        private Screen source = null;
+        [XmlIgnore]
         public Screen Source
         {
             get
@@ -24,7 +31,9 @@ namespace Eventful.Model
             }
         }
 
-        private Screen target;
+        [XmlIgnore]
+        private Screen target = null;
+        [XmlIgnore]
         public Screen Target
         {
             get
@@ -36,6 +45,24 @@ namespace Eventful.Model
                 Set(() => Target, ref target, value);
                 Update();
             }
+        }
+
+        private Guid targetId = Guid.Empty;
+        public Guid TargetId
+        {
+            get
+            {
+                return targetId;
+            }
+            set
+            {
+                Set(() => TargetId, ref targetId, value);
+            }
+        }
+
+        public void UpdateTargetFromId()
+        {
+            Target = Source.ParentEvent.Screens.SingleOrDefault(screen => screen.Id == TargetId);
         }
 
         private double sourceX;
@@ -66,14 +93,21 @@ namespace Eventful.Model
 
         public void Update()
         {
-            if (Source != null)
+            if (Source == null)
+                IsVisible = false;
+            else if (Target == null)
+                IsVisible = false;
+            else
+            {
+                IsVisible = true;
                 UpdateSource();
+            }
         }
 
         public void UpdateSource()
         {
-            SourceX = Source.X + (Width / 2) + (Source.GetOptionIndex(this) * Width);
-            SourceY = Source.Y + (Height) + Source.Height;
+            SourceX = Source.X + (Width / 2) + (Source.GetOptionIndex(this) * 5);
+            SourceY = Source.Y + Height + Source.Height;
         }
 
         private double width = 10;
@@ -115,18 +149,65 @@ namespace Eventful.Model
             }
         }
 
-        /*private Screen resultingScreen = new Screen();
-        public Screen ResultingScreen
+        [XmlIgnore]
+        public Screen Hotspot = new Screen();
+        private RelayCommand<DragDeltaEventArgs> dragDeltaCommand;
+        public RelayCommand<DragDeltaEventArgs> DragDeltaCommand
         {
             get
             {
-                return resultingScreen;
+                return dragDeltaCommand ?? (dragDeltaCommand = new RelayCommand<DragDeltaEventArgs>(ExecuteDragDeltaCommand));
+            }
+        }
+        private void ExecuteDragDeltaCommand(DragDeltaEventArgs args)
+        {
+            Hotspot = new Screen();
+            Hotspot.InputX += SourceX + args.HorizontalChange;
+            Hotspot.InputY += SourceY + args.VerticalChange;
+            TargetId = Guid.Empty;
+            Target = Hotspot;
+
+            foreach (Screen screen in Source.ParentEvent.Screens)
+            {
+                if (!screen.Options.Contains(this))
+                {
+                    if ((Hotspot.InputX > screen.X) && (Hotspot.InputX < screen.X + screen.Width) && (Hotspot.InputY > screen.Y) && (Hotspot.InputY < screen.Y + screen.Height))
+                    {
+                        TargetId = screen.Id;
+                        Target = screen;
+                        break;
+                    }
+                }
+            }
+
+            args.Handled = true;
+        }
+
+        private RelayCommand<DragCompletedEventArgs> dropCommand;
+        public RelayCommand<DragCompletedEventArgs> DropCommand
+        {
+            get
+            {
+                return dropCommand ?? (dropCommand = new RelayCommand<DragCompletedEventArgs>(ExecuteDropCommand));
+            }
+        }
+        private void ExecuteDropCommand(DragCompletedEventArgs args)
+        {
+            UpdateTargetFromId();
+        }
+
+        private bool isVisible = false;
+        public bool IsVisible
+        {
+            get
+            {
+                return isVisible;
             }
             set
             {
-                Set(() => ResultingScreen, ref resultingScreen, value);
+                Set(() => IsVisible, ref isVisible, value);
             }
-        }*/
+        }
 
         private string text = "Enter text here";
         public string Text

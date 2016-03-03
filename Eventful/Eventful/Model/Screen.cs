@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows.Controls.Primitives;
 using System.Xml.Serialization;
@@ -10,11 +11,17 @@ namespace Eventful.Model
     {
         public Screen()
         {
+            MessengerInstance.Register<Option>(this, option => OptionDraggedOverScreen(option));
         }
 
-        public Screen(Event parentEvent)
+        private void OptionDraggedOverScreen(Option option)
         {
-            ParentEvent = parentEvent;
+            if (Options.Contains(option)) return;
+            else if ((option.Hotspot.InputX > X) && (option.Hotspot.InputX < X + Width) && (option.Hotspot.InputY > Y) && (option.Hotspot.InputY < Y + Height))
+            {
+                option.TargetId = Id;
+                option.UpdateTargetFromId();
+            }
         }
 
         private string title = "Untitled Screen";
@@ -202,22 +209,9 @@ namespace Eventful.Model
             IsSelected = true;
         }
 
-        private RelayCommand lostFocusCommand;
-        public RelayCommand LostFocusCommand
-        {
-            get
-            {
-                return lostFocusCommand ?? (lostFocusCommand = new RelayCommand(ExecuteLostFocusCommand));
-            }
-        }
-        private void ExecuteLostFocusCommand()
-        {
-            IsSelected = false;
-        }
-
         public void UpdateInputPositions()
         {
-            InputX = X;// + (Width / 2);
+            InputX = X + (Width / 2);
             InputY = Y;// + (Height / 2);
         }
 
@@ -232,11 +226,26 @@ namespace Eventful.Model
             return Options.IndexOf(output);
         }
 
-        public void AddOutput()
+        public void AddOption()
         {
-            //NodeOutput output = new NodeOutput();
-            //output.Source = this;
-            //Outputs.Add(output);
+            Option option = new Option();
+            option.Index = Options.Count + 1;
+            option.Source = this;
+            option.Target = null;
+            Options.Add(option);
+        }
+
+        private Guid id = Guid.NewGuid();
+        public Guid Id
+        {
+            get
+            {
+                return id;
+            }
+            set
+            {
+                Set(() => Id, ref id, value);
+            }
         }
 
     }
