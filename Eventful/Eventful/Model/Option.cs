@@ -106,11 +106,11 @@ namespace Eventful.Model
 
         public void UpdateSource()
         {
-            SourceX = Source.X + (Width / 2) + (Source.GetOptionIndex(this) * 5);
+            SourceX = Source.X + ((Source.GetOptionIndex(this) + 1) * Width) - (Width / 2);
             SourceY = Source.Y + Height + Source.Height;
         }
 
-        private double width = 10;
+        private double width = 25;
         public double Width
         {
             get
@@ -123,7 +123,7 @@ namespace Eventful.Model
             }
         }
 
-        private double height = 10;
+        private double height = 25;
         public double Height
         {
             get
@@ -151,6 +151,7 @@ namespace Eventful.Model
 
         [XmlIgnore]
         public Screen Hotspot = new Screen();
+
         private RelayCommand<DragDeltaEventArgs> dragDeltaCommand;
         public RelayCommand<DragDeltaEventArgs> DragDeltaCommand
         {

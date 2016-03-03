@@ -24,7 +24,7 @@ namespace Eventful.Model
             }
         }
 
-        private string title = "Untitled Screen";
+        private string title = "Untitled Screen Untitled Screen Untitled Screen";
         public string Title
         {
             get

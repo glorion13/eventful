@@ -64,15 +64,19 @@
             <Properties:Settings x:Key="Settings" />
 
             <ControlTemplate x:Key="nodeOutputTemplate">
-                <StackPanel>
-                    <Rectangle Width="{Binding Width}" Height="{Binding Height}" Fill="Transparent" Stroke="Black" />
-                </StackPanel>
+                <Grid>
+                    <Rectangle VerticalAlignment="Center" HorizontalAlignment="Center" Stroke="Green" Width="{Binding Width}" Height="{Binding Height}" />
+                    <Label VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding Index}" Width="{Binding Width}" Height="{Binding Height}" />
+                    <Grid.ToolTip>
+                        <ToolTip Content="{Binding Text}" />
+                    </Grid.ToolTip>
+                </Grid>
             </ControlTemplate>
             <ControlTemplate x:Key="nodeTemplate">
                 <StackPanel>
                     <Grid>
-                        <Rectangle Fill="White" Width="{Binding Width}" Height="{Binding Height}" Stroke="Blue" />
-                        <TextBlock Text="{Binding Name}"/>
+                        <Rectangle RadiusX="4" RadiusY="4"  Fill="White" Width="{Binding Width}" Height="{Binding Height}" Stroke="Blue" />
+                        <TextBlock Text="{Binding Title}" TextWrapping="Wrap" Width="{Binding Width}" Height="{Binding Height}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Grid>
                     <ItemsControl ItemsSource="{Binding Options}">
                         <ItemsControl.ItemsPanel>
@@ -82,7 +86,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Thumb Canvas.Left="{Binding Hotspot.InputX}" Canvas.Top="{Binding Hotspot.InputY}" Width="{Binding Width}" Height="{Binding Height}">
+                                <Thumb Template="{StaticResource nodeOutputTemplate}" Canvas.Left="{Binding Hotspot.InputX}" Canvas.Top="{Binding Hotspot.InputY}">
                                     <Interactivity:Interaction.Triggers>
                                         <Interactivity:EventTrigger EventName="DragDelta">
                                             <MvvmControls:EventToCommand Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True" />
