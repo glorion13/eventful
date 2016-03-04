@@ -14,6 +14,16 @@ namespace Eventful.Model
             MessengerInstance.Register<Option>(this, option => OptionDraggedOverScreen(option));
         }
 
+        public Screen(Screen screen)
+        {
+            Title = screen.Title;
+            Text = screen.Text;
+            foreach (Option option in screen.Options)
+                AddOption(option);
+            Update();
+            MessengerInstance.Register<Option>(this, option => OptionDraggedOverScreen(option));
+        }
+
         private void OptionDraggedOverScreen(Option option)
         {
             if (Options.Contains(option)) return;
@@ -24,7 +34,7 @@ namespace Eventful.Model
             }
         }
 
-        private string title = "Untitled Screen Untitled Screen Untitled Screen";
+        private string title = "Untitled Screen";
         public string Title
         {
             get
@@ -49,8 +59,7 @@ namespace Eventful.Model
             set
             {
                 Set(() => X, ref x, value);
-                UpdateInputPositions();
-                UpdateOutputPositions();
+                Update();
             }
         }
 
@@ -64,8 +73,7 @@ namespace Eventful.Model
             set
             {
                 Set(() => Y, ref y, value);
-                UpdateInputPositions();
-                UpdateOutputPositions();
+                Update();
             }
         }
 
@@ -125,7 +133,7 @@ namespace Eventful.Model
             }
         }
 
-        private string text = "<EventBody>\n\n</EventBody>";
+        private string text = "";//"<EventBody>\n\n</EventBody>";
         public string Text
         {
             get
@@ -209,16 +217,22 @@ namespace Eventful.Model
             IsSelected = true;
         }
 
-        public void UpdateInputPositions()
+        private void UpdateInputPositions()
         {
             InputX = X + (Width / 2);
-            InputY = Y;// + (Height / 2);
+            InputY = Y;
         }
 
-        public void UpdateOutputPositions()
+        private void UpdateOutputPositions()
         {
             foreach (Option option in Options)
                 option.Update();
+        }
+
+        public void Update()
+        {
+            UpdateInputPositions();
+            UpdateOutputPositions();
         }
 
         public int GetOptionIndex(Option output)
@@ -230,6 +244,16 @@ namespace Eventful.Model
         {
             Option option = new Option();
             option.Index = Options.Count + 1;
+            option.Source = this;
+            option.Target = null;
+            Options.Add(option);
+        }
+
+        public void AddOption(Option sourceOption)
+        {
+            Option option = new Option();
+            option.Index = sourceOption.Index;
+            option.Text = sourceOption.Text;
             option.Source = this;
             option.Target = null;
             Options.Add(option);

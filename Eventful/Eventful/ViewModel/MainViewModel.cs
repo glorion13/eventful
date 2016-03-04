@@ -346,6 +346,7 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => SelectedOption, ref selectedOption, value);
+                IsRemoveOptionButtonEnabled = SelectedOption == null ? false : true;
             }
         }
 
@@ -478,26 +479,27 @@ namespace Eventful.ViewModel
                 InitialiseConnections();
             }
         }
-        private RelayCommand removeScreenCommand;
-        public RelayCommand RemoveScreenCommand
+        private RelayCommand<Screen> removeScreenCommand;
+        public RelayCommand<Screen> RemoveScreenCommand
         {
             get
             {
-                return removeScreenCommand ?? (removeScreenCommand = new RelayCommand(ExecuteRemoveScreenCommand));
+                return removeScreenCommand ?? (removeScreenCommand = new RelayCommand<Screen>(ExecuteRemoveScreenCommand));
             }
         }
-        private async void ExecuteRemoveScreenCommand()
+        private async void ExecuteRemoveScreenCommand(Screen screen)
         {
-            if (SelectedScreen == null) return;
-            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Screen Deletion", String.Concat("Do you want to delete the screen \"", SelectedScreen.Title, "\"?"));
+            if (screen == null) return;
+            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Screen Deletion", $"Do you want to delete the screen {screen.Title}?");
             if (dialogResult)
-                RemoveScreen(SelectedScreen);
+                RemoveScreen(screen);
         }
         private void RemoveScreen(Screen screen)
         {
             SelectedEvent.Screens.Remove(screen);
             InitialiseConnections();
-            SelectedScreen = null;
+            if (SelectedScreen == screen)
+                SelectedScreen = null;
         }
 
         private bool isAddScreenButtonEnabled = false;
@@ -719,6 +721,33 @@ namespace Eventful.ViewModel
             }
         }
 
+        private RelayCommand<Screen> changeScreenNameCommand;
+        public RelayCommand<Screen> ChangeScreenNameCommand
+        {
+            get
+            {
+                return changeScreenNameCommand ?? (changeScreenNameCommand = new RelayCommand<Screen>(ExecuteChangeScreenNameCommand));
+            }
+        }
+        private async void ExecuteChangeScreenNameCommand(Screen screen)
+        {
+            string text = "What is the new title of the screen?";
+            if (screen != null)
+            {
+                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Change Screen Name", text);
+                if (dialogResult == null)
+                {
+                }
+                else if (dialogResult == screen.Title)
+                {
+                }
+                else
+                {
+                    screen.Title = dialogResult;
+                }
+            }
+        }
+
         private string filenameErrorMessage = "A title cannot be empty, nor contain any of the following characters: \n \\ / : * ? \" < > |";
 
         private RelayCommand saveEventCommand;
@@ -782,6 +811,23 @@ namespace Eventful.ViewModel
             LoadDeckMappingsFromDisk();
             SelectedDeck = tempSelectedDeck;
             SelectedEvent = tempSelectedEvent;
+        }
+
+        private RelayCommand<Screen> duplicateScreenCommand;
+        public RelayCommand<Screen> DuplicateScreenCommand
+        {
+            get
+            {
+                return duplicateScreenCommand ?? (duplicateScreenCommand = new RelayCommand<Screen>(ExecuteDuplicateScreenCommand));
+            }
+        }
+        private void ExecuteDuplicateScreenCommand(Screen screen)
+        {
+            if (screen == null) return;
+            Screen duplicateScreen = new Screen(screen);
+            duplicateScreen.Title += " Copy";
+            SelectedEvent.AddScreen(duplicateScreen);
+            InitialiseConnections();
         }
 
         private RelayCommand duplicateEventCommand;
@@ -964,6 +1010,18 @@ namespace Eventful.ViewModel
             InitialiseConnections();
         }
 
+        private bool isRemoveOptionButtonEnabled = false;
+        public bool IsRemoveOptionButtonEnabled
+        {
+            get
+            {
+                return isRemoveOptionButtonEnabled;
+            }
+            set
+            {
+                Set(() => IsRemoveOptionButtonEnabled, ref isRemoveOptionButtonEnabled, value);
+            }
+        }
         private RelayCommand removeOptionCommand;
         public RelayCommand RemoveOptionCommand
         {
@@ -995,9 +1053,13 @@ namespace Eventful.ViewModel
         {
             if (SelectedOption == null) return;
             if (SelectedScreen == null) return;
+            if (SelectedOption.Index == 1) return;
             Option optionAbove = SelectedScreen.Options.FirstOrDefault(opt => opt.Index == SelectedOption.Index - 1);
             optionAbove.Index = SelectedOption.Index;
             SelectedOption.Index--;
+            SelectedScreen.Options.Move(optionAbove.Index - 1, SelectedOption.Index - 1);
+            SelectedScreen.Update();
+            InitialiseConnections();
         }
 
         private RelayCommand moveOptionDownCommand;
@@ -1012,9 +1074,13 @@ namespace Eventful.ViewModel
         {
             if (SelectedOption == null) return;
             if (SelectedScreen == null) return;
+            if (SelectedOption.Index == SelectedScreen.Options.Count) return;
             Option optionAbove = SelectedScreen.Options.FirstOrDefault(opt => opt.Index == SelectedOption.Index + 1);
             optionAbove.Index = SelectedOption.Index;
             SelectedOption.Index++;
+            SelectedScreen.Options.Move(optionAbove.Index - 1, SelectedOption.Index - 1);
+            SelectedScreen.Update();
+            InitialiseConnections();
         }
 
         private void InitialiseConnections()

@@ -162,9 +162,10 @@ namespace Eventful.Model
         }
         private void ExecuteDragDeltaCommand(DragDeltaEventArgs args)
         {
-            Hotspot = new Screen();
-            Hotspot.InputX += SourceX + args.HorizontalChange;
-            Hotspot.InputY += SourceY + args.VerticalChange;
+            Hotspot.InputX = SourceX;
+            Hotspot.InputY = SourceY;
+            Hotspot.InputX += args.HorizontalChange;
+            Hotspot.InputY += args.VerticalChange;
             TargetId = Guid.Empty;
             Target = Hotspot;
 

@@ -114,8 +114,8 @@
     <MetroControls:MetroWindow.RightWindowCommands>
         <MetroControls:WindowCommands>
             <Button Content="sync" Command="{Binding SyncDataCommand}" />
-            <Button Content="tags" Command="{Binding OpenTagLibraryCommand}" />
-            <Button Content="variables" Command="{Binding OpenVariableLibraryCommand}" />
+            <!--<Button Content="tags" Command="{Binding OpenTagLibraryCommand}" />-->
+            <!--<Button Content="variables" Command="{Binding OpenVariableLibraryCommand}" />-->
             <Button Content="settings" Command="{Binding ShowSettingsCommand}" />
         </MetroControls:WindowCommands>
     </MetroControls:MetroWindow.RightWindowCommands>
@@ -272,7 +272,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Screens" Grid.Column="0" FontSize="20" />
                 <Button Content="+" IsEnabled="{Binding IsAddScreenButtonEnabled}" Command="{Binding AddScreenCommand}" Grid.Column="1" />
-                <Button Content="-" IsEnabled="{Binding IsRemoveScreenButtonEnabled}" Command="{Binding RemoveScreenCommand}" Grid.Column="2" />
+                <Button Content="-" IsEnabled="{Binding IsRemoveScreenButtonEnabled}" Command="{Binding RemoveScreenCommand}" CommandParameter="{Binding SelectedScreen}" Grid.Column="2" />
             </Grid>
             <ScrollViewer Grid.Row="1">
                 <ScrollViewer.ContextMenu>
@@ -308,6 +308,18 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Thumb Focusable="True" Template="{StaticResource nodeTemplate}">
+                                    <Thumb.InputBindings>
+                                        <KeyBinding Command="{Binding Main.RemoveScreenCommand, Source={StaticResource Locator}}"
+                                            CommandParameter="{Binding}"
+                                Key="Delete" />
+                                    </Thumb.InputBindings>
+                                    <Thumb.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Rename screen" Command="{Binding Main.ChangeScreenNameCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
+                                            <MenuItem Header="Duplicate screen" Command="{Binding Main.DuplicateScreenCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
+                                            <MenuItem Header="Delete screen" Command="{Binding Main.RemoveScreenCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
+                                        </ContextMenu>
+                                    </Thumb.ContextMenu>
                                     <Interactivity:Interaction.Triggers>
                                         <Interactivity:EventTrigger EventName="DragDelta">
                                             <MvvmControls:EventToCommand Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True" />
@@ -359,7 +371,8 @@
                 </StackPanel>
             </Grid>
 
-            <LocalControls:MvvmTextEditor Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" AutocompleteTrees="{Binding AutocompleteTrees, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  FontSize="10pt">
+            <LocalControls:MvvmTextEditor Grid.Row="1" HorizontalScrollBarVisibility="Hidden" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" FontSize="10pt">
+                <!--AutocompleteTrees="{Binding AutocompleteTrees, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                 <Interactivity:Interaction.Behaviors>
                     <LocalControls:SpellCheckBehavior />
                 </Interactivity:Interaction.Behaviors>
@@ -371,7 +384,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="25" />
                 </Grid.ColumnDefinitions>
-                <DataGrid Grid.Column="0" CanUserAddRows="False" SelectionMode="Single" AutoGenerateColumns="False" HeadersVisibility="None" SelectedItem="{Binding SelectedOption}" ItemsSource="{Binding SelectedScreen.Options}">
+                <DataGrid Grid.Column="0" CanUserAddRows="False" SelectionMode="Single" AutoGenerateColumns="False" HeadersVisibility="None" SelectedItem="{Binding SelectedOption, Mode=TwoWay}" ItemsSource="{Binding SelectedScreen.Options}">
                     <DataGrid.Columns>
                         <DataGridTextColumn SortDirection="Ascending" Header="Index" Binding="{Binding Index}" IsReadOnly="True" Width="10" />
                         <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="*" />
@@ -387,8 +400,8 @@
                         <Button Content="-" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding RemoveOptionCommand}" />
                     </StackPanel>
                     <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
-                        <Button FontFamily="Marlett" Content="5" Command="{Binding MoveOptionUpCommand}" />
-                        <Button FontFamily="Marlett" Content="6" Command="{Binding MoveOptionDownCommand}" />
+                        <Button FontFamily="Marlett" Content="5" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding MoveOptionUpCommand}" />
+                        <Button FontFamily="Marlett" Content="6" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding MoveOptionDownCommand}" />
                     </StackPanel>
                 </Grid>
             </Grid>
