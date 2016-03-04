@@ -118,7 +118,7 @@ namespace Eventful.Model
             }
         }
 
-        private double height = 80;
+        private double height = 40;
         public double Height
         {
             get
