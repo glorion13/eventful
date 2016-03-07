@@ -167,7 +167,6 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150" />
             <ColumnDefinition Width="150" />
-            <ColumnDefinition Width="250" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
@@ -258,99 +257,21 @@
         </Grid>
         <GridSplitter Grid.Row="0" Grid.Column="1" Visibility="{Binding SelectedEvent, Converter={StaticResource NonNullToVisibility}}" Style="{StaticResource GridSplitterStyle}" />
 
-        <Grid Grid.Row="0" Grid.Column="2" Margin="5" Visibility="{Binding SelectedEvent, Converter={StaticResource NonNullToVisibility}}">
+        <Grid Visibility="{Binding SelectedEvent, Converter={StaticResource NonNullToVisibility}}" Grid.Row="0" Grid.Column="3">
             <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
+                <RowDefinition Height="100" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="30" />
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="30" />
-                    <ColumnDefinition Width="30" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Screens" Grid.Column="0" FontSize="20" />
-                <Button Content="+" IsEnabled="{Binding IsAddScreenButtonEnabled}" Command="{Binding AddScreenCommand}" Grid.Column="1" />
-                <Button Content="-" IsEnabled="{Binding IsRemoveScreenButtonEnabled}" Command="{Binding RemoveScreenCommand}" CommandParameter="{Binding SelectedScreen}" Grid.Column="2" />
-            </Grid>
-            <ScrollViewer Grid.Row="1">
-                <ScrollViewer.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>
-                    </ContextMenu>
-                </ScrollViewer.ContextMenu>
-                <Canvas>
-                    <ItemsControl ItemsSource="{Binding Connections}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <arrow:ArrowLine Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibility}}" X1="{Binding SourceX}" Y1="{Binding SourceY}" X2="{Binding Target.InputX}" Y2="{Binding Target.InputY}" Stroke="Black" StrokeThickness="2" ArrowEnds="Middle" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    <ItemsControl ItemsSource="{Binding SelectedEvent.Screens}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemContainerStyle>
-                            <Style>
-                                <Setter Property="Canvas.Left" Value="{Binding X}" />
-                                <Setter Property="Canvas.Top" Value="{Binding Y}" />
-                            </Style>
-                        </ItemsControl.ItemContainerStyle>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Thumb Focusable="True" Template="{StaticResource nodeTemplate}">
-                                    <Thumb.InputBindings>
-                                        <KeyBinding Command="{Binding Main.RemoveScreenCommand, Source={StaticResource Locator}}"
-                                            CommandParameter="{Binding}"
-                                Key="Delete" />
-                                    </Thumb.InputBindings>
-                                    <Thumb.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Rename screen" Command="{Binding Main.ChangeScreenNameCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
-                                            <MenuItem Header="Duplicate screen" Command="{Binding Main.DuplicateScreenCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
-                                            <MenuItem Header="Delete screen" Command="{Binding Main.RemoveScreenCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
-                                        </ContextMenu>
-                                    </Thumb.ContextMenu>
-                                    <Interactivity:Interaction.Triggers>
-                                        <Interactivity:EventTrigger EventName="DragDelta">
-                                            <MvvmControls:EventToCommand Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True" />
-                                        </Interactivity:EventTrigger>
-                                        <Interactivity:EventTrigger EventName="GotFocus">
-                                            <MvvmControls:EventToCommand Command="{Binding GotFocusCommand}" />
-                                        </Interactivity:EventTrigger>
-                                    </Interactivity:Interaction.Triggers>
-                                </Thumb>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Canvas>
-            </ScrollViewer>
-            <!--<TextBox Text="{Binding ScreenFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />-->
-        </Grid>
-        <GridSplitter Grid.Row="0" Grid.Column="2" Visibility="{Binding SelectedEvent, Converter={StaticResource NonNullToVisibility}}" Style="{StaticResource GridSplitterStyle}" />
-        
-        <!--<TextBlock Text="Select a screen to start editing." Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" />-->
-        <Grid Grid.Row="0" Grid.Column="3" Margin="5" Visibility="{Binding SelectedScreen, Converter={StaticResource NonNullToVisibility}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="60" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="5" />
-                <RowDefinition Height="150" />
-                <RowDefinition Height="30" />
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="20" />
+                    <RowDefinition Height="10" />
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0">
                     <TextBlock Text="{Binding SelectedDeck.Title}" FontSize="28" />
@@ -369,44 +290,136 @@
                     <TextBlock Text=" on " FontWeight="Light" FontSize="12" />
                     <TextBlock Text="{Binding SelectedEvent.Date, Converter={StaticResource DateToString}}" FontWeight="Normal"  FontSize="12" />
                 </StackPanel>
+                <Rectangle Grid.Row="2" Height="4" Width="auto" />
             </Grid>
 
-            <LocalControls:MvvmTextEditor Grid.Row="1" HorizontalScrollBarVisibility="Hidden" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" FontSize="10pt">
-                <!--AutocompleteTrees="{Binding AutocompleteTrees, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
-                <Interactivity:Interaction.Behaviors>
-                    <LocalControls:SpellCheckBehavior />
-                </Interactivity:Interaction.Behaviors>
-            </LocalControls:MvvmTextEditor>
-            <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
-
-            <Grid Grid.Row="3">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="25" />
-                </Grid.ColumnDefinitions>
-                <DataGrid Grid.Column="0" CanUserAddRows="False" SelectionMode="Single" AutoGenerateColumns="False" HeadersVisibility="None" SelectedItem="{Binding SelectedOption, Mode=TwoWay}" ItemsSource="{Binding SelectedScreen.Options}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn SortDirection="Ascending" Header="Index" Binding="{Binding Index}" IsReadOnly="True" Width="10" />
-                        <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="*" />
-                    </DataGrid.Columns>
-                </DataGrid>
-                <Grid Grid.Column="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0">
-                        <Button Content="+" Command="{Binding AddOptionCommand}" />
-                        <Button Content="-" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding RemoveOptionCommand}" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
-                        <Button FontFamily="Marlett" Content="5" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding MoveOptionUpCommand}" />
-                        <Button FontFamily="Marlett" Content="6" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding MoveOptionDownCommand}" />
-                    </StackPanel>
+            <Grid Grid.Row="1" Grid.Column="0" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition Width="30" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Screens" Grid.Column="0" FontSize="20" />
+                    <Button Content="+" IsEnabled="{Binding IsAddScreenButtonEnabled}" Command="{Binding AddScreenCommand}" Grid.Column="1" />
+                    <Button Content="-" IsEnabled="{Binding IsRemoveScreenButtonEnabled}" Command="{Binding RemoveScreenCommand}" CommandParameter="{Binding SelectedScreen}" Grid.Column="2" />
                 </Grid>
+                <ScrollViewer Grid.Row="1">
+                    <ScrollViewer.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>
+                        </ContextMenu>
+                    </ScrollViewer.ContextMenu>
+                    <Canvas>
+                        <ItemsControl ItemsSource="{Binding Connections}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <arrow:ArrowLine Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibility}}" X1="{Binding SourceX}" Y1="{Binding SourceY}" X2="{Binding Target.InputX}" Y2="{Binding Target.InputY}" Stroke="Black" StrokeThickness="2" ArrowEnds="Middle" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <ItemsControl ItemsSource="{Binding SelectedEvent.Screens}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="Canvas.Left" Value="{Binding X}" />
+                                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Thumb Focusable="True" Template="{StaticResource nodeTemplate}">
+                                        <Thumb.InputBindings>
+                                            <KeyBinding Command="{Binding Main.RemoveScreenCommand, Source={StaticResource Locator}}"
+                                            CommandParameter="{Binding}"
+                                Key="Delete" />
+                                        </Thumb.InputBindings>
+                                        <Thumb.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Rename screen" Command="{Binding Main.ChangeScreenNameCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
+                                                <MenuItem Header="Duplicate screen" Command="{Binding Main.DuplicateScreenCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
+                                                <MenuItem Header="Delete screen" Command="{Binding Main.RemoveScreenCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
+                                            </ContextMenu>
+                                        </Thumb.ContextMenu>
+                                        <Interactivity:Interaction.Triggers>
+                                            <Interactivity:EventTrigger EventName="DragDelta">
+                                                <MvvmControls:EventToCommand Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True" />
+                                            </Interactivity:EventTrigger>
+                                            <Interactivity:EventTrigger EventName="GotFocus">
+                                                <MvvmControls:EventToCommand Command="{Binding GotFocusCommand}" />
+                                            </Interactivity:EventTrigger>
+                                        </Interactivity:Interaction.Triggers>
+                                    </Thumb>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Canvas>
+                </ScrollViewer>
+                <!--<TextBox Text="{Binding ScreenFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />-->
             </Grid>
+            <GridSplitter Grid.Row="1" Grid.Column="0" Visibility="{Binding SelectedEvent}" Style="{StaticResource GridSplitterStyle}" />
 
-            <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="4" Width="80" IsEnabled="{Binding SelectedEvent.IsChanged}" HorizontalAlignment="Right" />
+            <TextBlock Text="Select a screen to start editing." Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Grid Grid.Row="1" Grid.Column="1" Margin="5" Visibility="{Binding SelectedScreen, Converter={StaticResource NonNullToVisibility}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="150" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+
+                <LocalControls:MvvmTextEditor Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Hidden" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" FontSize="10pt">
+                    <!--AutocompleteTrees="{Binding AutocompleteTrees, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
+                    <Interactivity:Interaction.Behaviors>
+                        <LocalControls:SpellCheckBehavior />
+                    </Interactivity:Interaction.Behaviors>
+                </LocalControls:MvvmTextEditor>
+                <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
+
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="25" />
+                    </Grid.ColumnDefinitions>
+                    <DataGrid Grid.Column="0" CanUserAddRows="False" SelectionMode="Single" AutoGenerateColumns="False" HeadersVisibility="None" SelectedItem="{Binding SelectedOption, Mode=TwoWay}" ItemsSource="{Binding SelectedScreen.Options}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn SortDirection="Ascending" Header="Index" Binding="{Binding Index}" IsReadOnly="True" Width="10" />
+                            <DataGridTextColumn Header="Text" Binding="{Binding Text}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <Button Content="+" Command="{Binding AddOptionCommand}" />
+                            <Button Content="-" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding RemoveOptionCommand}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
+                            <Button FontFamily="Marlett" Content="5" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding MoveOptionUpCommand}" />
+                            <Button FontFamily="Marlett" Content="6" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding MoveOptionDownCommand}" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+
+                <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="4" Width="80" IsEnabled="{Binding SelectedEvent.IsChanged}" HorizontalAlignment="Right" />
+            </Grid>
         </Grid>
 
         <Border Visibility="{Binding IsStatusbarVisible, Converter={StaticResource BoolToVisibility}}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
