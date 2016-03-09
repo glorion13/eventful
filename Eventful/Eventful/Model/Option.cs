@@ -102,6 +102,9 @@ namespace Eventful.Model
                 IsVisible = true;
                 UpdateSource();
             }
+            if (Source != null)
+                if (Source.ParentEvent != null)
+                    Source.ParentEvent.IsChanged = true;
         }
 
         public void UpdateSource()
@@ -221,6 +224,9 @@ namespace Eventful.Model
             set
             {
                 Set(() => Text, ref text, value);
+                if (Source != null)
+                    if (Source.ParentEvent != null)
+                        Source.ParentEvent.IsChanged = true;
             }
         }
 

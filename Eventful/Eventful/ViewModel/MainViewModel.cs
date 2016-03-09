@@ -1038,6 +1038,8 @@ namespace Eventful.ViewModel
                 if (option.Index > SelectedOption.Index)
                     option.Index--;
             SelectedScreen.Options.Remove(SelectedOption);
+            if (SelectedScreen.ParentEvent != null)
+                SelectedScreen.ParentEvent.IsChanged = true;
             InitialiseConnections();
         }
 

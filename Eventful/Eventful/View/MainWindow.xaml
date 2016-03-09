@@ -259,7 +259,7 @@
 
         <Grid Visibility="{Binding SelectedEvent, Converter={StaticResource NonNullToVisibility}}" Grid.Row="0" Grid.Column="3">
             <Grid.RowDefinitions>
-                <RowDefinition Height="100" />
+                <RowDefinition Height="85" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -269,13 +269,14 @@
 
             <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="20" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
                     <RowDefinition Height="10" />
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0">
-                    <TextBlock Text="{Binding SelectedDeck.Title}" FontSize="28" />
                     <TextBlock Text=" > " FontSize="28" />
+                    <TextBlock Text="{Binding SelectedDeck.Title}" FontSize="28" />
+                    <TextBlock Text=": " FontSize="28" />
                     <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28">
                         <Interactivity:Interaction.Triggers>
                             <Interactivity:EventTrigger EventName="MouseDown">
@@ -284,13 +285,16 @@
                         </Interactivity:Interaction.Triggers>
                     </TextBlock>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Grid.Row="1">
-                    <TextBlock Text="Last saved by " FontWeight="Light" FontSize="12" />
-                    <TextBlock Text="{Binding SelectedEvent.Author}" FontWeight="Bold" FontSize="12" />
-                    <TextBlock Text=" on " FontWeight="Light" FontSize="12" />
-                    <TextBlock Text="{Binding SelectedEvent.Date, Converter={StaticResource DateToString}}" FontWeight="Normal"  FontSize="12" />
+                <StackPanel Margin="5,5,0,5" Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                    <Button HorizontalAlignment="Left" Grid.Row="1" Grid.Column="0" Content="Save" Command="{Binding SaveEventCommand}" Width="80" IsEnabled="{Binding SelectedEvent.IsChanged}" />
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Grid.Row="1" Margin="10,0,0,0">
+                        <TextBlock Text="Last saved by " FontWeight="Light" FontSize="12" />
+                        <TextBlock Text="{Binding SelectedEvent.Author}" FontWeight="Bold" FontSize="12" />
+                        <TextBlock Text=" on " FontWeight="Light" FontSize="12" />
+                        <TextBlock Text="{Binding SelectedEvent.Date, Converter={StaticResource DateToString}}" FontWeight="Normal"  FontSize="12" />
+                    </StackPanel>
                 </StackPanel>
-                <Rectangle Grid.Row="2" Height="4" Width="auto" />
+                <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="0" Margin="5">
@@ -376,22 +380,20 @@
             <TextBlock Text="Select a screen to start editing." Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
             <Grid Grid.Row="1" Grid.Column="1" Margin="5" Visibility="{Binding SelectedScreen, Converter={StaticResource NonNullToVisibility}}">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="60" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="5" />
                     <RowDefinition Height="150" />
-                    <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
 
-                <LocalControls:MvvmTextEditor Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Hidden" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" FontSize="10pt">
+                <LocalControls:MvvmTextEditor Grid.Row="0" Grid.Column="1" HorizontalScrollBarVisibility="Hidden" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" FontSize="10pt">
                     <!--AutocompleteTrees="{Binding AutocompleteTrees, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                     <Interactivity:Interaction.Behaviors>
                         <LocalControls:SpellCheckBehavior />
                     </Interactivity:Interaction.Behaviors>
                 </LocalControls:MvvmTextEditor>
-                <GridSplitter Grid.Row="2" Style="{StaticResource HorizontalGridSplitterStyle}" />
+                <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
-                <Grid Grid.Row="3">
+                <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="25" />
@@ -417,8 +419,6 @@
                         </StackPanel>
                     </Grid>
                 </Grid>
-
-                <Button Content="Save" Command="{Binding SaveEventCommand}" Grid.Row="4" Width="80" IsEnabled="{Binding SelectedEvent.IsChanged}" HorizontalAlignment="Right" />
             </Grid>
         </Grid>
 

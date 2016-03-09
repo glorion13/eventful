@@ -233,6 +233,8 @@ namespace Eventful.Model
         {
             UpdateInputPositions();
             UpdateOutputPositions();
+            if (ParentEvent != null)
+                ParentEvent.IsChanged = true;
         }
 
         public int GetOptionIndex(Option output)
@@ -247,6 +249,8 @@ namespace Eventful.Model
             option.Source = this;
             option.Target = null;
             Options.Add(option);
+            if (ParentEvent != null)
+                ParentEvent.IsChanged = true;
         }
 
         public void AddOption(Option sourceOption)
@@ -257,6 +261,8 @@ namespace Eventful.Model
             option.Source = this;
             option.Target = null;
             Options.Add(option);
+            if (ParentEvent != null)
+                ParentEvent.IsChanged = true;
         }
 
         private Guid id = Guid.NewGuid();
