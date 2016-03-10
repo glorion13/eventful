@@ -276,11 +276,19 @@
                 <StackPanel Orientation="Horizontal" Grid.Row="0">
                     <TextBlock Text=" > " FontSize="28" />
                     <TextBlock Text="{Binding SelectedDeck.Title}" FontSize="28" />
-                    <TextBlock Text=": " FontSize="28" />
+                    <TextBlock Text=" > " FontSize="28" />
                     <TextBlock Text="{Binding SelectedEvent.Title}" FontSize="28">
                         <Interactivity:Interaction.Triggers>
                             <Interactivity:EventTrigger EventName="MouseDown">
-                                <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
+                                <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" CommandParameter="{Binding SelectedEvent}" />
+                            </Interactivity:EventTrigger>
+                        </Interactivity:Interaction.Triggers>
+                    </TextBlock>
+                    <TextBlock Text=" > " FontSize="28" Visibility="{Binding SelectedScreen, Converter={StaticResource NonNullToVisibility}}" />
+                    <TextBlock Text="{Binding SelectedScreen.Title}" FontSize="28">
+                        <Interactivity:Interaction.Triggers>
+                            <Interactivity:EventTrigger EventName="MouseDown">
+                                <MvvmControls:EventToCommand Command="{Binding ChangeScreenNameCommand}" CommandParameter="{Binding SelectedScreen}" />
                             </Interactivity:EventTrigger>
                         </Interactivity:Interaction.Triggers>
                     </TextBlock>
@@ -313,13 +321,13 @@
                     <Button Content="+" IsEnabled="{Binding IsAddScreenButtonEnabled}" Command="{Binding AddScreenCommand}" Grid.Column="1" />
                     <Button Content="-" IsEnabled="{Binding IsRemoveScreenButtonEnabled}" Command="{Binding RemoveScreenCommand}" CommandParameter="{Binding SelectedScreen}" Grid.Column="2" />
                 </Grid>
-                <ScrollViewer Grid.Row="1">
+                <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <ScrollViewer.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>
                         </ContextMenu>
                     </ScrollViewer.ContextMenu>
-                    <Canvas>
+                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="Auto" Width="Auto">
                         <ItemsControl ItemsSource="{Binding Connections}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -346,7 +354,7 @@
                             </ItemsControl.ItemContainerStyle>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Thumb Focusable="True" Template="{StaticResource nodeTemplate}">
+                                    <Thumb ScrollViewer.CanContentScroll="True" Focusable="True" Template="{StaticResource nodeTemplate}">
                                         <Thumb.InputBindings>
                                             <KeyBinding Command="{Binding Main.RemoveScreenCommand, Source={StaticResource Locator}}"
                                             CommandParameter="{Binding}"
@@ -427,13 +435,19 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="80" />
                 <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="15" />
                 <ColumnDefinition Width="130" />
                 <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="15" />
+                <ColumnDefinition Width="145" />
+                <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="Decks loaded: " Grid.Column="0" HorizontalAlignment="Right" />
+            <TextBlock Text="Decks loaded: " Grid.Column="0" />
             <TextBlock Text="{Binding Decks.Count}" Grid.Column="1" />
-            <TextBlock Text="Events in selected deck: " Grid.Column="2" HorizontalAlignment="Right" />
-            <TextBlock Text="{Binding SelectedDeck.Events.Count}" Grid.Column="3" />
+            <TextBlock Text="Events in selected deck: " Visibility="{Binding SelectedDeck, Converter={StaticResource NonNullToVisibility}}" Grid.Column="3" />
+            <TextBlock Text="{Binding SelectedDeck.Events.Count}" Grid.Column="4" />
+            <TextBlock Text="Screens in selected event: " Visibility="{Binding SelectedEvent, Converter={StaticResource NonNullToVisibility}}" Grid.Column="6" />
+            <TextBlock Text="{Binding SelectedEvent.Screens.Count}" Grid.Column="7" />
         </Grid>
 
     </Grid>

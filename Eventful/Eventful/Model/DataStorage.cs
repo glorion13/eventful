@@ -164,28 +164,30 @@ namespace Eventful.Model
             }
         }
         
-        public static async void LoadDeckEventsFromDisk(Deck deck)
+        public static async Task<ObservableCollection<Event>> LoadDeckEventsFromDisk(Deck deck)
         {
-            deck.Events.Clear();
+            ObservableCollection<Event> events = new ObservableCollection<Event>();
             string fullpath = GetDeckFilePath(deck);
             try
             {
-                foreach (string file in await Task.Run(() => EnumerateFilesTask(fullpath, "*.event")))
+                foreach (string file in EnumerateFilesTask(fullpath, "*.event"))
                 {
                     string subDirectory = file.Replace(StorageDirectory, "");
-                    Event newEvent = await Task.Run(() => LoadEventFromDisk(subDirectory));
+                    Event newEvent = LoadEventFromDisk(subDirectory);
                     if (newEvent != null)
                     {
                         newEvent.IsChanged = false;
-                        deck.Events.Add(newEvent);
+                        events.Add(newEvent);
                     }
                     if (newEvent == null)
                         await ViewModel.MessageWindowsViewModel.ShowOkMessage("Problem Loading Event", $"Event from file {subDirectory} was not loaded successfully.");
                 }
+                return events;
             }
             catch
             {
                 await ViewModel.MessageWindowsViewModel.ShowOkMessage("Problem Loading Deck", "An error occurred while trying to load the deck's events.");
+                return events;
             }
         }
 
@@ -210,25 +212,28 @@ namespace Eventful.Model
             if (deckMapping[0] == '.') return null;
             return new Deck(deckMapping);
         }
-        public static async void LoadAllDeckMappingsFromDisk(ObservableCollection<Deck> decks)
+        public static ObservableCollection<Deck> LoadAllDeckMappingsFromDisk()
         {
-            decks.Clear();
+            ObservableCollection<Deck> decks = new ObservableCollection<Deck>();
             try
             {
-                foreach (string folder in await Task.Run(() => EnumerateDirectoriesTask(String.Concat(StorageDirectory, deckDirectoryName))))
+                foreach (string folder in EnumerateDirectoriesTask(string.Concat(StorageDirectory, deckDirectoryName)))
                 {
                     string subDirectory = folder.Replace(StorageDirectory, "");
                     Deck deck = CreateDeckMapping(subDirectory);
                     if (deck != null)
                         decks.Add(deck);
                 }
+                return decks;
             }
             catch (DirectoryNotFoundException)
             {
                 CreateInitialDirectories();
+                return decks;
             }
             catch
             {
+                return decks;
             }
         }
 

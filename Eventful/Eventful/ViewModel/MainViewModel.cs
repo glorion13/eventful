@@ -12,6 +12,7 @@ using Eventful.Auxiliary;
 using GongSolutions.Wpf.DragDrop;
 using System.Windows;
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace Eventful.ViewModel
 {
@@ -274,11 +275,15 @@ namespace Eventful.ViewModel
 
         private void LoadDeckMappingsFromDisk()
         {
-            DataStorage.LoadAllDeckMappingsFromDisk(Decks);
+            Decks.Clear();
+            foreach (Deck deck in DataStorage.LoadAllDeckMappingsFromDisk())
+                Decks.Add(deck);
         }
-        private void LoadSelectedDeckEventMappingsFromDisk()
+        private async Task LoadSelectedDeckEventMappingsFromDisk()
         {
-            DataStorage.LoadDeckEventsFromDisk(SelectedDeck);
+            SelectedDeck.Events.Clear();
+            foreach (Event ev in await DataStorage.LoadDeckEventsFromDisk(SelectedDeck))
+                SelectedDeck.Events.Add(ev);
         }
 
         private Deck selectedDeck;
@@ -792,11 +797,11 @@ namespace Eventful.ViewModel
                 {
                     bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Sync Data", "You haven't saved your changes yet. If you sync they will be lost. Are you sure you want to sync?");
                     if (dialogResult)
-                        SyncAndKeepFocusOnSelectedEvent();
+                        SyncAndKeepFocusOnSelectedElements();
                 }
                 else
                 {
-                    SyncAndKeepFocusOnSelectedEvent();
+                    SyncAndKeepFocusOnSelectedElements();
                 }
             }
             else
@@ -804,13 +809,24 @@ namespace Eventful.ViewModel
                 LoadDeckMappingsFromDisk();
             }
         }
-        private void SyncAndKeepFocusOnSelectedEvent()
+        private void SyncAndKeepFocusOnSelectedElements()
         {
-            Deck tempSelectedDeck = SelectedDeck;
-            Event tempSelectedEvent = SelectedEvent;
+            string selectedDeckId = SelectedDeck?.Title;
+            string selectedEventId = SelectedEvent?.Id.ToString();
+            string selectedScreenId = SelectedScreen?.Id.ToString();
+
+            SelectedDeck = null;
+            SelectedEvent = null;
+            SelectedScreen = null;
+
             LoadDeckMappingsFromDisk();
-            SelectedDeck = tempSelectedDeck;
-            SelectedEvent = tempSelectedEvent;
+            SelectedDeck = Decks.SingleOrDefault(d => d.Title == selectedDeckId);
+            if (SelectedDeck == null) return;
+            
+            SelectedEvent = SelectedDeck.Events.SingleOrDefault(e => e.Id.ToString() == selectedEventId);
+            if (SelectedEvent == null) return;
+
+            SelectedScreen = SelectedEvent.Screens.SingleOrDefault(s => s.Id.ToString() == selectedScreenId);
         }
 
         private RelayCommand<Screen> duplicateScreenCommand;
@@ -1105,6 +1121,19 @@ namespace Eventful.ViewModel
             {
                 Set(() => Connections, ref connections, value);
             }
+        }
+
+        private RelayCommand deselectSelectedScreenCommand;
+        public RelayCommand DeselectSelectedScreenCommand
+        {
+            get
+            {
+                return deselectSelectedScreenCommand ?? (deselectSelectedScreenCommand = new RelayCommand(ExecuteDeselectSelectedScreenCommand));
+            }
+        }
+        private void ExecuteDeselectSelectedScreenCommand()
+        {
+            SelectedScreen = null;
         }
     }
 }
