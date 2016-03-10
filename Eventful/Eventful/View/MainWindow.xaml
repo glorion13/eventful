@@ -327,6 +327,11 @@
                             <MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>
                         </ContextMenu>
                     </ScrollViewer.ContextMenu>
+                    <Interactivity:Interaction.Triggers>
+                        <Interactivity:EventTrigger EventName="MouseLeftButtonUp">
+                            <MvvmControls:EventToCommand Command="{Binding DeselectSelectedScreenCommand}" />
+                        </Interactivity:EventTrigger>
+                    </Interactivity:Interaction.Triggers>
                     <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="Auto" Width="Auto">
                         <ItemsControl ItemsSource="{Binding Connections}">
                             <ItemsControl.ItemsPanel>
