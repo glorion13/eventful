@@ -141,7 +141,10 @@ namespace Eventful.ViewModel
             {
                 Set(() => ScreenFilter, ref screenFilter, value);
                 if (ScreensViewSource != null)
+                {
                     ScreensViewSource.View.Filter = new Predicate<object>(ScreenTitleContains);
+                    InitialiseConnections();
+                }
             }
         }
 
@@ -1105,7 +1108,7 @@ namespace Eventful.ViewModel
         {
             Connections.Clear();
             if (SelectedEvent != null)
-                foreach (Screen screen in SelectedEvent.Screens)
+                foreach (Screen screen in ScreensViewSource.View)
                     foreach (Option option in screen.Options)
                         Connections.Add(option);
         }

@@ -33,7 +33,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
+
             <Style x:Key="GridSplitterStyle" TargetType="GridSplitter">
                 <Setter Property="Width">
                     <Setter.Value>2</Setter.Value>
@@ -45,7 +45,7 @@
                     <Setter.Value>Stretch</Setter.Value>
                 </Setter>
             </Style>
-            
+
             <Style x:Key="HorizontalGridSplitterStyle" TargetType="GridSplitter">
                 <Setter Property="Height">
                     <Setter.Value>2</Setter.Value>
@@ -57,7 +57,7 @@
                     <Setter.Value>Center</Setter.Value>
                 </Setter>
             </Style>
-            
+
             <Converters:BooleanToVisibilityConverter x:Key="BoolToVisibility" />
             <Converters:NonNullToVisibilityConverter x:Key="NonNullToVisibility" />
             <Converters:DateTimeToStringConverter x:Key="DateToString" />
@@ -186,7 +186,7 @@
                 <Button Content="+" IsEnabled="{Binding IsAddDeckButtonEnabled}" Command="{Binding AddDeckCommand}" Grid.Column="1" />
                 <Button Content="-" IsEnabled="{Binding IsRemoveDeckButtonEnabled}" Command="{Binding RemoveDeckCommand}" Grid.Column="2" />
             </Grid>
-            <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
+            <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter decks" Height="25" Grid.Row="2" />
             <DataGrid dragdrop:DragDrop.IsDropTarget="True" dragdrop:DragDrop.DropHandler="{Binding}" SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding DecksViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedDeck, Mode=TwoWay}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=RemoveDeckCommand}" 
@@ -229,7 +229,7 @@
                 <Button Content="+" IsEnabled="{Binding IsAddEventButtonEnabled}" Command="{Binding AddEventCommand}" Grid.Column="1" />
                 <Button Content="-" IsEnabled="{Binding IsRemoveEventButtonEnabled}" Command="{Binding RemoveEventCommand}" Grid.Column="2" />
             </Grid>
-            <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />
+            <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter events" Height="25" Grid.Row="2" />
             <DataGrid dragdrop:DragDrop.IsDragSource="True" SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Visibility="{Binding SelectedDeck, Converter={StaticResource NonNullToVisibility}}" Grid.Row="1">
                 <DataGrid.InputBindings>
                     <KeyBinding Command="{Binding Path=DuplicateEventCommand}" 
@@ -308,7 +308,7 @@
             <Grid Grid.Row="1" Grid.Column="0" Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition />
                     <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
@@ -332,7 +332,7 @@
                             <MvvmControls:EventToCommand Command="{Binding DeselectSelectedScreenCommand}" />
                         </Interactivity:EventTrigger>
                     </Interactivity:Interaction.Triggers>
-                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="Auto" Width="Auto">
+                    <Canvas ScrollViewer.CanContentScroll="True">
                         <ItemsControl ItemsSource="{Binding Connections}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -345,7 +345,7 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <ItemsControl ItemsSource="{Binding SelectedEvent.Screens}">
+                        <ItemsControl ItemsSource="{Binding ScreensViewSource.View}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <Canvas />
@@ -386,7 +386,7 @@
                         </ItemsControl>
                     </Canvas>
                 </ScrollViewer>
-                <!--<TextBox Text="{Binding ScreenFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter" Height="25" Grid.Row="2" />-->
+                <TextBox Text="{Binding ScreenFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter screens" Height="25" Grid.Row="2" />
             </Grid>
             <GridSplitter Grid.Row="1" Grid.Column="0" Visibility="{Binding SelectedEvent}" Style="{StaticResource GridSplitterStyle}" />
 
