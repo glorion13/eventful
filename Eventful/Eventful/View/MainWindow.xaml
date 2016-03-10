@@ -65,7 +65,7 @@
 
             <ControlTemplate x:Key="nodeOutputTemplate">
                 <Grid>
-                    <Rectangle VerticalAlignment="Center" HorizontalAlignment="Center" Stroke="Green" Width="{Binding Width}" Height="{Binding Height}" />
+                    <Rectangle Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Center" HorizontalAlignment="Center" Stroke="Green" />
                     <Label VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding Index}" Width="{Binding Width}" Height="{Binding Height}" />
                     <Grid.ToolTip>
                         <ToolTip Content="{Binding Text}" />
@@ -75,7 +75,7 @@
             <ControlTemplate x:Key="nodeTemplate">
                 <StackPanel>
                     <Grid>
-                        <Rectangle RadiusX="4" RadiusY="4"  Fill="White" Width="{Binding Width}" Height="{Binding Height}" Stroke="Blue" />
+                        <Rectangle RadiusX="4" RadiusY="4" Fill="White" Width="{Binding Width}" Height="{Binding Height}" Stroke="Blue" />
                         <TextBlock Text="{Binding Title}" TextWrapping="Wrap" Width="{Binding Width}" Height="{Binding Height}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Grid>
                     <ItemsControl ItemsSource="{Binding Options}">
@@ -305,12 +305,15 @@
                 <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="0" Margin="5">
+            <Grid x:Name="screensGrid" Grid.Row="1" Grid.Column="0" Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30" />
-                    <RowDefinition />
+                    <RowDefinition Height="*" />
                     <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -321,7 +324,7 @@
                     <Button Content="+" IsEnabled="{Binding IsAddScreenButtonEnabled}" Command="{Binding AddScreenCommand}" Grid.Column="1" />
                     <Button Content="-" IsEnabled="{Binding IsRemoveScreenButtonEnabled}" Command="{Binding RemoveScreenCommand}" CommandParameter="{Binding SelectedScreen}" Grid.Column="2" />
                 </Grid>
-                <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer PanningMode="Both" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="0">
                     <ScrollViewer.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>
@@ -332,7 +335,7 @@
                             <MvvmControls:EventToCommand Command="{Binding DeselectSelectedScreenCommand}" />
                         </Interactivity:EventTrigger>
                     </Interactivity:Interaction.Triggers>
-                    <Canvas ScrollViewer.CanContentScroll="True">
+                    <Canvas Width="10000" Height="10000">
                         <ItemsControl ItemsSource="{Binding Connections}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -362,8 +365,7 @@
                                     <Thumb ScrollViewer.CanContentScroll="True" Focusable="True" Template="{StaticResource nodeTemplate}">
                                         <Thumb.InputBindings>
                                             <KeyBinding Command="{Binding Main.RemoveScreenCommand, Source={StaticResource Locator}}"
-                                            CommandParameter="{Binding}"
-                                Key="Delete" />
+                                            CommandParameter="{Binding}" Key="Delete" />
                                         </Thumb.InputBindings>
                                         <Thumb.ContextMenu>
                                             <ContextMenu>

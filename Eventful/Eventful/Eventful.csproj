@@ -179,6 +179,7 @@
     <Compile Include="Controls\ArrowLine\ArrowLine.cs" />
     <Compile Include="Controls\ArrowLine\ArrowLineBase.cs" />
     <Compile Include="Controls\ArrowLine\ArrowPolyline.cs" />
+    <Compile Include="Controls\CanvasAutoSize.cs" />
     <Compile Include="Controls\MvvmTextEditor.cs" />
     <Compile Include="Controls\SpellCheckBehavior.cs" />
     <Compile Include="Controls\SpellingErrorColorizer.cs" />

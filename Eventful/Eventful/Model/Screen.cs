@@ -12,6 +12,8 @@ namespace Eventful.Model
         public Screen()
         {
             MessengerInstance.Register<Option>(this, option => OptionDraggedOverScreen(option));
+            Width = 150;
+            Height = 40;
         }
 
         public Screen(Screen screen)
@@ -20,6 +22,8 @@ namespace Eventful.Model
             Text = screen.Text;
             foreach (Option option in screen.Options)
                 AddOption(option);
+            Width = 150;
+            Height = 40;
             Update();
             MessengerInstance.Register<Option>(this, option => OptionDraggedOverScreen(option));
         }
