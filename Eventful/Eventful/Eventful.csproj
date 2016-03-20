@@ -68,9 +68,7 @@
     </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup />
-  <PropertyGroup>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
@@ -179,7 +177,6 @@
     <Compile Include="Controls\ArrowLine\ArrowLine.cs" />
     <Compile Include="Controls\ArrowLine\ArrowLineBase.cs" />
     <Compile Include="Controls\ArrowLine\ArrowPolyline.cs" />
-    <Compile Include="Controls\CanvasAutoSize.cs" />
     <Compile Include="Controls\MvvmTextEditor.cs" />
     <Compile Include="Controls\SpellCheckBehavior.cs" />
     <Compile Include="Controls\SpellingErrorColorizer.cs" />
@@ -259,9 +256,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Eventful_TemporaryKey.pfx" />
     <None Include="packages.config" />
-    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
