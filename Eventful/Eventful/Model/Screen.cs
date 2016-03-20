@@ -193,7 +193,6 @@ namespace Eventful.Model
             set
             {
                 Set(() => IsSelected, ref isSelected, value);
-                //MessengerInstance.Send(this);
             }
         }
 
@@ -209,19 +208,6 @@ namespace Eventful.Model
         {
             X += args.HorizontalChange;
             Y += args.VerticalChange;
-        }
-
-        private RelayCommand gotFocusCommand;
-        public RelayCommand GotFocusCommand
-        {
-            get
-            {
-                return gotFocusCommand ?? (gotFocusCommand = new RelayCommand(ExecuteGotFocusCommand));
-            }
-        }
-        private void ExecuteGotFocusCommand()
-        {
-            IsSelected = true;
         }
 
         private void UpdateInputPositions()

@@ -149,6 +149,7 @@ namespace Eventful.Model
                 foreach (Screen screen in ev.Screens)
                 {
                     screen.ParentEvent = ev;
+                    screen.IsSelected = false;
                     foreach (Option option in screen.Options)
                     {
                         option.Source = screen;

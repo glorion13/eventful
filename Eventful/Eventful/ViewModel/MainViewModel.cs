@@ -849,6 +849,7 @@ namespace Eventful.ViewModel
             Screen duplicateScreen = new Screen(screen);
             duplicateScreen.Title += " Copy";
             SelectedEvent.AddScreen(duplicateScreen);
+            ExecuteSelectScreenCommand(SelectedEvent.Screens.Last());
             InitialiseConnections();
         }
 
@@ -868,6 +869,7 @@ namespace Eventful.ViewModel
             while (SelectedDeck.Events.Any(e => e.Title == duplicateEvent.Title))
                 duplicateEvent.Title += " Copy";
             AddEventToDeck(duplicateEvent, SelectedDeck);
+            SelectedEvent = duplicateEvent;
         }
 
         private RelayCommand duplicateDeckCommand;
@@ -886,6 +888,7 @@ namespace Eventful.ViewModel
             while (Decks.Any(d => d.Title == duplicateDeck.Title))
                 duplicateDeck.Title += " Copy";
             CreateDeck(duplicateDeck);
+            SelectedDeck = duplicateDeck;
         }
 
         private RelayCommand<SelectionChangedEventArgs> moveEventToDeckCommand;
