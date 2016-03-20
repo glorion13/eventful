@@ -78,6 +78,8 @@ namespace Eventful.ViewModel
         {
             if (SelectedDeck == null) return;
             if (SelectedEvent == null) return;
+
+
             SelectedScreen = screen.IsSelected ? screen : null;
         }
 
@@ -354,7 +356,7 @@ namespace Eventful.ViewModel
             set
             {
                 Set(() => SelectedOption, ref selectedOption, value);
-                IsRemoveOptionButtonEnabled = SelectedOption == null ? false : true;
+                IsRemoveOptionButtonEnabled = SelectedOption == null ? false : true;                
             }
         }
 
@@ -479,14 +481,25 @@ namespace Eventful.ViewModel
                 return addScreenCommand ?? (addScreenCommand = new RelayCommand(ExecuteAddScreenCommand));
             }
         }
-        private void ExecuteAddScreenCommand()
+        private async void ExecuteAddScreenCommand()
         {
             if (SelectedEvent != null)
             {
-                SelectedEvent.AddScreen();
-                InitialiseConnections();
+                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Screen", "What is the title of the new screen? You can always change it later.");
+                if (dialogResult == null)
+                {
+                }
+                else
+                {
+                    SelectedEvent.AddScreen();
+                    Screen newScreen = SelectedEvent.Screens.Last();
+                    newScreen.Title = dialogResult;
+                    InitialiseConnections();
+                    newScreen.IsSelected = true;
+                }
             }
         }
+
         private RelayCommand<Screen> removeScreenCommand;
         public RelayCommand<Screen> RemoveScreenCommand
         {
@@ -673,6 +686,7 @@ namespace Eventful.ViewModel
             if (SelectedDeck != null)
             {
                 string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Change Deck Name", text);
+                
                 if (dialogResult == null)
                 {
                 }
@@ -680,7 +694,7 @@ namespace Eventful.ViewModel
                 {
                 }
                 else if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
-                    ChangeDeckName(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
+                    ChangeDeckName($"A deck with the title {dialogResult} already exists. Please enter a different title.");
                 else if (!StringChecker.FilenameStringCheck(dialogResult))
                 {
                     ChangeDeckName(filenameErrorMessage);
@@ -1027,6 +1041,7 @@ namespace Eventful.ViewModel
             if (SelectedScreen == null) return;
             SelectedScreen.AddOption();
             InitialiseConnections();
+            SelectedOption = SelectedScreen.Options.Last();
         }
 
         private bool isRemoveOptionButtonEnabled = false;
@@ -1060,6 +1075,7 @@ namespace Eventful.ViewModel
             if (SelectedScreen.ParentEvent != null)
                 SelectedScreen.ParentEvent.IsChanged = true;
             InitialiseConnections();
+            SelectedOption = selectedScreen?.Options.LastOrDefault();
         }
 
         private RelayCommand moveOptionUpCommand;

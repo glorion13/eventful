@@ -76,7 +76,7 @@ namespace Eventful.Model
                     return false;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -106,7 +106,7 @@ namespace Eventful.Model
                     return false;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

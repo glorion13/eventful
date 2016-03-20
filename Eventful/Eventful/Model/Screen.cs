@@ -62,7 +62,7 @@ namespace Eventful.Model
             }
             set
             {
-                Set(() => X, ref x, value);
+                Set(() => X, ref x, Math.Max(0, value));
                 Update();
             }
         }
@@ -76,7 +76,7 @@ namespace Eventful.Model
             }
             set
             {
-                Set(() => Y, ref y, value);
+                Set(() => Y, ref y, Math.Max(0, value));
                 Update();
             }
         }
@@ -180,7 +180,7 @@ namespace Eventful.Model
             }
         }
 
-        private bool isSelected;
+        private bool isSelected = false;
         public bool IsSelected
         {
             get
@@ -190,7 +190,7 @@ namespace Eventful.Model
             set
             {
                 Set(() => IsSelected, ref isSelected, value);
-                MessengerInstance.Send<Screen>(this);
+                MessengerInstance.Send(this);
             }
         }
 

@@ -214,6 +214,19 @@ namespace Eventful.Model
             }
         }
 
+        private bool isSelected = false;
+        public bool IsSelected
+        {
+            get
+            {
+                return isSelected;
+            }
+            set
+            {
+                Set(() => IsSelected, ref isSelected, value);
+            }
+        }
+
         private string text = "Enter text here";
         public string Text
         {
