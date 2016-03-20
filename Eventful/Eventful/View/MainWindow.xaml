@@ -421,7 +421,7 @@
                                                 <MvvmControls:EventToCommand Command="{Binding DragDeltaCommand}" PassEventArgsToCommand="True" />
                                             </Interactivity:EventTrigger>
                                             <Interactivity:EventTrigger EventName="GotFocus">
-                                                <MvvmControls:EventToCommand Command="{Binding GotFocusCommand}" />
+                                                <MvvmControls:EventToCommand Command="{Binding Main.SelectScreenCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
                                             </Interactivity:EventTrigger>
                                             <Interactivity:EventTrigger EventName="MouseDoubleClick">
                                                 <MvvmControls:EventToCommand Command="{Binding Main.ChangeScreenNameCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
@@ -445,12 +445,13 @@
                     <RowDefinition Height="150" />
                 </Grid.RowDefinitions>
 
-                <LocalControls:MvvmTextEditor WordWrap="True" Grid.Row="0" Grid.Column="1" HorizontalScrollBarVisibility="Hidden" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" FontSize="10pt">
-                    <!--AutocompleteTrees="{Binding AutocompleteTrees, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
+                <TextBox AcceptsReturn="True" TextWrapping="Wrap" Grid.Row="0" Grid.Column="1" HorizontalScrollBarVisibility="Hidden" Text="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="10pt" />
+                    <!--<LocalControls:MvvmTextEditor WordWrap="True" Grid.Row="0" Grid.Column="1" HorizontalScrollBarVisibility="Hidden" DocumentText="{Binding SelectedScreen.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalScrollBarVisibility="Auto" SyntaxHighlighting="XML" FontFamily="Consolas" FontSize="10pt">
+                    AutocompleteTrees="{Binding AutocompleteTrees, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     <Interactivity:Interaction.Behaviors>
                         <LocalControls:SpellCheckBehavior />
                     </Interactivity:Interaction.Behaviors>
-                </LocalControls:MvvmTextEditor>
+                </LocalControls:MvvmTextEditor>-->
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalGridSplitterStyle}" />
 
                 <Grid Grid.Row="2">

@@ -107,6 +107,7 @@ namespace Eventful.Model
             }
         }
 
+        [XmlIgnore]
         private double width = 150;
         public double Width
         {
@@ -122,6 +123,7 @@ namespace Eventful.Model
             }
         }
 
+        [XmlIgnore]
         private double height = 40;
         public double Height
         {
@@ -137,7 +139,7 @@ namespace Eventful.Model
             }
         }
 
-        private string text = "";//"<EventBody>\n\n</EventBody>";
+        private string text = "";
         public string Text
         {
             get
@@ -180,6 +182,7 @@ namespace Eventful.Model
             }
         }
 
+        [XmlIgnore]
         private bool isSelected = false;
         public bool IsSelected
         {
@@ -190,7 +193,7 @@ namespace Eventful.Model
             set
             {
                 Set(() => IsSelected, ref isSelected, value);
-                MessengerInstance.Send(this);
+                //MessengerInstance.Send(this);
             }
         }
 

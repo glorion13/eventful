@@ -71,16 +71,6 @@ namespace Eventful.ViewModel
 
         private void InitialiseMessengerService()
         {
-            MessengerInstance.Register<Screen>(this, screen => SelectScreen(screen));
-        }
-
-        private void SelectScreen(Screen screen)
-        {
-            if (SelectedDeck == null) return;
-            if (SelectedEvent == null) return;
-
-
-            SelectedScreen = screen.IsSelected ? screen : null;
         }
 
         private bool DeckTitleContains(object obj)
@@ -149,7 +139,6 @@ namespace Eventful.ViewModel
                 }
             }
         }
-
 
         private ObservableCollection<Deck> decks = new ObservableCollection<Deck>();
         public ObservableCollection<Deck> Decks
@@ -495,7 +484,7 @@ namespace Eventful.ViewModel
                     Screen newScreen = SelectedEvent.Screens.Last();
                     newScreen.Title = dialogResult;
                     InitialiseConnections();
-                    newScreen.IsSelected = true;
+                    ExecuteSelectScreenCommand(newScreen);
                 }
             }
         }
@@ -1152,7 +1141,29 @@ namespace Eventful.ViewModel
         }
         private void ExecuteDeselectSelectedScreenCommand()
         {
-            SelectedScreen = null;
+            if (SelectedScreen != null)
+            {
+                SelectedScreen.IsSelected = false;
+                SelectedScreen = null;
+            }
+        }
+
+        private RelayCommand<Screen> selectScreenCommand;
+        public RelayCommand<Screen> SelectScreenCommand
+        {
+            get
+            {
+                return selectScreenCommand ?? (selectScreenCommand = new RelayCommand<Screen>(ExecuteSelectScreenCommand));
+            }
+        }
+        private void ExecuteSelectScreenCommand(Screen screen)
+        {
+            if (SelectedDeck == null) return;
+            if (SelectedEvent == null) return;
+
+            ExecuteDeselectSelectedScreenCommand();
+            SelectedScreen = screen;
+            SelectedScreen.IsSelected = true;
         }
     }
 }
