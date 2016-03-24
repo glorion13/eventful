@@ -1,10 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Eventful.Model
 {
@@ -23,6 +18,8 @@ namespace Eventful.Model
         {
             Events = new ObservableCollection<Event>(deck.Events);
             Title = deck.Title;
+            foreach (Event ev in deck.Events)
+                Events.Add(ev);
         }
 
         private string title;

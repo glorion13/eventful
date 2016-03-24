@@ -868,6 +868,17 @@ namespace Eventful.ViewModel
             duplicateEvent.Title += " Copy";
             while (SelectedDeck.Events.Any(e => e.Title == duplicateEvent.Title))
                 duplicateEvent.Title += " Copy";
+
+            /*for (int i = 0; i < duplicateEvent.Screens.Count; i++)
+            {
+                for (int j = 0; j < duplicateEvent.Screens[i].Options.Count; j++)
+                {
+                    duplicateEvent.Screens[i].Options[j].TargetId = SelectedEvent.Screens[i].Options[j].TargetId;
+                    duplicateEvent.Screens[i].Options[j].UpdateTargetFromId();
+                }
+            }*/
+            // TO-DO need to somehow duplicate files directly, and then just refresh the IDs
+
             AddEventToDeck(duplicateEvent, SelectedDeck);
             SelectedEvent = duplicateEvent;
         }
@@ -1060,14 +1071,23 @@ namespace Eventful.ViewModel
         {
             if (SelectedOption == null) return;
             if (SelectedScreen == null) return;
+
             foreach (Option option in SelectedScreen.Options)
                 if (option.Index > SelectedOption.Index)
                     option.Index--;
+
+            int index = SelectedOption.Index;
+
             SelectedScreen.Options.Remove(SelectedOption);
+
+            if (index >= 2)
+                SelectedOption = SelectedScreen.Options[index - 2];
+            else if (SelectedScreen.Options.Count > 0)
+                SelectedOption = SelectedScreen.Options[0];
+
             if (SelectedScreen.ParentEvent != null)
                 SelectedScreen.ParentEvent.IsChanged = true;
             InitialiseConnections();
-            SelectedOption = selectedScreen?.Options.LastOrDefault();
         }
 
         private RelayCommand moveOptionUpCommand;

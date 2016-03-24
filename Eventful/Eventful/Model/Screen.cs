@@ -24,6 +24,8 @@ namespace Eventful.Model
                 AddOption(option);
             Width = 150;
             Height = 40;
+            X = screen.X;
+            Y = screen.Y;
             Update();
             MessengerInstance.Register<Option>(this, option => OptionDraggedOverScreen(option));
         }

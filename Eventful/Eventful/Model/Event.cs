@@ -18,6 +18,8 @@ namespace Eventful.Model
         {
             Title = ev.Title;
             Author = ev.Author;
+            foreach (Screen screen in ev.Screens)
+                AddScreen(new Screen(screen), true);
         }
 
         private ObservableCollection<Screen> screens = new ObservableCollection<Screen>();
@@ -60,6 +62,17 @@ namespace Eventful.Model
             screen.ParentEvent = this;
             screen.X = 10;
             screen.Y = 10;
+            Screens.Add(screen);
+        }
+
+        public void AddScreen(Screen screen, bool keepScreenPosition)
+        {
+            screen.ParentEvent = this;
+            if (!keepScreenPosition)
+            {
+                screen.X = 10;
+                screen.Y = 10;
+            }
             Screens.Add(screen);
         }
 
