@@ -1,4 +1,3 @@
-using Eventful.Model;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
@@ -12,8 +11,8 @@ using GongSolutions.Wpf.DragDrop;
 using System.Windows;
 using System.Collections;
 using System.Threading.Tasks;
-using Eventful.Services.Auxiliary;
-using Eventful.Services;
+using Eventful.Service.Auxiliary;
+using Eventful.Service;
 
 namespace Eventful.ViewModel
 {
@@ -21,18 +20,21 @@ namespace Eventful.ViewModel
     {
         public MainViewModel()
         {
-            InitialiseInAllModes();
             if (IsInDesignMode)
             {
-                InitialiseInDesignMode();
             }
             else
             {
-                InitialiseInRealMode();
+                InitialiseViewSources();
+                InitialiseAuthor();
+                InitialiseStorageDirectory();
+                InitialiseMessengerService();
+                LoadDeckMappingsFromDisk();
+                InitialiseAutocompletion();
             }
         }
 
-        private void InitialiseInAllModes()
+        private void InitialiseViewSources()
         {
             DeckFilter = "";
             DecksViewSource = new CollectionViewSource();
@@ -41,37 +43,58 @@ namespace Eventful.ViewModel
             DecksViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
             ScreensViewSource = new CollectionViewSource();
         }
-        private void InitialiseInDesignMode()
+        private void InitialiseAuthor()
         {
-            Deck mainDeck = new Deck("Main");
-            Deck undeadDeck = new Deck("Undead Army");
-            mainDeck.Events.Add(new Event("Finding Timmy: A Bewildering Adventure"));
-            Event ev = new Event("Cinding Timmy");
-            mainDeck.Events.Add(ev);
-            mainDeck.Events.Add(new Event("Ainding Timmy"));
-            mainDeck.Events.Add(new Event("Binding Timmy"));
-            Decks.Add(mainDeck);
-            Decks.Add(undeadDeck);
-            SelectedDeck = mainDeck;
-            SelectedEvent = mainDeck.Events[0];
+            try
+            {
+                string authorFromSettings = Properties.Settings.Default["Author"] as string;
+                if (authorFromSettings != "")
+                    Author = authorFromSettings;
+                else
+                {
+                    Author = System.Environment.UserName;
+                }
+            }
+            catch
+            {
+                Author = System.Environment.UserName;
+            }
         }
-        private void InitialiseInRealMode()
+        private void InitialiseStorageDirectory()
         {
-            InitialiseAuthor();
-            InitialiseStorageDirectory();
-            InitialiseMessengerService();
-            LoadDeckMappingsFromDisk();
-            InitialiseAutocompletion();
+            try
+            {
+                string storageDirectoryFromSettings = Properties.Settings.Default["StorageDirectory"] as string;
+                if (storageDirectoryFromSettings != "")
+                    StorageDirectory = storageDirectoryFromSettings;
+                else
+                    StorageDirectory = DataStorage.DefaultStorageDirectory;
+            }
+            catch
+            {
+                StorageDirectory = DataStorage.DefaultStorageDirectory;
+            }
         }
-
+        private void InitialiseMessengerService()
+        {
+        }
         private void InitialiseAutocompletion()
         {
             AutocompleteTrees.Add("var", Variables);
             AutocompleteTrees.Add("tag", Tags);
         }
 
-        private void InitialiseMessengerService()
+        private void LoadDeckMappingsFromDisk()
         {
+            Decks.Clear();
+            foreach (Deck deck in DataStorage.LoadAllDeckMappingsFromDisk())
+                Decks.Add(deck);
+        }
+        private async Task LoadSelectedDeckEventMappingsFromDisk()
+        {
+            SelectedDeck.Events.Clear();
+            foreach (Event ev in await DataStorage.LoadDeckEventsFromDisk(SelectedDeck))
+                SelectedDeck.Events.Add(ev);
         }
 
         private bool DeckTitleContains(object obj)
@@ -158,24 +181,7 @@ namespace Eventful.ViewModel
         public CollectionViewSource EventsViewSource { get; set; }
         public CollectionViewSource ScreensViewSource { get; set; }
 
-        private void InitialiseAuthor()
-        {
-            try
-            {
-                string authorFromSettings = Properties.Settings.Default["Author"] as string;
-                if (authorFromSettings != "")
-                    Author = authorFromSettings;
-                else
-                {
-                    Author = System.Environment.UserName;
-                }
-            }
-            catch
-            {
-                Author = System.Environment.UserName;
-            }
-        }
-        private string author = System.Environment.UserName;
+        private string author = Environment.UserName;
         public string Author
         {
             get
@@ -217,21 +223,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        private void InitialiseStorageDirectory()
-        {
-            try
-            {
-                string storageDirectoryFromSettings = Properties.Settings.Default["StorageDirectory"] as string;
-                if (storageDirectoryFromSettings != "")
-                    StorageDirectory = storageDirectoryFromSettings;
-                else
-                    StorageDirectory = DataStorage.DefaultStorageDirectory;
-            }
-            catch
-            {
-                StorageDirectory = DataStorage.DefaultStorageDirectory;
-            }
-        }
         private string storageDirectory = DataStorage.DefaultStorageDirectory;
         public string StorageDirectory
         {
@@ -266,19 +257,6 @@ namespace Eventful.ViewModel
                 StorageDirectory = (pathTokens[pathTokens.Length - 1] == "Eventful") ? String.Concat(dialog.FileName, @"\") : String.Concat(dialog.FileName, @"\Eventful\");
                 LoadDeckMappingsFromDisk();
             }
-        }
-
-        private void LoadDeckMappingsFromDisk()
-        {
-            Decks.Clear();
-            foreach (Deck deck in DataStorage.LoadAllDeckMappingsFromDisk())
-                Decks.Add(deck);
-        }
-        private async Task LoadSelectedDeckEventMappingsFromDisk()
-        {
-            SelectedDeck.Events.Clear();
-            foreach (Event ev in await DataStorage.LoadDeckEventsFromDisk(SelectedDeck))
-                SelectedDeck.Events.Add(ev);
         }
 
         private Deck selectedDeck;

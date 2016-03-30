@@ -3,7 +3,7 @@ using MahApps.Metro.Controls;
 using GalaSoft.MvvmLight.Messaging;
 using Eventful.ViewModel;
 
-namespace Eventful.View
+namespace Eventful.View.Windows
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

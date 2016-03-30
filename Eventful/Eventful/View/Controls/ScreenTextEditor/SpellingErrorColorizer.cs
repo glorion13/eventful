@@ -5,7 +5,7 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 
-namespace Eventful.Controls
+namespace Eventful.View.Controls.ScreenTextEditor
 {
     public class SpellingErrorColorizer : DocumentColorizingTransformer
     {

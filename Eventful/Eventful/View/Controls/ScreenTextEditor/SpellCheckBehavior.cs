@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Interactivity;
 using ICSharpCode.AvalonEdit;
 
-namespace Eventful.Controls
+namespace Eventful.View.Controls.ScreenTextEditor
 {
     internal class SpellCheckBehavior : Behavior<TextEditor>
     {

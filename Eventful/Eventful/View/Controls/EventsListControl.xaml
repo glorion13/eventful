@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="Eventful.View.Controls.EventsListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:MvvmControls="http://www.galasoft.ch/mvvmlight"
+             xmlns:DragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+             xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:Interactivity="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:Converters="clr-namespace:Eventful.Converters"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Converters:NonNullToVisibilityConverter x:Key="NonNullToVisibility" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="30" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Events" Grid.Column="0" FontSize="20" />
+            <Button Content="+" IsEnabled="{Binding IsAddEventButtonEnabled}" Command="{Binding AddEventCommand}" Grid.Column="1" />
+            <Button Content="-" IsEnabled="{Binding IsRemoveEventButtonEnabled}" Command="{Binding RemoveEventCommand}" Grid.Column="2" />
+        </Grid>
+        <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter events" Height="25" Grid.Row="2" />
+        <DataGrid DragDrop:DragDrop.IsDragSource="True" SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Visibility="{Binding SelectedDeck, Converter={StaticResource NonNullToVisibility}}" Grid.Row="1">
+            <DataGrid.InputBindings>
+                <KeyBinding Command="{Binding Path=DuplicateEventCommand}" 
+                                Key="D" 
+                                Modifiers="Control"/>
+                <KeyBinding Command="{Binding Path=ChangeEventNameCommand}" 
+                                Key="R" 
+                                Modifiers="Control"/>
+                <KeyBinding Command="{Binding Path=RemoveEventCommand}" 
+                                Key="Delete"/>
+            </DataGrid.InputBindings>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="View event in new window" Command="{Binding OpenNewEventWindowCommand}" />
+                    <MenuItem Header="Rename event" Command="{Binding ChangeEventNameCommand}" />
+                    <MenuItem Header="Duplicate event" Command="{Binding DuplicateEventCommand}" />
+                    <MenuItem Header="Delete event" Command="{Binding RemoveEventCommand}" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <Interactivity:Interaction.Triggers>
+                <Interactivity:EventTrigger EventName="BeginningEdit">
+                    <MvvmControls:EventToCommand Command="{Binding ChangeEventNameCommand}" />
+                </Interactivity:EventTrigger>
+            </Interactivity:Interaction.Triggers>
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Title}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

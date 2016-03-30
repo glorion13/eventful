@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="Eventful.View.Controls.StatusbarControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Converters="clr-namespace:Eventful.Converters"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Converters:NonNullToVisibilityConverter x:Key="NonNullToVisibility" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80" />
+            <ColumnDefinition Width="30" />
+            <ColumnDefinition Width="15" />
+            <ColumnDefinition Width="130" />
+            <ColumnDefinition Width="30" />
+            <ColumnDefinition Width="15" />
+            <ColumnDefinition Width="145" />
+            <ColumnDefinition Width="30" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Decks loaded: " Grid.Column="0" />
+        <TextBlock Text="{Binding Decks.Count}" Grid.Column="1" />
+        <TextBlock Text="Events in selected deck: " Visibility="{Binding SelectedDeck, Converter={StaticResource NonNullToVisibility}}" Grid.Column="3" />
+        <TextBlock Text="{Binding SelectedDeck.Events.Count}" Grid.Column="4" />
+        <TextBlock Text="Screens in selected event: " Visibility="{Binding SelectedEvent, Converter={StaticResource NonNullToVisibility}}" Grid.Column="6" />
+        <TextBlock Text="{Binding SelectedEvent.Screens.Count}" Grid.Column="7" />
+    </Grid>
+</UserControl>

@@ -3,7 +3,7 @@
 //------------------------------------------
 using System;
 
-namespace Controls.ArrowLine
+namespace Eventful.View.Controls.ArrowLine
 {
     /// <summary>
     ///     Indicates which end of the line has an arrow.

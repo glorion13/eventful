@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Eventful.Services
+namespace Eventful.Service
 {
     public static class DataStorage
     {

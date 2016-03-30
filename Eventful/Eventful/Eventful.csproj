@@ -179,14 +179,29 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Services\Auxiliary\StringChecker.cs" />
-    <Compile Include="Controls\ArrowLine\ArrowEnds.cs" />
-    <Compile Include="Controls\ArrowLine\ArrowLine.cs" />
-    <Compile Include="Controls\ArrowLine\ArrowLineBase.cs" />
-    <Compile Include="Controls\ArrowLine\ArrowPolyline.cs" />
-    <Compile Include="Controls\MvvmTextEditor.cs" />
-    <Compile Include="Controls\SpellCheckBehavior.cs" />
-    <Compile Include="Controls\SpellingErrorColorizer.cs" />
+    <Compile Include="View\Controls\DecksListControl.xaml.cs">
+      <DependentUpon>DecksListControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Controls\EditEventControl.xaml.cs">
+      <DependentUpon>EditEventControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Controls\EventsListControl.xaml.cs">
+      <DependentUpon>EventsListControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Controls\SettingsControl.xaml.cs">
+      <DependentUpon>SettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Controls\StatusbarControl.xaml.cs">
+      <DependentUpon>StatusbarControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Service\Auxiliary\StringChecker.cs" />
+    <Compile Include="View\Controls\ArrowLine\ArrowEnds.cs" />
+    <Compile Include="View\Controls\ArrowLine\ArrowLine.cs" />
+    <Compile Include="View\Controls\ArrowLine\ArrowLineBase.cs" />
+    <Compile Include="View\Controls\ArrowLine\ArrowPolyline.cs" />
+    <Compile Include="View\Controls\ScreenTextEditor\MvvmTextEditor.cs" />
+    <Compile Include="View\Controls\ScreenTextEditor\SpellCheckBehavior.cs" />
+    <Compile Include="View\Controls\ScreenTextEditor\SpellingErrorColorizer.cs" />
     <Compile Include="Converters\NonNullToVisibilityConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
@@ -195,7 +210,7 @@
     </Compile>
     <Compile Include="Model\AutocompleteData.cs" />
     <Compile Include="ViewModel\ModelAbstractions\Option.cs" />
-    <Compile Include="Services\DataStorage.cs" />
+    <Compile Include="Service\DataStorage.cs" />
     <Compile Include="ViewModel\ModelAbstractions\Deck.cs" />
     <Compile Include="ViewModel\ModelAbstractions\Event.cs" />
     <Compile Include="ViewModel\ModelAbstractions\Screen.cs" />
@@ -207,21 +222,53 @@
     <Compile Include="ViewModel\ViewAbstractions\TagLibraryViewModel.cs" />
     <Compile Include="ViewModel\ViewAbstractions\VariableLibraryViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="View\TagLibraryWindow.xaml.cs">
+    <Compile Include="View\Windows\TagLibraryWindow.xaml.cs">
       <DependentUpon>TagLibraryWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\VariableLibraryWindow.xaml.cs">
+    <Compile Include="View\Windows\VariableLibraryWindow.xaml.cs">
       <DependentUpon>VariableLibraryWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="View\Controls\DecksListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Controls\EditEventControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Controls\EventsListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Controls\SettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Controls\StatusbarControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="EventEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\EditEventWindow.xaml">
+    <Page Include="View\ResourceDictionaries\ControlStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MainWindow.xaml">
+    <Page Include="View\ResourceDictionaries\NodeViewControlTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ResourceDictionaries\WindowStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Windows\EditEventWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -229,18 +276,18 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="View\EditEventWindow.xaml.cs">
+    <Compile Include="View\Windows\EditEventWindow.xaml.cs">
       <DependentUpon>EditEventWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MainWindow.xaml.cs">
+    <Compile Include="View\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\TagLibraryWindow.xaml">
+    <Page Include="View\Windows\TagLibraryWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\VariableLibraryWindow.xaml">
+    <Page Include="View\Windows\VariableLibraryWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -262,6 +309,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />

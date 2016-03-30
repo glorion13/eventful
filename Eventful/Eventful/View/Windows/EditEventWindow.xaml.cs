@@ -16,7 +16,7 @@ using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using GalaSoft.MvvmLight.Messaging;
 
-namespace Eventful.View
+namespace Eventful.View.Windows
 {
     /// <summary>
     /// Interaction logic for EditEventWindow.xaml

@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace Controls.ArrowLine
+namespace Eventful.View.Controls.ArrowLine
 {
     /// <summary>
     ///     Provides a base class for ArrowLine and ArrowPolyline.

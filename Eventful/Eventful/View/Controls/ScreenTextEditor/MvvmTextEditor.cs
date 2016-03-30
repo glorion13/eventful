@@ -14,7 +14,7 @@ using Eventful.Model;
 using System.Collections;
 using Eventful.ViewModel;
 
-namespace Eventful.Controls
+namespace Eventful.View.Controls.ScreenTextEditor
 {
     public class MvvmTextEditor : TextEditor
     {

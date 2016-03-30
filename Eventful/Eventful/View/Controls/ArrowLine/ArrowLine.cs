@@ -4,7 +4,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace Controls.ArrowLine
+namespace Eventful.View.Controls.ArrowLine
 {
     /// <summary>
     ///     Draws a straight line between two points with 
