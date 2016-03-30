@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eventful.Auxiliary
+namespace Eventful.Services.Auxiliary
 {
     public static class StringChecker
     {

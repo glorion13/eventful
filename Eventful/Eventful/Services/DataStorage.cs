@@ -1,55 +1,41 @@
-﻿using System;
+﻿using Eventful.Model;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Eventful.Model
+namespace Eventful.Services
 {
     public static class DataStorage
     {
-        public static string DefaultStorageDirectory = string.Concat(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"\Eventful\");
+        public static string DefaultStorageDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\Eventful\\";
         public static string StorageDirectory = DefaultStorageDirectory;
 
         private static string deckDirectoryName = "decks\\";
         private static string tagDirectoryName = "tags\\";
         private static string variableDirectoryName = "variables\\";
 
-        private static bool CreateInitialDirectories()
+        private static async Task<bool> CreateInitialDirectories()
         {
             try
             {
                 Directory.CreateDirectory(StorageDirectory);
-                Directory.CreateDirectory(String.Concat(StorageDirectory, deckDirectoryName));
-                Directory.CreateDirectory(String.Concat(StorageDirectory, tagDirectoryName));
-                Directory.CreateDirectory(String.Concat(StorageDirectory, variableDirectoryName));
+                Directory.CreateDirectory($"{StorageDirectory}{deckDirectoryName}");
+                Directory.CreateDirectory($"{StorageDirectory}{tagDirectoryName}");
+                Directory.CreateDirectory($"{StorageDirectory}{variableDirectoryName}");
                 return true;
             }
             catch
             {
-                System.Windows.MessageBox.Show("Problem reading/writing to disk. There is a chance your data will not be saved.");
+                await ViewModel.MessageWindowsViewModel.ShowOkMessage("Problem reading/writing to disk", "There is a chance your data will not be saved.");
                 return false;
             }
         }
 
-        private static string GetEventFileName(Event ev)
-        {
-            return string.Concat(
-                ev.Title,
-                " #",
-                ev.Id,
-                ".event");
-        }
-
-        private static string GetDeckFilePath(Deck deck)
-        {
-            return String.Concat(
-                StorageDirectory,
-                deckDirectoryName,
-                deck.Title,
-                @"\");
-        }
+        private static string GetEventFileName(Event ev) => $"{ev.Title} #{ev.Id}.event";
+        private static string GetDeckFilePath(Deck deck) => $"{StorageDirectory}{deckDirectoryName}{deck.Title}\\";
 
         public static bool SaveVariableToDisk(Variable variable)
         {
@@ -58,7 +44,7 @@ namespace Eventful.Model
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(Variable));
-                TextWriter textWriter = new StreamWriter(String.Concat(variableDirectoryName, variable.Title));
+                TextWriter textWriter = new StreamWriter($"{variableDirectoryName}{variable.Title}");
                 serializer.Serialize(textWriter, variable);
                 textWriter.Close();
                 return true;
@@ -88,7 +74,7 @@ namespace Eventful.Model
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(Event));
-                TextWriter textWriter = new StreamWriter(String.Concat(GetDeckFilePath(deck), GetEventFileName(ev)));
+                TextWriter textWriter = new StreamWriter($"{GetDeckFilePath(deck)}{GetEventFileName(ev)}");
                 serializer.Serialize(textWriter, ev);
                 textWriter.Close();
                 return true;
@@ -139,11 +125,10 @@ namespace Eventful.Model
 
         public static Event LoadEventFromDisk(string path)
         {
-            string fullpath = string.Concat(StorageDirectory, path);
             try
             {
                 XmlSerializer deserializer = new XmlSerializer(typeof(Event));
-                TextReader textReader = new StreamReader(fullpath);
+                TextReader textReader = new StreamReader($"{StorageDirectory}{path}");
                 Event ev = new Event();
                 ev = (Event)deserializer.Deserialize(textReader);
                 foreach (Screen screen in ev.Screens)
@@ -206,7 +191,7 @@ namespace Eventful.Model
 
         private static Deck CreateDeckMapping(string deckMapping)
         {
-            string fullpath = String.Concat(StorageDirectory, deckMapping);
+            string fullpath = $"{StorageDirectory}{deckMapping}";
             deckMapping = deckMapping.Replace(deckDirectoryName, "");
             if (!Directory.Exists(fullpath)) return null;
             if (deckMapping.Length <= 0) return null;
@@ -270,13 +255,8 @@ namespace Eventful.Model
             {
                 Directory.CreateDirectory(string.Concat(GetDeckFilePath(deck), ".Backups"));
                 Directory.Move(
-                    String.Concat(GetDeckFilePath(deck), GetEventFileName(ev)),
-                    String.Concat(
-                        GetDeckFilePath(deck),
-                        @".Backups\",
-                        GetDateTime(),
-                        " ",
-                        GetEventFileName(ev))
+                    $"{GetDeckFilePath(deck)}{GetEventFileName(ev)}",
+                    $"{GetDeckFilePath(deck)}.Backups\\{GetDateTime()} {GetEventFileName(ev)}"
                     );
                 return true;
             }
@@ -289,11 +269,11 @@ namespace Eventful.Model
         {
             try
             {
-                string deckBackupsDirectory = String.Concat(StorageDirectory, deckDirectoryName, ".Backups\\");
+                string deckBackupsDirectory = $"{StorageDirectory}{deckDirectoryName}.Backups\\";
                 Directory.CreateDirectory(deckBackupsDirectory);
                 Directory.Move(
                     GetDeckFilePath(deck),
-                    String.Concat(deckBackupsDirectory, deck.Title, " ", GetDateTime())
+                    $"{deckBackupsDirectory}{deck.Title} {GetDateTime()}"
                     );
                 return true;
             }
@@ -309,7 +289,7 @@ namespace Eventful.Model
             {
                 Directory.Move(
                     GetDeckFilePath(deck),
-                    String.Concat(StorageDirectory, deckDirectoryName, newDeckTitle, @"\")
+                    $"{StorageDirectory}{deckDirectoryName}{newDeckTitle}\\"
                 );
                 return true;
             }

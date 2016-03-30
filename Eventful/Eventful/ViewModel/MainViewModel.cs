@@ -8,11 +8,12 @@ using System.Windows.Data;
 using System.Linq;
 using WPFFolderBrowser;
 using System.Windows.Controls;
-using Eventful.Auxiliary;
 using GongSolutions.Wpf.DragDrop;
 using System.Windows;
 using System.Collections;
 using System.Threading.Tasks;
+using Eventful.Services.Auxiliary;
+using Eventful.Services;
 
 namespace Eventful.ViewModel
 {
