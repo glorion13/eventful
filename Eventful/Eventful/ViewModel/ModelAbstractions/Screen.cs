@@ -247,7 +247,6 @@ namespace Eventful.ViewModel
             if (ParentEvent != null)
                 ParentEvent.IsChanged = true;
         }
-
         public void AddOption(Option sourceOption)
         {
             Option option = new Option();
@@ -258,6 +257,15 @@ namespace Eventful.ViewModel
             Options.Add(option);
             if (ParentEvent != null)
                 ParentEvent.IsChanged = true;
+        }
+
+        public void RemoveOption(Option option)
+        {
+            foreach (Option opt in Options)
+                if (opt.Index > option.Index)
+                    opt.Index--;
+            int index = option.Index;
+            Options.Remove(option);
         }
 
         private Guid id = Guid.NewGuid();

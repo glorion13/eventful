@@ -435,20 +435,14 @@ namespace Eventful.ViewModel
         }
         private async void ExecuteAddScreenCommand()
         {
-            // TO-DO: move to separate view-model
             if (SelectedEvent != null)
             {
                 string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Screen", "What is the title of the new screen? You can always change it later.");
-                if (dialogResult == null)
+                if (dialogResult != null)
                 {
-                }
-                else
-                {
-                    SelectedEvent.AddScreen();
-                    Screen newScreen = SelectedEvent.Screens.Last();
-                    newScreen.Title = dialogResult;
+                    SelectedEvent.AddScreen(dialogResult);
+                    ExecuteSelectScreenCommand(SelectedEvent.Screens.Last());
                     InitialiseConnections();
-                    ExecuteSelectScreenCommand(newScreen);
                 }
             }
         }
@@ -466,15 +460,11 @@ namespace Eventful.ViewModel
             if (screen == null) return;
             bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Screen Deletion", $"Do you want to delete the screen {screen.Title}?");
             if (dialogResult)
-                RemoveScreen(screen);
-        }
-        // TO-DO: move to separate view-model
-        private void RemoveScreen(Screen screen)
-        {
-            SelectedEvent.Screens.Remove(screen);
-            InitialiseConnections();
-            if (SelectedScreen == screen)
-                SelectedScreen = null;
+            {
+                SelectedEvent.RemoveScreen(screen);
+                SelectedScreen = SelectedScreen == screen ? null : SelectedScreen;
+                InitialiseConnections();
+            }
         }
 
         private RelayCommand addEventCommand;
@@ -923,7 +913,6 @@ namespace Eventful.ViewModel
         }
         private void ExecuteAddOptionCommand()
         {
-            if (SelectedScreen == null) return;
             SelectedScreen.AddOption();
             InitialiseConnections();
             SelectedOption = SelectedScreen.Options.Last();
@@ -939,22 +928,13 @@ namespace Eventful.ViewModel
         }
         private void ExecuteRemoveOptionCommand()
         {
-            if (SelectedOption == null) return;
-            if (SelectedScreen == null) return;
-
-            foreach (Option option in SelectedScreen.Options)
-                if (option.Index > SelectedOption.Index)
-                    option.Index--;
-
             int index = SelectedOption.Index;
-
-            SelectedScreen.Options.Remove(SelectedOption);
+            SelectedScreen.RemoveOption(SelectedOption);
 
             if (index >= 2)
                 SelectedOption = SelectedScreen.Options[index - 2];
             else if (SelectedScreen.Options.Count > 0)
                 SelectedOption = SelectedScreen.Options[0];
-
             if (SelectedScreen.ParentEvent != null)
                 SelectedScreen.ParentEvent.IsChanged = true;
             InitialiseConnections();

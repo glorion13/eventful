@@ -1,10 +1,11 @@
 ﻿using GalaSoft.MvvmLight;
 using System;
 using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
 
 namespace Eventful.ViewModel
 {
-    [Serializable]
+    [DataContract]
     public class Event : ViewModelBase
     {
         public Event()
@@ -35,6 +36,7 @@ namespace Eventful.ViewModel
             }
         }
 
+        [DataMember]
         private string title;
         public string Title
         {
@@ -48,34 +50,7 @@ namespace Eventful.ViewModel
             }
         }
 
-        public void AddScreen()
-        {
-            Screen screen = new Screen();
-            screen.ParentEvent = this;
-            screen.X = 10;
-            screen.Y = 10;
-            Screens.Add(screen);
-        }
-
-        public void AddScreen(Screen screen)
-        {
-            screen.ParentEvent = this;
-            screen.X = 10;
-            screen.Y = 10;
-            Screens.Add(screen);
-        }
-
-        public void AddScreen(Screen screen, bool keepScreenPosition)
-        {
-            screen.ParentEvent = this;
-            if (!keepScreenPosition)
-            {
-                screen.X = 10;
-                screen.Y = 10;
-            }
-            Screens.Add(screen);
-        }
-
+        [DataMember]
         private Guid id = Guid.NewGuid();
         public Guid Id
         {
@@ -89,6 +64,7 @@ namespace Eventful.ViewModel
             }
         }
 
+        [DataMember]
         private string author = "anonymous";
         public string Author
         {
@@ -102,6 +78,7 @@ namespace Eventful.ViewModel
             }
         }
 
+        [DataMember]
         private DateTime date = DateTime.Now;
         public DateTime Date
         {
@@ -115,6 +92,7 @@ namespace Eventful.ViewModel
             }
         }
 
+        [IgnoreDataMember]
         private bool isChanged = false;
         public bool IsChanged
         {
@@ -128,5 +106,36 @@ namespace Eventful.ViewModel
             }
         }
 
+        public void AddScreen(string screenName)
+        {
+            Screen screen = new Screen();
+            screen.ParentEvent = this;
+            screen.Title = screenName;
+            screen.X = 10;
+            screen.Y = 10;
+            Screens.Add(screen);
+        }
+        public void AddScreen(Screen screen)
+        {
+            screen.ParentEvent = this;
+            screen.X = 10;
+            screen.Y = 10;
+            Screens.Add(screen);
+        }
+        public void AddScreen(Screen screen, bool keepScreenPosition)
+        {
+            screen.ParentEvent = this;
+            if (!keepScreenPosition)
+            {
+                screen.X = 10;
+                screen.Y = 10;
+            }
+            Screens.Add(screen);
+        }
+
+        public void RemoveScreen(Screen screen)
+        {
+            Screens.Remove(screen);
+        }
     }
 }
