@@ -2,7 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 
-namespace Eventful.Model
+namespace Eventful.ViewModel
 {
     [Serializable]
     public class Event : ViewModelBase

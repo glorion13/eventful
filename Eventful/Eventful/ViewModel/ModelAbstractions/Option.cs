@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Xml.Serialization;
 
-namespace Eventful.Model
+namespace Eventful.ViewModel
 {
     public class Option : ViewModelBase
     {

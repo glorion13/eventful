@@ -1,4 +1,4 @@
-﻿using Eventful.Model;
+﻿using Eventful.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

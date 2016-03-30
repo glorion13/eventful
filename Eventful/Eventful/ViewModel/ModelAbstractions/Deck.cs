@@ -1,7 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
 
-namespace Eventful.Model
+namespace Eventful.ViewModel
 {
     public class Deck : ViewModelBase
     {

@@ -11,8 +11,8 @@ using ICSharpCode.AvalonEdit.Editing;
 using System;
 using System.Windows;
 using Eventful.Model;
-using System.Linq;
 using System.Collections;
+using Eventful.ViewModel;
 
 namespace Eventful.Controls
 {

@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Controls.Primitives;
 using System.Xml.Serialization;
 
-namespace Eventful.Model
+namespace Eventful.ViewModel
 {
     public class Screen : ViewModelBase
     {

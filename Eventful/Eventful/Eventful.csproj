@@ -194,18 +194,18 @@
       <DependentUpon>EventEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\AutocompleteData.cs" />
-    <Compile Include="Model\Option.cs" />
+    <Compile Include="ViewModel\ModelAbstractions\Option.cs" />
     <Compile Include="Services\DataStorage.cs" />
-    <Compile Include="Model\Deck.cs" />
-    <Compile Include="Model\Event.cs" />
-    <Compile Include="Model\Screen.cs" />
-    <Compile Include="Model\Tag.cs" />
-    <Compile Include="Model\Variable.cs" />
-    <Compile Include="ViewModel\EditEventViewModel.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\MessageWindowsViewModel.cs" />
-    <Compile Include="ViewModel\TagLibraryViewModel.cs" />
-    <Compile Include="ViewModel\VariableLibraryViewModel.cs" />
+    <Compile Include="ViewModel\ModelAbstractions\Deck.cs" />
+    <Compile Include="ViewModel\ModelAbstractions\Event.cs" />
+    <Compile Include="ViewModel\ModelAbstractions\Screen.cs" />
+    <Compile Include="ViewModel\ModelAbstractions\Tag.cs" />
+    <Compile Include="ViewModel\ModelAbstractions\Variable.cs" />
+    <Compile Include="ViewModel\ViewAbstractions\EditEventViewModel.cs" />
+    <Compile Include="ViewModel\ViewAbstractions\MainViewModel.cs" />
+    <Compile Include="ViewModel\ViewAbstractions\MessageWindowsViewModel.cs" />
+    <Compile Include="ViewModel\ViewAbstractions\TagLibraryViewModel.cs" />
+    <Compile Include="ViewModel\ViewAbstractions\VariableLibraryViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\TagLibraryWindow.xaml.cs">
       <DependentUpon>TagLibraryWindow.xaml</DependentUpon>
