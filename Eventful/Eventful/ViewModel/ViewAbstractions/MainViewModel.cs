@@ -271,7 +271,6 @@ namespace Eventful.ViewModel
                 Set(() => SelectedDeck, ref selectedDeck, value);
                 SelectedEvent = null;
                 SelectedScreen = null;
-                IsRemoveDeckButtonEnabled = !(SelectedDeck == null);
                 EventsViewSource.Source = SelectedDeck == null ? new ObservableCollection<Event>() : SelectedDeck.Events;
                 EventsViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
                 if (SelectedDeck != null)
@@ -290,7 +289,6 @@ namespace Eventful.ViewModel
             {
                 Set(() => SelectedEvent, ref selectedEvent, value);
                 SelectedScreen = null;
-                IsRemoveEventButtonEnabled = !(SelectedEvent == null);
                 ScreensViewSource.Source = SelectedEvent == null ? new ObservableCollection<Screen>() : SelectedEvent.Screens;
                 ScreensViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
                 InitialiseConnections();
@@ -308,7 +306,6 @@ namespace Eventful.ViewModel
             {
                 Set(() => SelectedScreen, ref selectedScreen, value);
                 SelectedOption = null;
-                IsRemoveScreenButtonEnabled = !(SelectedScreen == null);
             }
         }
 
@@ -321,8 +318,7 @@ namespace Eventful.ViewModel
             }
             set
             {
-                Set(() => SelectedOption, ref selectedOption, value);
-                IsRemoveOptionButtonEnabled = SelectedOption == null ? false : true;                
+                Set(() => SelectedOption, ref selectedOption, value);               
             }
         }
 
@@ -479,57 +475,6 @@ namespace Eventful.ViewModel
             InitialiseConnections();
             if (SelectedScreen == screen)
                 SelectedScreen = null;
-        }
-
-        // TO-DO: move to separate view-model
-        // Possibly remove this and just create a converter?
-        private bool isRemoveDeckButtonEnabled = false;
-        public bool IsRemoveDeckButtonEnabled
-        {
-            get
-            {
-                return isRemoveDeckButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsRemoveDeckButtonEnabled, ref isRemoveDeckButtonEnabled, value);
-            }
-        }
-        private bool isRemoveEventButtonEnabled = false;
-        public bool IsRemoveEventButtonEnabled
-        {
-            get
-            {
-                return isRemoveEventButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsRemoveEventButtonEnabled, ref isRemoveEventButtonEnabled, value);
-            }
-        }
-        private bool isRemoveScreenButtonEnabled = false;
-        public bool IsRemoveScreenButtonEnabled
-        {
-            get
-            {
-                return isRemoveScreenButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsRemoveScreenButtonEnabled, ref isRemoveScreenButtonEnabled, value);
-            }
-        }
-        private bool isRemoveOptionButtonEnabled = false;
-        public bool IsRemoveOptionButtonEnabled
-        {
-            get
-            {
-                return isRemoveOptionButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsRemoveOptionButtonEnabled, ref isRemoveOptionButtonEnabled, value);
-            }
         }
 
         private RelayCommand addEventCommand;

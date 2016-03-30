@@ -179,6 +179,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\NonNullToBooleanConverter.cs" />
     <Compile Include="View\Controls\DecksListControl.xaml.cs">
       <DependentUpon>DecksListControl.xaml</DependentUpon>
     </Compile>

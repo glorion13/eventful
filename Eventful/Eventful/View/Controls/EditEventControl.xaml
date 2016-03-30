@@ -19,6 +19,7 @@
             </ResourceDictionary.MergedDictionaries>
             <Converters:BooleanToVisibilityConverter x:Key="BoolToVisibility" />
             <Converters:NonNullToVisibilityConverter x:Key="NonNullToVisibility" />
+            <Converters:NonNullToBooleanConverter x:Key="NonNullToBool" />
             <Converters:DateTimeToStringConverter x:Key="DateToString" />
         </ResourceDictionary>
     </UserControl.Resources>
@@ -86,8 +87,8 @@
                     <ColumnDefinition Width="30" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Screens" Grid.Column="0" FontSize="20" />
-                <Button Content="+" IsEnabled="{Binding IsAddScreenButtonEnabled}" Command="{Binding AddScreenCommand}" Grid.Column="1" />
-                <Button Content="-" IsEnabled="{Binding IsRemoveScreenButtonEnabled}" Command="{Binding RemoveScreenCommand}" CommandParameter="{Binding SelectedScreen}" Grid.Column="2" />
+                <Button Content="+" Command="{Binding AddScreenCommand}" Grid.Column="1" />
+                <Button Content="-" IsEnabled="{Binding SelectedScreen, Converter={StaticResource NonNullToBool}}" Command="{Binding RemoveScreenCommand}" CommandParameter="{Binding SelectedScreen}" Grid.Column="2" />
             </Grid>
             <ScrollViewer PanningMode="Both" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
                 <ScrollViewer.ContextMenu>
@@ -201,11 +202,11 @@
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
                         <Button Content="+" Command="{Binding AddOptionCommand}" />
-                        <Button Content="-" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding RemoveOptionCommand}" />
+                        <Button Content="-" IsEnabled="{Binding SelectedOption, Converter={StaticResource NonNullToBool}}" Command="{Binding RemoveOptionCommand}" />
                     </StackPanel>
                     <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
-                        <Button FontFamily="Marlett" Content="5" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding MoveOptionUpCommand}" />
-                        <Button FontFamily="Marlett" Content="6" IsEnabled="{Binding IsRemoveOptionButtonEnabled}" Command="{Binding MoveOptionDownCommand}" />
+                        <Button FontFamily="Marlett" Content="5" IsEnabled="{Binding SelectedOption, Converter={StaticResource NonNullToBool}}" Command="{Binding MoveOptionUpCommand}" />
+                        <Button FontFamily="Marlett" Content="6" IsEnabled="{Binding SelectedOption, Converter={StaticResource NonNullToBool}}" Command="{Binding MoveOptionDownCommand}" />
                     </StackPanel>
                 </Grid>
             </Grid>

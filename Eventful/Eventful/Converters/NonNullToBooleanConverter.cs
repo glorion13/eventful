@@ -6,12 +6,15 @@ using System.Windows.Data;
 
 namespace Eventful.Converters
 {
-    public class DateTimeToStringConverter : IValueConverter
+    public class NonNullToBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            DateTime date = (DateTime)value;
-            return date.ToString("d MMM yyyy, HH:mm:ss");
+            if (value != null)
+            {
+                return true;
+            }
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
