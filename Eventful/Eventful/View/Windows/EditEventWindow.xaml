@@ -102,7 +102,7 @@
                     <ColumnDefinition Width="30" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Screens" Grid.Column="0" FontSize="20" />
-                <Button Content="+" IsEnabled="{Binding IsAddScreenButtonEnabled}" Command="{Binding AddScreenCommand}" Grid.Column="1" />
+                <Button Content="+" Command="{Binding AddScreenCommand}" Grid.Column="1" />
                 <Button Content="-" IsEnabled="{Binding IsRemoveScreenButtonEnabled}" Command="{Binding RemoveScreenCommand}" CommandParameter="{Binding SelectedScreen}" Grid.Column="2" />
             </Grid>
             <ScrollViewer PanningMode="Both" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">

@@ -21,7 +21,7 @@
                 <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
             <TextBlock Text="Decks" Grid.Column="0" FontSize="20" />
-            <Button Content="+" IsEnabled="{Binding IsAddDeckButtonEnabled}" Command="{Binding AddDeckCommand}" Grid.Column="1" />
+            <Button Content="+" Command="{Binding AddDeckCommand}" Grid.Column="1" />
             <Button Content="-" IsEnabled="{Binding IsRemoveDeckButtonEnabled}" Command="{Binding RemoveDeckCommand}" Grid.Column="2" />
         </Grid>
         <TextBox Text="{Binding DeckFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter decks" Height="25" Grid.Row="2" />

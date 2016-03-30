@@ -7,11 +7,9 @@ namespace Eventful.ViewModel
     {
         public Deck()
         {
-            Events = new ObservableCollection<Event>();
         }
         public Deck(string title)
         {
-            Events = new ObservableCollection<Event>();
             Title = title;
         }
         public Deck(Deck deck)
@@ -35,7 +33,7 @@ namespace Eventful.ViewModel
             }
         }
 
-        private ObservableCollection<Event> events;
+        private ObservableCollection<Event> events = new ObservableCollection<Event>();
         public ObservableCollection<Event> Events
         {
             get

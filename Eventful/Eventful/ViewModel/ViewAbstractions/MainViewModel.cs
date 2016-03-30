@@ -272,7 +272,6 @@ namespace Eventful.ViewModel
                 SelectedEvent = null;
                 SelectedScreen = null;
                 IsRemoveDeckButtonEnabled = !(SelectedDeck == null);
-                IsAddEventButtonEnabled = !(SelectedDeck == null);
                 EventsViewSource.Source = SelectedDeck == null ? new ObservableCollection<Event>() : SelectedDeck.Events;
                 EventsViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
                 if (SelectedDeck != null)
@@ -292,7 +291,6 @@ namespace Eventful.ViewModel
                 Set(() => SelectedEvent, ref selectedEvent, value);
                 SelectedScreen = null;
                 IsRemoveEventButtonEnabled = !(SelectedEvent == null);
-                IsAddScreenButtonEnabled = !(SelectedEvent == null);
                 ScreensViewSource.Source = SelectedEvent == null ? new ObservableCollection<Screen>() : SelectedEvent.Screens;
                 ScreensViewSource.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("Title", System.ComponentModel.ListSortDirection.Ascending));
                 InitialiseConnections();
@@ -384,18 +382,6 @@ namespace Eventful.ViewModel
             IsSettingsFlyoutVisible = !IsSettingsFlyoutVisible;
         }
 
-        private bool isAddDeckButtonEnabled = true;
-        public bool IsAddDeckButtonEnabled
-        {
-            get
-            {
-                return isAddDeckButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsAddDeckButtonEnabled, ref isAddDeckButtonEnabled, value);
-            }
-        }
         private RelayCommand addDeckCommand;
         public RelayCommand AddDeckCommand
         {
@@ -408,6 +394,8 @@ namespace Eventful.ViewModel
         {
             AddNewDeck("What is the title of the new deck? You can always change it later.");
         }
+
+        // TO-DO: move to separate view-model
         private async void AddNewDeck(string text)
         {
             if (Decks != null)
@@ -451,6 +439,7 @@ namespace Eventful.ViewModel
         }
         private async void ExecuteAddScreenCommand()
         {
+            // TO-DO: move to separate view-model
             if (SelectedEvent != null)
             {
                 string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Screen", "What is the title of the new screen? You can always change it later.");
@@ -483,6 +472,7 @@ namespace Eventful.ViewModel
             if (dialogResult)
                 RemoveScreen(screen);
         }
+        // TO-DO: move to separate view-model
         private void RemoveScreen(Screen screen)
         {
             SelectedEvent.Screens.Remove(screen);
@@ -491,16 +481,30 @@ namespace Eventful.ViewModel
                 SelectedScreen = null;
         }
 
-        private bool isAddScreenButtonEnabled = false;
-        public bool IsAddScreenButtonEnabled
+        // TO-DO: move to separate view-model
+        // Possibly remove this and just create a converter?
+        private bool isRemoveDeckButtonEnabled = false;
+        public bool IsRemoveDeckButtonEnabled
         {
             get
             {
-                return isAddScreenButtonEnabled;
+                return isRemoveDeckButtonEnabled;
             }
             set
             {
-                Set(() => IsAddScreenButtonEnabled, ref isAddScreenButtonEnabled, value);
+                Set(() => IsRemoveDeckButtonEnabled, ref isRemoveDeckButtonEnabled, value);
+            }
+        }
+        private bool isRemoveEventButtonEnabled = false;
+        public bool IsRemoveEventButtonEnabled
+        {
+            get
+            {
+                return isRemoveEventButtonEnabled;
+            }
+            set
+            {
+                Set(() => IsRemoveEventButtonEnabled, ref isRemoveEventButtonEnabled, value);
             }
         }
         private bool isRemoveScreenButtonEnabled = false;
@@ -515,19 +519,19 @@ namespace Eventful.ViewModel
                 Set(() => IsRemoveScreenButtonEnabled, ref isRemoveScreenButtonEnabled, value);
             }
         }
-
-        private bool isAddEventButtonEnabled = false;
-        public bool IsAddEventButtonEnabled
+        private bool isRemoveOptionButtonEnabled = false;
+        public bool IsRemoveOptionButtonEnabled
         {
             get
             {
-                return isAddEventButtonEnabled;
+                return isRemoveOptionButtonEnabled;
             }
             set
             {
-                Set(() => IsAddEventButtonEnabled, ref isAddEventButtonEnabled, value);
+                Set(() => IsRemoveOptionButtonEnabled, ref isRemoveOptionButtonEnabled, value);
             }
         }
+
         private RelayCommand addEventCommand;
         public RelayCommand AddEventCommand
         {
@@ -540,6 +544,7 @@ namespace Eventful.ViewModel
         {
             AddNewEvent("What is the title of the new event? You can always change it later.");
         }
+        // TO-DO: move to separate view-model
         private async void AddNewEvent(string text)
         {
             if (SelectedDeck != null)
@@ -566,18 +571,6 @@ namespace Eventful.ViewModel
             SaveEvent(ev, deck);
         }
 
-        private bool isRemoveDeckButtonEnabled = false;
-        public bool IsRemoveDeckButtonEnabled
-        {
-            get
-            {
-                return isRemoveDeckButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsRemoveDeckButtonEnabled, ref isRemoveDeckButtonEnabled, value);
-            }
-        }
         private RelayCommand removeDeckCommand;
         public RelayCommand RemoveDeckCommand
         {
@@ -593,6 +586,7 @@ namespace Eventful.ViewModel
             if (dialogResult)
                 RemoveDeck(SelectedDeck);
         }
+        // TO-DO: move to separate view-model
         private void RemoveDeck(Deck deck)
         {
             if (deck != null)
@@ -602,18 +596,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        private bool isRemoveEventButtonEnabled = false;
-        public bool IsRemoveEventButtonEnabled
-        {
-            get
-            {
-                return isRemoveEventButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsRemoveEventButtonEnabled, ref isRemoveEventButtonEnabled, value);
-            }
-        }
         private RelayCommand removeEventCommand;
         public RelayCommand RemoveEventCommand
         {
@@ -628,6 +610,7 @@ namespace Eventful.ViewModel
             if (dialogResult)
                 RemoveEventFromDeck(SelectedEvent, SelectedDeck);
         }
+        // TO-DO: move to separate view-model
         private void RemoveEventFromDeck(Event ev, Deck deck)
         {
             if (ev != null && deck != null)
@@ -649,6 +632,7 @@ namespace Eventful.ViewModel
         {
             ChangeDeckName("What is the new title of the deck?");
         }
+        // TO-DO: move to separate view-model
         private async void ChangeDeckName(string text)
         {
             if (SelectedDeck != null)
@@ -687,6 +671,7 @@ namespace Eventful.ViewModel
         {
             ChangeEventName("What is the new title of the event?");
         }
+        // TO-DO: move to separate view-model
         private async void ChangeEventName(string text)
         {
             if (SelectedEvent != null && SelectedDeck != null)
@@ -1026,18 +1011,6 @@ namespace Eventful.ViewModel
             SelectedOption = SelectedScreen.Options.Last();
         }
 
-        private bool isRemoveOptionButtonEnabled = false;
-        public bool IsRemoveOptionButtonEnabled
-        {
-            get
-            {
-                return isRemoveOptionButtonEnabled;
-            }
-            set
-            {
-                Set(() => IsRemoveOptionButtonEnabled, ref isRemoveOptionButtonEnabled, value);
-            }
-        }
         private RelayCommand removeOptionCommand;
         public RelayCommand RemoveOptionCommand
         {
