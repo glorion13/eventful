@@ -1,4 +1,6 @@
-﻿using GalaSoft.MvvmLight;
+﻿using Eventful.Service;
+using GalaSoft.MvvmLight;
+using System;
 using System.Collections.ObjectModel;
 
 namespace Eventful.ViewModel
@@ -44,6 +46,25 @@ namespace Eventful.ViewModel
             {
                 Set(() => Events, ref events, value);
             }
+        }
+
+        public void AddEvent(string eventName)
+        {
+            Event tempEvent = new Event(eventName);
+            Events.Add(tempEvent);
+            DataStorage.SaveEventToDisk(tempEvent, this);
+        }
+        public void AddEvent(Event ev)
+        {
+            Event tempEvent = new Event(ev);
+            Events.Add(tempEvent);
+            DataStorage.SaveEventToDisk(tempEvent, this);
+        }
+
+        public void RemoveEvent(Event ev)
+        {
+            Events.Remove(ev);
+            DataStorage.DeleteEvent(ev, this);
         }
     }
 }

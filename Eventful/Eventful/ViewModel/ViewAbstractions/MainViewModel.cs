@@ -406,8 +406,8 @@ namespace Eventful.ViewModel
                 }
                 else if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
                     AddNewDeck(String.Concat("A deck with the title \"", dialogResult, "\" already exists. Please enter a different title."));
-                else if (!StringChecker.FilenameStringCheck(dialogResult))
-                    AddNewDeck(filenameErrorMessage);
+                else if (!StringChecker.IsFilenameValid(dialogResult))
+                    AddNewDeck("error");
                 else
                 {
                     Deck tempDeck = new Deck(dialogResult);
@@ -540,35 +540,25 @@ namespace Eventful.ViewModel
                 return addEventCommand ?? (addEventCommand = new RelayCommand(ExecuteAddEventCommand));
             }
         }
-        private void ExecuteAddEventCommand()
-        {
-            AddNewEvent("What is the title of the new event? You can always change it later.");
-        }
-        // TO-DO: move to separate view-model
-        private async void AddNewEvent(string text)
+        private async void ExecuteAddEventCommand()
         {
             if (SelectedDeck != null)
             {
-                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Event", text);
+                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Event", "What is the title of the new event? You can always change it later.");
                 if (dialogResult == null)
                 {
                 }
-                else if (StringChecker.FilenameStringCheck(dialogResult))
+                else if (StringChecker.IsFilenameValid(dialogResult))
                 {
-                    Event tempEvent = new Event(dialogResult);
-                    AddEventToDeck(tempEvent, SelectedDeck);
-                    SelectedEvent = tempEvent;
+                    SelectedDeck.AddEvent(dialogResult);
+                    SelectedEvent = SelectedDeck.Events.Last();
                 }
                 else
                 {
-                    AddNewEvent(filenameErrorMessage);
+                    await MessageWindowsViewModel.ShowOkMessage("Create New Event", "A title cannot be empty, nor contain any of the following characters: \n \\ / : * ? \" < > |");
+                    ExecuteAddEventCommand();
                 }
             }
-        }
-        private void AddEventToDeck(Event ev, Deck deck)
-        {
-            deck.Events.Add(ev);
-            SaveEvent(ev, deck);
         }
 
         private RelayCommand removeDeckCommand;
@@ -582,17 +572,11 @@ namespace Eventful.ViewModel
         private async void ExecuteRemoveDeckCommand()
         {
             if (SelectedDeck == null) return;
-            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Deck Deletion", String.Concat("Do you want to delete the deck \"", SelectedDeck.Title, "\"?"));
+            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Deck Deletion", $"Do you want to delete the deck \"{SelectedDeck.Title}\"?");
             if (dialogResult)
-                RemoveDeck(SelectedDeck);
-        }
-        // TO-DO: move to separate view-model
-        private void RemoveDeck(Deck deck)
-        {
-            if (deck != null)
             {
-                if (DataStorage.DeleteDeck(deck))
-                    Decks.Remove(deck);
+                if (DataStorage.DeleteDeck(SelectedDeck))
+                    Decks.Remove(SelectedDeck);
             }
         }
 
@@ -606,18 +590,9 @@ namespace Eventful.ViewModel
         }
         private async void ExecuteRemoveEventCommand()
         {
-            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Event Deletion", String.Concat("Do you want to delete the event \"", SelectedEvent.Title, "\"?"));
+            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Event Deletion", $"Do you want to delete the event \"{SelectedEvent.Title}\"?");
             if (dialogResult)
-                RemoveEventFromDeck(SelectedEvent, SelectedDeck);
-        }
-        // TO-DO: move to separate view-model
-        private void RemoveEventFromDeck(Event ev, Deck deck)
-        {
-            if (ev != null && deck != null)
-            {
-                if (DataStorage.DeleteEvent(ev, deck))
-                    deck.Events.Remove(ev);
-            }
+                SelectedDeck.RemoveEvent(SelectedEvent);
         }
 
         private RelayCommand changeDeckNameCommand;
@@ -647,9 +622,9 @@ namespace Eventful.ViewModel
                 }
                 else if (Decks.Any(d => String.Equals(d.Title, dialogResult, StringComparison.OrdinalIgnoreCase)))
                     ChangeDeckName($"A deck with the title {dialogResult} already exists. Please enter a different title.");
-                else if (!StringChecker.FilenameStringCheck(dialogResult))
+                else if (!StringChecker.IsFilenameValid(dialogResult))
                 {
-                    ChangeDeckName(filenameErrorMessage);
+                    ChangeDeckName("A title cannot be empty, nor contain any of the following characters: \n \\ / : * ? \" < > |");
                 }
                 else
                 {
@@ -683,7 +658,7 @@ namespace Eventful.ViewModel
                 else if (dialogResult == SelectedEvent.Title)
                 {
                 }
-                else if (StringChecker.FilenameStringCheck(dialogResult))
+                else if (StringChecker.IsFilenameValid(dialogResult))
                 {
                     if (DataStorage.RenameEvent(SelectedEvent, SelectedDeck, dialogResult))
                     {
@@ -692,7 +667,7 @@ namespace Eventful.ViewModel
                     }
                 }
                 else
-                    ChangeEventName(filenameErrorMessage);
+                    ChangeEventName("EVENT NAME ERROR");
             }
         }
 
@@ -722,8 +697,6 @@ namespace Eventful.ViewModel
                 }
             }
         }
-
-        private string filenameErrorMessage = "A title cannot be empty, nor contain any of the following characters: \n \\ / : * ? \" < > |";
 
         private RelayCommand saveEventCommand;
         public RelayCommand SaveEventCommand
@@ -843,7 +816,7 @@ namespace Eventful.ViewModel
             }*/
             // TO-DO need to somehow duplicate files directly, and then just refresh the IDs
 
-            AddEventToDeck(duplicateEvent, SelectedDeck);
+            SelectedDeck.AddEvent(duplicateEvent);
             SelectedEvent = duplicateEvent;
         }
 
@@ -893,8 +866,8 @@ namespace Eventful.ViewModel
         }
         private void MoveEventToNewDeck(Event ev, Deck oldDeck, Deck newDeck)
         {
-            AddEventToDeck(ev, newDeck);
-            RemoveEventFromDeck(ev, oldDeck);
+            newDeck.AddEvent(ev);
+            oldDeck.RemoveEvent(ev);
         }
 
         private RelayCommand openNewEventWindowCommand;

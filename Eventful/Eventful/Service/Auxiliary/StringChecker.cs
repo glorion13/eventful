@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Eventful.Service.Auxiliary
+﻿namespace Eventful.Service.Auxiliary
 {
     public static class StringChecker
     {
-        public static bool FilenameStringCheck(string text)
+        public static bool IsFilenameValid(string text)
         {
             if (text == "")
                 return false;
