@@ -425,77 +425,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        private RelayCommand addScreenCommand;
-        public RelayCommand AddScreenCommand
-        {
-            get
-            {
-                return addScreenCommand ?? (addScreenCommand = new RelayCommand(ExecuteAddScreenCommand));
-            }
-        }
-        private async void ExecuteAddScreenCommand()
-        {
-            if (SelectedEvent != null)
-            {
-                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Screen", "What is the title of the new screen? You can always change it later.");
-                if (dialogResult != null)
-                {
-                    SelectedEvent.AddScreen(dialogResult);
-                    ExecuteSelectScreenCommand(SelectedEvent.Screens.Last());
-                    InitialiseConnections();
-                }
-            }
-        }
-
-        private RelayCommand<Screen> removeScreenCommand;
-        public RelayCommand<Screen> RemoveScreenCommand
-        {
-            get
-            {
-                return removeScreenCommand ?? (removeScreenCommand = new RelayCommand<Screen>(ExecuteRemoveScreenCommand));
-            }
-        }
-        private async void ExecuteRemoveScreenCommand(Screen screen)
-        {
-            if (screen == null) return;
-            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Screen Deletion", $"Do you want to delete the screen {screen.Title}?");
-            if (dialogResult)
-            {
-                SelectedEvent.RemoveScreen(screen);
-                SelectedScreen = SelectedScreen == screen ? null : SelectedScreen;
-                InitialiseConnections();
-            }
-        }
-
-        private RelayCommand addEventCommand;
-        public RelayCommand AddEventCommand
-        {
-            get
-            {
-                return addEventCommand ?? (addEventCommand = new RelayCommand(ExecuteAddEventCommand));
-            }
-        }
-        private async void ExecuteAddEventCommand()
-        {
-            if (SelectedDeck != null)
-            {
-                string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Event", "What is the title of the new event? You can always change it later.");
-                if (dialogResult == null)
-                {
-                }
-                else if (StringChecker.IsFilenameValid(dialogResult))
-                {
-                    SelectedDeck.AddEvent(dialogResult);
-                    SelectedEvent = SelectedDeck.Events.Last();
-                }
-                else
-                {
-                    await MessageWindowsViewModel.ShowOkMessage("Create New Event", "A title cannot be empty, nor contain any of the following characters: \n \\ / : * ? \" < > |");
-                    ExecuteAddEventCommand();
-                }
-            }
-        }
-
         private RelayCommand removeDeckCommand;
         public RelayCommand RemoveDeckCommand
         {
@@ -513,21 +442,6 @@ namespace Eventful.ViewModel
                 if (DataStorage.DeleteDeck(SelectedDeck))
                     Decks.Remove(SelectedDeck);
             }
-        }
-
-        private RelayCommand removeEventCommand;
-        public RelayCommand RemoveEventCommand
-        {
-            get
-            {
-                return removeEventCommand ?? (removeEventCommand = new RelayCommand(ExecuteRemoveEventCommand));
-            }
-        }
-        private async void ExecuteRemoveEventCommand()
-        {
-            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Event Deletion", $"Do you want to delete the event \"{SelectedEvent.Title}\"?");
-            if (dialogResult)
-                SelectedDeck.RemoveEvent(SelectedEvent);
         }
 
         private RelayCommand changeDeckNameCommand;
@@ -903,85 +817,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        private RelayCommand addOptionCommand;
-        public RelayCommand AddOptionCommand
-        {
-            get
-            {
-                return addOptionCommand ?? (addOptionCommand = new RelayCommand(ExecuteAddOptionCommand));
-            }
-        }
-        private void ExecuteAddOptionCommand()
-        {
-            SelectedScreen.AddOption();
-            InitialiseConnections();
-            SelectedOption = SelectedScreen.Options.Last();
-        }
-
-        private RelayCommand removeOptionCommand;
-        public RelayCommand RemoveOptionCommand
-        {
-            get
-            {
-                return removeOptionCommand ?? (removeOptionCommand = new RelayCommand(ExecuteRemoveOptionCommand));
-            }
-        }
-        private void ExecuteRemoveOptionCommand()
-        {
-            int index = SelectedOption.Index;
-            SelectedScreen.RemoveOption(SelectedOption);
-
-            if (index >= 2)
-                SelectedOption = SelectedScreen.Options[index - 2];
-            else if (SelectedScreen.Options.Count > 0)
-                SelectedOption = SelectedScreen.Options[0];
-            if (SelectedScreen.ParentEvent != null)
-                SelectedScreen.ParentEvent.IsChanged = true;
-            InitialiseConnections();
-        }
-
-        private RelayCommand moveOptionUpCommand;
-        public RelayCommand MoveOptionUpCommand
-        {
-            get
-            {
-                return moveOptionUpCommand ?? (moveOptionUpCommand = new RelayCommand(ExecuteMoveOptionUpCommand));
-            }
-        }
-        private void ExecuteMoveOptionUpCommand()
-        {
-            if (SelectedOption == null) return;
-            if (SelectedScreen == null) return;
-            if (SelectedOption.Index == 1) return;
-            Option optionAbove = SelectedScreen.Options.FirstOrDefault(opt => opt.Index == SelectedOption.Index - 1);
-            optionAbove.Index = SelectedOption.Index;
-            SelectedOption.Index--;
-            SelectedScreen.Options.Move(optionAbove.Index - 1, SelectedOption.Index - 1);
-            SelectedScreen.Update();
-            InitialiseConnections();
-        }
-
-        private RelayCommand moveOptionDownCommand;
-        public RelayCommand MoveOptionDownCommand
-        {
-            get
-            {
-                return moveOptionDownCommand ?? (moveOptionDownCommand = new RelayCommand(ExecuteMoveOptionDownCommand));
-            }
-        }
-        private void ExecuteMoveOptionDownCommand()
-        {
-            if (SelectedOption == null) return;
-            if (SelectedScreen == null) return;
-            if (SelectedOption.Index == SelectedScreen.Options.Count) return;
-            Option optionAbove = SelectedScreen.Options.FirstOrDefault(opt => opt.Index == SelectedOption.Index + 1);
-            optionAbove.Index = SelectedOption.Index;
-            SelectedOption.Index++;
-            SelectedScreen.Options.Move(optionAbove.Index - 1, SelectedOption.Index - 1);
-            SelectedScreen.Update();
-            InitialiseConnections();
-        }
-
         private void InitialiseConnections()
         {
             Connections.Clear();
@@ -990,7 +825,6 @@ namespace Eventful.ViewModel
                     foreach (Option option in screen.Options)
                         Connections.Add(option);
         }
-
         private ObservableCollection<Option> connections = new ObservableCollection<Option>();
         public ObservableCollection<Option> Connections
         {

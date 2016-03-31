@@ -30,8 +30,8 @@
                 <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
             <TextBlock Text="Events" Grid.Column="0" FontSize="20" />
-            <Button Content="+" Command="{Binding AddEventCommand}" Grid.Column="1" />
-            <Button Content="-" IsEnabled="{Binding SelectedEvent, Converter={StaticResource NonNullToBool}}" Command="{Binding RemoveEventCommand}" Grid.Column="2" />
+            <Button Content="+" Command="{Binding SelectedDeck.AddEventCommand}" Grid.Column="1" />
+            <Button Content="-" IsEnabled="{Binding SelectedEvent, Converter={StaticResource NonNullToBool}}" Command="{Binding SelectedDeck.RemoveEventCommand}" CommandParameter="{Binding SelectedEvent}" Grid.Column="2" />
         </Grid>
         <TextBox Text="{Binding EventFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MetroControls:TextBoxHelper.Watermark="Filter events" Height="25" Grid.Row="2" />
         <DataGrid DragDrop:DragDrop.IsDragSource="True" SelectionMode="Single" Margin="0,5" CanUserDeleteRows="False" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="None" ItemsSource="{Binding EventsViewSource.View}" VerticalScrollBarVisibility="Auto" SelectedItem="{Binding SelectedEvent, Mode=TwoWay}" Visibility="{Binding SelectedDeck, Converter={StaticResource NonNullToVisibility}}" Grid.Row="1">
@@ -42,7 +42,8 @@
                 <KeyBinding Command="{Binding Path=ChangeEventNameCommand}" 
                                 Key="R" 
                                 Modifiers="Control"/>
-                <KeyBinding Command="{Binding Path=RemoveEventCommand}" 
+                <KeyBinding Command="{Binding Path=RemoveEventCommand}"
+                            CommandParameter="{Binding SelectedEvent}"
                                 Key="Delete"/>
             </DataGrid.InputBindings>
             <DataGrid.ContextMenu>
@@ -50,7 +51,7 @@
                     <MenuItem Header="View event in new window" Command="{Binding OpenNewEventWindowCommand}" />
                     <MenuItem Header="Rename event" Command="{Binding ChangeEventNameCommand}" />
                     <MenuItem Header="Duplicate event" Command="{Binding DuplicateEventCommand}" />
-                    <MenuItem Header="Delete event" Command="{Binding RemoveEventCommand}" />
+                    <MenuItem Header="Delete event" Command="{Binding RemoveEventCommand}" CommandParameter="{Binding SelectedEvent}" />
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <Interactivity:Interaction.Triggers>

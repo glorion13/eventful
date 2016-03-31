@@ -87,13 +87,13 @@
                     <ColumnDefinition Width="30" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Screens" Grid.Column="0" FontSize="20" />
-                <Button Content="+" Command="{Binding AddScreenCommand}" Grid.Column="1" />
-                <Button Content="-" IsEnabled="{Binding SelectedScreen, Converter={StaticResource NonNullToBool}}" Command="{Binding RemoveScreenCommand}" CommandParameter="{Binding SelectedScreen}" Grid.Column="2" />
+                <Button Content="+" Command="{Binding SelectedEvent.AddScreenCommand}" Grid.Column="1" />
+                <Button Content="-" IsEnabled="{Binding SelectedScreen, Converter={StaticResource NonNullToBool}}" Command="{Binding SelectedEvent.RemoveScreenCommand}" CommandParameter="{Binding SelectedScreen}" Grid.Column="2" />
             </Grid>
             <ScrollViewer PanningMode="Both" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
                 <ScrollViewer.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Add new screen" Command="{Binding AddScreenCommand}" ToolTip="Create a new screen for this event"/>
+                        <MenuItem Header="Add new screen" Command="{Binding SelectedEvent.AddScreenCommand}" ToolTip="Create a new screen for this event"/>
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
                 <Interactivity:Interaction.Triggers>
@@ -130,7 +130,7 @@
                             <DataTemplate>
                                 <Thumb ScrollViewer.CanContentScroll="True" Focusable="True" Template="{StaticResource nodeTemplate}">
                                     <Thumb.InputBindings>
-                                        <KeyBinding Command="{Binding Main.RemoveScreenCommand, Source={StaticResource Locator}}"
+                                        <KeyBinding Command="{Binding RemoveScreenCommand}"
                                             CommandParameter="{Binding}" Key="Delete" />
                                         <KeyBinding Command="{Binding Main.ChangeScreenNameCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}"
                                                 Key="R" 
@@ -143,7 +143,7 @@
                                         <ContextMenu>
                                             <MenuItem Header="Rename screen" Command="{Binding Main.ChangeScreenNameCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
                                             <MenuItem Header="Duplicate screen" Command="{Binding Main.DuplicateScreenCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
-                                            <MenuItem Header="Delete screen" Command="{Binding Main.RemoveScreenCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" />
+                                            <MenuItem Header="Delete screen" Command="{Binding RemoveScreenCommand}" CommandParameter="{Binding}" />
                                         </ContextMenu>
                                     </Thumb.ContextMenu>
                                     <Interactivity:Interaction.Triggers>
@@ -201,12 +201,12 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
-                        <Button Content="+" Command="{Binding AddOptionCommand}" />
-                        <Button Content="-" IsEnabled="{Binding SelectedOption, Converter={StaticResource NonNullToBool}}" Command="{Binding RemoveOptionCommand}" />
+                        <Button Content="+" Command="{Binding SelectedScreen.AddOptionCommand}" />
+                        <Button Content="-" IsEnabled="{Binding SelectedOption, Converter={StaticResource NonNullToBool}}" Command="{Binding SelectedScreen.RemoveOptionCommand}" CommandParameter="{Binding SelectedOption}" />
                     </StackPanel>
                     <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
-                        <Button FontFamily="Marlett" Content="5" IsEnabled="{Binding SelectedOption, Converter={StaticResource NonNullToBool}}" Command="{Binding MoveOptionUpCommand}" />
-                        <Button FontFamily="Marlett" Content="6" IsEnabled="{Binding SelectedOption, Converter={StaticResource NonNullToBool}}" Command="{Binding MoveOptionDownCommand}" />
+                        <Button FontFamily="Marlett" Content="5" IsEnabled="{Binding SelectedOption, Converter={StaticResource NonNullToBool}}" Command="{Binding SelectedScreen.MoveOptionUpCommand}" CommandParameter="{Binding SelectedOption}" />
+                        <Button FontFamily="Marlett" Content="6" IsEnabled="{Binding SelectedOption, Converter={StaticResource NonNullToBool}}" Command="{Binding SelectedScreen.MoveOptionDownCommand}" CommandParameter="{Binding SelectedOption}" />
                     </StackPanel>
                 </Grid>
             </Grid>

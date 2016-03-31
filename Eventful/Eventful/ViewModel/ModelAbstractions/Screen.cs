@@ -2,11 +2,14 @@
 using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Runtime.Serialization;
 using System.Windows.Controls.Primitives;
 using System.Xml.Serialization;
 
 namespace Eventful.ViewModel
 {
+    [DataContract]
     public class Screen : ViewModelBase
     {
         public Screen()
@@ -30,17 +33,8 @@ namespace Eventful.ViewModel
             MessengerInstance.Register<Option>(this, option => OptionDraggedOverScreen(option));
         }
 
-        private void OptionDraggedOverScreen(Option option)
-        {
-            if (Options.Contains(option)) return;
-            else if ((option.Hotspot.InputX > X) && (option.Hotspot.InputX < X + Width) && (option.Hotspot.InputY > Y) && (option.Hotspot.InputY < Y + Height))
-            {
-                option.TargetId = Id;
-                option.UpdateTargetFromId();
-            }
-        }
-
         private string title = "Untitled Screen";
+        [DataMember]
         public string Title
         {
             get
@@ -52,6 +46,50 @@ namespace Eventful.ViewModel
                 Set(() => Title, ref title, value);
                 if (ParentEvent != null)
                     ParentEvent.IsChanged = true;
+            }
+        }
+
+        private Guid id = Guid.NewGuid();
+        [DataMember]
+        public Guid Id
+        {
+            get
+            {
+                return id;
+            }
+            set
+            {
+                Set(() => Id, ref id, value);
+            }
+        }
+
+        private string text = "";
+        [DataMember]
+        public string Text
+        {
+            get
+            {
+                return text;
+            }
+            set
+            {
+                Set(() => Text, ref text, value);
+                if (ParentEvent != null)
+                    ParentEvent.IsChanged = true;
+            }
+        }
+
+        private ObservableCollection<Option> options = new ObservableCollection<Option>();
+        [DataMember]
+        public ObservableCollection<Option> Options
+        {
+            get
+            {
+                return options;
+            }
+            set
+            {
+                Set(() => Options, ref options, value);
             }
         }
 
@@ -109,8 +147,8 @@ namespace Eventful.ViewModel
             }
         }
 
-        [XmlIgnore]
         private double width = 150;
+        [IgnoreDataMember]
         public double Width
         {
             get
@@ -125,8 +163,8 @@ namespace Eventful.ViewModel
             }
         }
 
-        [XmlIgnore]
         private double height = 40;
+        [IgnoreDataMember]
         public double Height
         {
             get
@@ -140,25 +178,9 @@ namespace Eventful.ViewModel
                 UpdateOutputPositions();
             }
         }
-
-        private string text = "";
-        public string Text
-        {
-            get
-            {
-                return text;
-            }
-            set
-            {
-                Set(() => Text, ref text, value);
-                if (ParentEvent != null)
-                    ParentEvent.IsChanged = true;
-            }
-        }
-
-        [XmlIgnore]
+        
         private Event parentEvent;
-        [XmlIgnore]
+        [IgnoreDataMember]
         public Event ParentEvent
         {
             get
@@ -170,22 +192,9 @@ namespace Eventful.ViewModel
                 Set(() => ParentEvent, ref parentEvent, value);
             }
         }
-
-        private ObservableCollection<Option> options = new ObservableCollection<Option>();
-        public ObservableCollection<Option> Options
-        {
-            get
-            {
-                return options;
-            }
-            set
-            {
-                Set(() => Options, ref options, value);
-            }
-        }
-
-        [XmlIgnore]
+        
         private bool isSelected = false;
+        [IgnoreDataMember]
         public bool IsSelected
         {
             get
@@ -210,6 +219,15 @@ namespace Eventful.ViewModel
         {
             X += args.HorizontalChange;
             Y += args.VerticalChange;
+        }
+        private void OptionDraggedOverScreen(Option option)
+        {
+            if (Options.Contains(option)) return;
+            else if ((option.Hotspot.InputX > X) && (option.Hotspot.InputX < X + Width) && (option.Hotspot.InputY > Y) && (option.Hotspot.InputY < Y + Height))
+            {
+                option.TargetId = Id;
+                option.UpdateTargetFromId();
+            }
         }
 
         private void UpdateInputPositions()
@@ -268,17 +286,79 @@ namespace Eventful.ViewModel
             Options.Remove(option);
         }
 
-        private Guid id = Guid.NewGuid();
-        public Guid Id
+        private RelayCommand addOptionCommand;
+        public RelayCommand AddOptionCommand
         {
             get
             {
-                return id;
+                return addOptionCommand ?? (addOptionCommand = new RelayCommand(ExecuteAddOptionCommand));
             }
-            set
+        }
+        private void ExecuteAddOptionCommand()
+        {
+            AddOption();
+            //InitialiseConnections();
+            //SelectedOption = SelectedScreen.Options.Last();
+        }
+
+        private RelayCommand<Option> removeOptionCommand;
+        public RelayCommand<Option> RemoveOptionCommand
+        {
+            get
             {
-                Set(() => Id, ref id, value);
+                return removeOptionCommand ?? (removeOptionCommand = new RelayCommand<Option>(ExecuteRemoveOptionCommand));
             }
+        }
+        private void ExecuteRemoveOptionCommand(Option option)
+        {
+            RemoveOption(option);
+
+            //int index = option.Index;
+            /*if (index >= 2)
+                SelectedOption = SelectedScreen.Options[index - 2];
+            else if (SelectedScreen.Options.Count > 0)
+                SelectedOption = SelectedScreen.Options[0];
+            if (SelectedScreen.ParentEvent != null)
+                SelectedScreen.ParentEvent.IsChanged = true;
+            InitialiseConnections();*/
+        }
+
+        private RelayCommand<Option> moveOptionDownCommand;
+        public RelayCommand<Option> MoveOptionDownCommand
+        {
+            get
+            {
+                return moveOptionDownCommand ?? (moveOptionDownCommand = new RelayCommand<Option>(ExecuteMoveOptionDownCommand));
+            }
+        }
+        private void ExecuteMoveOptionDownCommand(Option option)
+        {
+            if (option.Index == Options.Count) return;
+            Option optionAbove = Options.FirstOrDefault(opt => opt.Index == option.Index + 1);
+            optionAbove.Index = option.Index;
+            option.Index++;
+            Options.Move(optionAbove.Index - 1, option.Index - 1);
+            Update();
+            //InitialiseConnections();
+        }
+
+        private RelayCommand<Option> moveOptionUpCommand;
+        public RelayCommand<Option> MoveOptionUpCommand
+        {
+            get
+            {
+                return moveOptionUpCommand ?? (moveOptionUpCommand = new RelayCommand<Option>(ExecuteMoveOptionUpCommand));
+            }
+        }
+        private void ExecuteMoveOptionUpCommand(Option option)
+        {
+            if (option.Index == 1) return;
+            Option optionAbove = Options.FirstOrDefault(opt => opt.Index == option.Index - 1);
+            optionAbove.Index = option.Index;
+            option.Index--;
+            Options.Move(optionAbove.Index - 1, option.Index - 1);
+            Update();
+            //InitialiseConnections();
         }
 
     }

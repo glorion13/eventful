@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
@@ -23,6 +24,7 @@ namespace Eventful.ViewModel
                 AddScreen(new Screen(screen), true);
         }
 
+        [DataMember]
         private ObservableCollection<Screen> screens = new ObservableCollection<Screen>();
         public ObservableCollection<Screen> Screens
         {
@@ -93,7 +95,7 @@ namespace Eventful.ViewModel
         }
 
         [IgnoreDataMember]
-        private bool isChanged = false;
+        private bool isChanged = true;
         public bool IsChanged
         {
             get
@@ -136,6 +138,45 @@ namespace Eventful.ViewModel
         public void RemoveScreen(Screen screen)
         {
             Screens.Remove(screen);
+        }
+
+        private RelayCommand addScreenCommand;
+        public RelayCommand AddScreenCommand
+        {
+            get
+            {
+                return addScreenCommand ?? (addScreenCommand = new RelayCommand(ExecuteAddScreenCommand));
+            }
+        }
+        private async void ExecuteAddScreenCommand()
+        {
+            string dialogResult = await MessageWindowsViewModel.ShowOkCancelInput("Create New Screen", "What is the title of the new screen? You can always change it later.");
+            if (dialogResult != null)
+            {
+                AddScreen(dialogResult);
+                //ExecuteSelectScreenCommand(SelectedEvent.Screens.Last());
+                //InitialiseConnections();
+            }
+        }
+
+        private RelayCommand<Screen> removeScreenCommand;
+        public RelayCommand<Screen> RemoveScreenCommand
+        {
+            get
+            {
+                return removeScreenCommand ?? (removeScreenCommand = new RelayCommand<Screen>(ExecuteRemoveScreenCommand));
+            }
+        }
+        private async void ExecuteRemoveScreenCommand(Screen screen)
+        {
+            if (screen == null) return;
+            bool dialogResult = await MessageWindowsViewModel.ShowOkCancelMessage("Confirm Screen Deletion", $"Do you want to delete the screen {screen.Title}?");
+            if (dialogResult)
+            {
+                RemoveScreen(screen);
+                //SelectedScreen = SelectedScreen == screen ? null : SelectedScreen;
+                //InitialiseConnections();
+            }
         }
     }
 }
