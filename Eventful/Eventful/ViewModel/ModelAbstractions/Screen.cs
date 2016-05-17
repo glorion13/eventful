@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace Eventful.ViewModel
 {
-    [DataContract]
+    [Serializable]
     public class Screen : ViewModelBase
     {
         public Screen()
@@ -24,7 +24,7 @@ namespace Eventful.ViewModel
             Title = screen.Title;
             Text = screen.Text;
             foreach (Option option in screen.Options)
-                AddOption(option);
+                AddOption(option, true);
             Width = 150;
             Height = 40;
             X = screen.X;
@@ -34,7 +34,6 @@ namespace Eventful.ViewModel
         }
 
         private string title = "Untitled Screen";
-        [DataMember]
         public string Title
         {
             get
@@ -50,7 +49,6 @@ namespace Eventful.ViewModel
         }
 
         private Guid id = Guid.NewGuid();
-        [DataMember]
         public Guid Id
         {
             get
@@ -64,7 +62,6 @@ namespace Eventful.ViewModel
         }
 
         private string text = "";
-        [DataMember]
         public string Text
         {
             get
@@ -80,7 +77,6 @@ namespace Eventful.ViewModel
         }
 
         private ObservableCollection<Option> options = new ObservableCollection<Option>();
-        [DataMember]
         public ObservableCollection<Option> Options
         {
             get
@@ -147,8 +143,9 @@ namespace Eventful.ViewModel
             }
         }
 
+        [XmlIgnore]
         private double width = 150;
-        [IgnoreDataMember]
+        [XmlIgnore]
         public double Width
         {
             get
@@ -163,8 +160,9 @@ namespace Eventful.ViewModel
             }
         }
 
+        [XmlIgnore]
         private double height = 40;
-        [IgnoreDataMember]
+        [XmlIgnore]
         public double Height
         {
             get
@@ -178,9 +176,10 @@ namespace Eventful.ViewModel
                 UpdateOutputPositions();
             }
         }
-        
+
+        [XmlIgnore]
         private Event parentEvent;
-        [IgnoreDataMember]
+        [XmlIgnore]
         public Event ParentEvent
         {
             get
@@ -192,9 +191,10 @@ namespace Eventful.ViewModel
                 Set(() => ParentEvent, ref parentEvent, value);
             }
         }
-        
+
+        [XmlIgnore]
         private bool isSelected = false;
-        [IgnoreDataMember]
+        [XmlIgnore]
         public bool IsSelected
         {
             get
@@ -272,6 +272,17 @@ namespace Eventful.ViewModel
             option.Text = sourceOption.Text;
             option.Source = this;
             option.Target = null;
+            Options.Add(option);
+            if (ParentEvent != null)
+                ParentEvent.IsChanged = true;
+        }
+        public void AddOption(Option sourceOption, bool keepConnections)
+        {
+            Option option = new Option();
+            option.Index = sourceOption.Index;
+            option.Text = sourceOption.Text;
+            option.Source = this;
+            option.Target = sourceOption.Target;
             Options.Add(option);
             if (ParentEvent != null)
                 ParentEvent.IsChanged = true;

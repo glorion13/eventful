@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 
 namespace Eventful.ViewModel
 {
+    [Serializable]
     public class Option : ViewModelBase
     {
         public Option()

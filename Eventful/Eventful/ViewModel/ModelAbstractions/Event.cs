@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 
 namespace Eventful.ViewModel
 {
-    [DataContract]
+    [Serializable]
     public class Event : ViewModelBase
     {
         public Event()
@@ -24,7 +24,6 @@ namespace Eventful.ViewModel
                 AddScreen(new Screen(screen), true);
         }
 
-        [DataMember]
         private ObservableCollection<Screen> screens = new ObservableCollection<Screen>();
         public ObservableCollection<Screen> Screens
         {
@@ -38,7 +37,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        [DataMember]
         private string title;
         public string Title
         {
@@ -52,7 +50,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        [DataMember]
         private Guid id = Guid.NewGuid();
         public Guid Id
         {
@@ -66,7 +63,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        [DataMember]
         private string author = "anonymous";
         public string Author
         {
@@ -80,7 +76,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        [DataMember]
         private DateTime date = DateTime.Now;
         public DateTime Date
         {
@@ -94,7 +89,6 @@ namespace Eventful.ViewModel
             }
         }
 
-        [IgnoreDataMember]
         private bool isChanged = true;
         public bool IsChanged
         {

@@ -652,8 +652,8 @@ namespace Eventful.ViewModel
             if (SelectedEvent == null) return;
             Event duplicateEvent = new Event(SelectedEvent);
             duplicateEvent.Title += " Copy";
-            while (SelectedDeck.Events.Any(e => e.Title == duplicateEvent.Title))
-                duplicateEvent.Title += " Copy";
+            /*while (SelectedDeck.Events.Any(e => e.Title == duplicateEvent.Title))
+                duplicateEvent.Title += " Copy";*/
 
             /*for (int i = 0; i < duplicateEvent.Screens.Count; i++)
             {
