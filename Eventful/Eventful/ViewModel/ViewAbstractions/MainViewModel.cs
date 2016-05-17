@@ -13,6 +13,8 @@ using System.Collections;
 using System.Threading.Tasks;
 using Eventful.Service.Auxiliary;
 using Eventful.Service;
+using MahApps.Metro;
+using System.Collections.Generic;
 
 namespace Eventful.ViewModel
 {
@@ -31,6 +33,56 @@ namespace Eventful.ViewModel
                 InitialiseMessengerService();
                 LoadDeckMappingsFromDisk();
                 InitialiseAutocompletion();
+                InitialiseTheme();
+                InitialiseAccent();
+            }
+        }
+
+        private Accent selectedAccent = ThemeManager.GetAccent("Blue");
+        public Accent SelectedAccent
+        {
+            get
+            {
+                return selectedAccent;
+            }
+            set
+            {
+                Set(() => SelectedAccent, ref selectedAccent, value);
+                Properties.Settings.Default[nameof(SelectedAccent)] = SelectedAccent.Name;
+                Properties.Settings.Default.Save();
+                MessengerInstance.Send(SelectedAccent);
+            }
+        }
+
+        private AppTheme selectedTheme = ThemeManager.GetAppTheme("BaseLight");
+        public AppTheme SelectedTheme
+        {
+            get
+            {
+                return selectedTheme;
+            }
+            set
+            {
+                Set(() => SelectedTheme, ref selectedTheme, value);
+                Properties.Settings.Default[nameof(SelectedTheme)] = SelectedTheme.Name;
+                Properties.Settings.Default.Save();
+                MessengerInstance.Send(SelectedTheme);
+            }
+        }
+
+        public List<Accent> Accents
+        {
+            get
+            {
+                return ThemeManager.Accents.ToList();
+            }
+        }
+
+        public List<AppTheme> Themes
+        {
+            get
+            {
+                return ThemeManager.AppThemes.ToList();
             }
         }
 
@@ -83,6 +135,8 @@ namespace Eventful.ViewModel
             AutocompleteTrees.Add("var", Variables);
             AutocompleteTrees.Add("tag", Tags);
         }
+        private void InitialiseTheme() => SelectedTheme = ThemeManager.GetAppTheme((string)Properties.Settings.Default[nameof(SelectedAccent)] == "" ? selectedTheme.Name : (string)Properties.Settings.Default[nameof(SelectedTheme)]);
+        private void InitialiseAccent() => SelectedAccent = ThemeManager.GetAccent((string)Properties.Settings.Default[nameof(SelectedAccent)] == "" ? selectedAccent.Name : (string)Properties.Settings.Default[nameof(SelectedAccent)]);
 
         private void LoadDeckMappingsFromDisk()
         {

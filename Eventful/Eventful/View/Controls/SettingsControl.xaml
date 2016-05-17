@@ -11,6 +11,9 @@
             <RowDefinition Height="80" />
             <RowDefinition Height="30" />
             <RowDefinition Height="50" />
+            <RowDefinition Height="80" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -32,6 +35,35 @@
             </Grid.ColumnDefinitions>
             <TextBlock Text="{Binding StorageDirectory}" VerticalAlignment="Center" Grid.Column="0"/>
             <Button Content="Change" Command="{Binding BrowseStorageDirectoryCommand}" Width="60" Height="20" Grid.Column="1" VerticalAlignment="Center" />
+        </Grid>
+        <TextBlock Text="Colour Theme" FontSize="24" Grid.Row="5" Grid.Column="0" />
+        <Grid Grid.Row="6" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Colours:" VerticalAlignment="Center" Grid.Column="0"/>
+            <ComboBox ItemsSource="{Binding Accents}" SelectedItem="{Binding SelectedAccent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Grid.Column="1">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </Grid>
+        <Grid Grid.Row="7" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Themes:" VerticalAlignment="Center" Grid.Column="0"/>
+            <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Grid.Column="1">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </Grid>
     </Grid>
 </UserControl>

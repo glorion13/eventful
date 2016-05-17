@@ -2,6 +2,7 @@
 using MahApps.Metro.Controls;
 using GalaSoft.MvvmLight.Messaging;
 using Eventful.ViewModel;
+using MahApps.Metro;
 
 namespace Eventful.View.Windows
 {
@@ -13,9 +14,26 @@ namespace Eventful.View.Windows
         public MainWindow()
         {
             InitializeComponent();
+
+            ChangeTheme(ThemeManager.GetAppTheme(Properties.Settings.Default["SelectedTheme"] as string));
+            ChangeAccent(ThemeManager.GetAccent(Properties.Settings.Default["SelectedAccent"] as string));
+
+            Messenger.Default.Register<Accent>(this, accent => ChangeAccent(accent));
+            Messenger.Default.Register<AppTheme>(this, theme => ChangeTheme(theme));
+
             Messenger.Default.Register<EditEventViewModel>(this, vm => OpenNewEventWindow(vm));
             Messenger.Default.Register<TagLibraryViewModel>(this, vm => OpenTagLibraryWindow(vm));
             Messenger.Default.Register<VariableLibraryViewModel>(this, vm => OpenVariableLibraryWindow(vm));
+        }
+
+        private void ChangeTheme(AppTheme theme)
+        {
+            ThemeManager.ChangeAppTheme(this, theme.Name);
+        }
+
+        private void ChangeAccent(Accent accent)
+        {
+            ThemeManager.ChangeAppStyle(this, accent, ThemeManager.DetectAppStyle(this).Item1);
         }
 
         private void OpenNewEventWindow(EditEventViewModel vm)

@@ -42,9 +42,13 @@
                 <KeyBinding Command="{Binding Path=ChangeEventNameCommand}" 
                                 Key="R" 
                                 Modifiers="Control"/>
-                <KeyBinding Command="{Binding Path=RemoveEventCommand}"
+                <KeyBinding Command="{Binding Path=SelectedDeck.RemoveEventCommand}"
                             CommandParameter="{Binding SelectedEvent}"
                                 Key="Delete"/>
+                <KeyBinding Command="{Binding Path=SelectedDeck.AddEventCommand}"
+                                Key="OemPlus"/>
+                <KeyBinding Command="{Binding Path=SelectedDeck.AddEventCommand}"
+                                Key="Add"/>
             </DataGrid.InputBindings>
             <DataGrid.ContextMenu>
                 <ContextMenu>
